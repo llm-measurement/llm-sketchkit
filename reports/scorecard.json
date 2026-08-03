@@ -1,0 +1,28 @@
+{
+  "release": "v0.1.0-alpha.3",
+  "measured_commit": "cf9de450fc96a8fa6b2204be2875d9b2a79c085a",
+  "linux_benchmark": {
+    "date": "2026-08-02",
+    "run_url": "https://github.com/llm-measurement/llm-sketchkit/actions/runs/30782282374",
+    "environment": "GitHub Actions ubuntu-24.04 image 20260720.247.2, Intel Xeon Platinum 8573C, 2 vCPUs, Go 1.26.5 linux/amd64, GOMAXPROCS=1",
+    "headroom": [
+      {"label": "HMAC 64 B", "multiple": 1.6526},
+      {"label": "HMAC 1 KiB", "multiple": 4.2517},
+      {"label": "HLL++ update", "multiple": 47.2589},
+      {"label": "Frequent-items update", "multiple": 3.4341}
+    ]
+  },
+  "hllpp_small": [
+    {"label": "Observed max", "percent": 2.330117},
+    {"label": "Enforced bound", "percent": 2.4375}
+  ],
+  "bloom": [
+    {"label": "micro", "observed": 0.000995, "target": 0.001},
+    {"label": "small", "observed": 0.000905, "target": 0.001},
+    {"label": "default", "observed": 0.000094, "target": 0.0001}
+  ],
+  "minhash": [
+    {"label": "k=128", "mean": 0.02844922, "p95": 0.07421875},
+    {"label": "k=256", "mean": 0.02009375, "p95": 0.05078125}
+  ]
+}

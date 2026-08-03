@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="296" viewBox="0 0 760 296" role="img" aria-labelledby="title desc">
+  <title id="title">Bloom False-Positive Rate</title>
+  <desc id="desc">Empirical rate compared with each profile's configured target</desc>
+  <rect width="760" height="296" fill="#ffffff" />
+  <text x="24" y="32" fill="#17202a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">Bloom False-Positive Rate</text>
+  <text x="24" y="54" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="12">Empirical rate compared with each profile's configured target</text>
+  <rect x="180" y="68" width="10" height="10" fill="#1976a3" />
+  <text x="196" y="77" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="11">Observed</text>
+  <rect x="310" y="68" width="10" height="10" fill="#b7791f" />
+  <text x="326" y="77" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="11">Target</text>
+  <text x="24" y="118" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">micro</text>
+  <line x1="180" y1="103" x2="720" y2="103" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="103" x2="668.45" y2="103" stroke="#1976a3" stroke-width="14" />
+  <text x="674.45" y="107" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.000995</text>
+  <line x1="180" y1="129" x2="720" y2="129" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="129" x2="670.91" y2="129" stroke="#b7791f" stroke-width="14" />
+  <text x="676.91" y="133" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.001000</text>
+  <text x="24" y="186" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">small</text>
+  <line x1="180" y1="171" x2="720" y2="171" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="171" x2="624.27" y2="171" stroke="#1976a3" stroke-width="14" />
+  <text x="630.27" y="175" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.000905</text>
+  <line x1="180" y1="197" x2="720" y2="197" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="197" x2="670.91" y2="197" stroke="#b7791f" stroke-width="14" />
+  <text x="676.91" y="201" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.001000</text>
+  <text x="24" y="254" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">default</text>
+  <line x1="180" y1="239" x2="720" y2="239" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="239" x2="226.15" y2="239" stroke="#1976a3" stroke-width="14" />
+  <text x="232.15" y="243" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.000094</text>
+  <line x1="180" y1="265" x2="720" y2="265" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="265" x2="229.09" y2="265" stroke="#b7791f" stroke-width="14" />
+  <text x="235.09" y="269" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.000100</text>
+</svg>

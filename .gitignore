@@ -3,6 +3,8 @@
 .ruff_cache/
 .venv/
 .tools/
+/build/
+/dist/
 __pycache__/
 *.egg-info/
 *.swp

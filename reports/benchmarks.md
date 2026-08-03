@@ -69,7 +69,57 @@ Weighted frequent-items `AddHash(uint64, weight)`:
 | Tracked steady-state | 29.15 | 29.20 | 29.13 | 29.16 | 28.88 | 0 | 0 |
 | Drop steady-state | 73.36 | 72.94 | 73.15 | 73.83 | 74.23 | 0 | 0 |
 
-## Linux Runner Results
+## Current Linux Runner Results
+
+Recorded 2026-08-02 on GitHub Actions `ubuntu-24.04`, image
+`20260720.247.2`, Intel Xeon Platinum 8573C, 2 online vCPUs, Go
+`go1.26.5 linux/amd64`, `GOMAXPROCS=1`. The complete workflow run is
+[30782282374](https://github.com/llm-measurement/llm-sketchkit/actions/runs/30782282374).
+
+Commands:
+
+```sh
+GOMAXPROCS=1 go test ./bench/hash -run '^$' -bench='BenchmarkHMACSHA25664_(64B|1KB)$' -benchmem -count=5
+GOMAXPROCS=1 go test ./bench/sketch -run '^$' -bench='Benchmark(HLLPPAddHash|FrequentItemsAddHash)_' -benchmem -count=5
+```
+
+64-byte HMAC-SHA256-64 input:
+
+| Run | ns/op | MB/s | B/op | allocs/op | ops/s |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 580.9 | 110.18 | 529 | 8 | 1,721,467 |
+| 2 | 575.0 | 111.30 | 529 | 8 | 1,739,130 |
+| 3 | 605.1 | 105.77 | 529 | 8 | 1,652,619 |
+| 4 | 586.8 | 109.07 | 529 | 8 | 1,704,158 |
+| 5 | 597.4 | 107.14 | 529 | 8 | 1,673,920 |
+
+1 KiB HMAC-SHA256-64 input:
+
+| Run | ns/op | MB/s | B/op | allocs/op | ops/s |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 1,142 | 896.92 | 529 | 8 | 875,657 |
+| 2 | 1,162 | 881.21 | 529 | 8 | 860,585 |
+| 3 | 1,150 | 890.43 | 529 | 8 | 869,565 |
+| 4 | 1,141 | 897.39 | 529 | 8 | 876,424 |
+| 5 | 1,176 | 870.49 | 529 | 8 | 850,340 |
+
+HLL++ `AddHash(uint64)`:
+
+| Benchmark | Run 1 ns/op | Run 2 ns/op | Run 3 ns/op | Run 4 ns/op | Run 5 ns/op | B/op | allocs/op |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Amortized from empty | 2.543 | 2.532 | 2.579 | 2.568 | 2.584 | 0 | 0 |
+| Sparse steady-state | 10.37 | 10.58 | 10.42 | 10.44 | 10.57 | 0 | 0 |
+| Dense steady-state | 2.568 | 2.573 | 2.509 | 2.560 | 2.830 | 0 | 0 |
+
+Weighted frequent-items `AddHash(uint64, weight)`:
+
+| Benchmark | Run 1 ns/op | Run 2 ns/op | Run 3 ns/op | Run 4 ns/op | Run 5 ns/op | B/op | allocs/op |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Amortized skewed | 145.6 | 143.8 | 142.9 | 144.4 | 141.1 | 0 | 0 |
+| Tracked steady-state | 53.38 | 53.67 | 56.09 | 53.30 | 54.63 | 0 | 0 |
+| Drop steady-state | 126.2 | 126.6 | 126.6 | 129.0 | 130.9 | 0 | 0 |
+
+## Earlier Linux Runner Results
 
 Recorded 2026-07-04 on GitHub Actions `ubuntu-24.04`, image
 `20260628.225.1`, Linux `6.17.0-1018-azure`, AMD EPYC 7763 64-Core Processor,
@@ -120,7 +170,8 @@ Weighted frequent-items `AddHash(uint64, weight)`:
 
 ## Summary
 
-The slowest Linux runner hash result was `1,365,560 ops/s/core` for 64-byte
-inputs and `772,798 ops/s/core` for 1 KiB inputs. The slowest Linux runner
-sketch update result was `14.52 ns/op` for HLL++ and `176.4 ns/op` for
-weighted frequent-items, both with `0 B/op` and `0 allocs/op`.
+On the current Linux run, the slowest hash result was `1,652,619 ops/s/core`
+for 64-byte inputs and `850,340 ops/s/core` for 1 KiB inputs. The slowest
+sketch update result was `10.58 ns/op` for HLL++ and `145.6 ns/op` for
+weighted frequent-items, both with `0 B/op` and `0 allocs/op`. All four paths
+met their stated performance targets in every run.

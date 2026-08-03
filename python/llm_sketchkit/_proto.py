@@ -3,13 +3,14 @@
 
 from __future__ import annotations
 
-import importlib
 from typing import Any, cast
+
+from . import sketches_pb2 as _sketchpb
+
+sketchpb: Any = _sketchpb
 
 WIRE_VERSION = 1
 MAX_WIRE_BYTES = 4 * 1024 * 1024
-sketchpb: Any = importlib.import_module("spec.sketches_pb2")
-
 __all__ = [
     "WIRE_VERSION",
     "MAX_WIRE_BYTES",

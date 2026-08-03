@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="228" viewBox="0 0 760 228" role="img" aria-labelledby="title desc">
+  <title id="title">MinHash Absolute Error</title>
+  <desc id="desc">Mean and p95 over 1,000 deterministic set pairs</desc>
+  <rect width="760" height="228" fill="#ffffff" />
+  <text x="24" y="32" fill="#17202a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">MinHash Absolute Error</text>
+  <text x="24" y="54" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="12">Mean and p95 over 1,000 deterministic set pairs</text>
+  <rect x="180" y="68" width="10" height="10" fill="#1976a3" />
+  <text x="196" y="77" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="11">Mean</text>
+  <rect x="310" y="68" width="10" height="10" fill="#b7791f" />
+  <text x="326" y="77" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="11">p95</text>
+  <text x="24" y="118" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">k=128</text>
+  <line x1="180" y1="103" x2="720" y2="103" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="103" x2="372.03" y2="103" stroke="#1976a3" stroke-width="14" />
+  <text x="378.03" y="107" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.02845</text>
+  <line x1="180" y1="129" x2="720" y2="129" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="129" x2="680.98" y2="129" stroke="#b7791f" stroke-width="14" />
+  <text x="686.98" y="133" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.07422</text>
+  <text x="24" y="186" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">k=256</text>
+  <line x1="180" y1="171" x2="720" y2="171" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="171" x2="315.63" y2="171" stroke="#1976a3" stroke-width="14" />
+  <text x="321.63" y="175" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.02009</text>
+  <line x1="180" y1="197" x2="720" y2="197" stroke="#d7dde3" stroke-width="14" />
+  <line x1="180" y1="197" x2="522.77" y2="197" stroke="#b7791f" stroke-width="14" />
+  <text x="528.77" y="201" fill="#17202a" font-family="system-ui, sans-serif" font-size="11">0.05078</text>
+</svg>
