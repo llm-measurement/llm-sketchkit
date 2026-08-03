@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-measurement.github.io/llm-sketchkit/schemas/hash-vector.schema.json",
+  "title": "llm-sketchkit hash vector",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "canonicalization",
+    "input",
+    "canonical_bytes_hex",
+    "domain",
+    "hash_algo",
+    "secret",
+    "expected"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonicalization": {
+      "type": "string",
+      "enum": [
+        "text_v1"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "encoding",
+        "value"
+      ],
+      "properties": {
+        "encoding": {
+          "const": "utf8"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "canonical_bytes_hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]*$"
+    },
+    "domain": {
+      "type": "string",
+      "enum": [
+        "prompt:v1",
+        "user:v1",
+        "tool:v1",
+        "retrieval-doc:v1",
+        "session:v1",
+        "mcp-session:v1",
+        "mcp-method:v1",
+        "tool-error:v1"
+      ]
+    },
+    "hash_algo": {
+      "type": "string",
+      "enum": [
+        "hmac_sha256_64",
+        "siphash_64"
+      ]
+    },
+    "secret": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "utf8"
+          ]
+        },
+        {
+          "required": [
+            "hex"
+          ]
+        }
+      ],
+      "properties": {
+        "utf8": {
+          "type": "string"
+        },
+        "hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]*$"
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest64_hex",
+        "digest64_uint"
+      ],
+      "properties": {
+        "digest64_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        },
+        "digest64_uint": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

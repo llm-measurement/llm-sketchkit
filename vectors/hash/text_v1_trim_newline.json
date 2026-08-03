@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "text_v1 trim and newline normalization",
+  "canonicalization": "text_v1",
+  "input": {
+    "encoding": "utf8",
+    "value": "  Hello, sketchkit!\r\n"
+  },
+  "canonical_bytes_hex": "48656c6c6f2c20736b657463686b697421",
+  "domain": "prompt:v1",
+  "hash_algo": "hmac_sha256_64",
+  "secret": {
+    "utf8": "text-vector-secret"
+  },
+  "expected": {
+    "digest64_hex": "d4cce292568ace52",
+    "digest64_uint": 15333879949434736210
+  }
+}

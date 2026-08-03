@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "name": "HLL++ sparse merge",
+  "metadata": {
+    "kind": "HLLPP",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "HLLPP_SPARSE",
+    "hllpp_normal_precision": 12,
+    "hllpp_sparse_precision": 16
+  },
+  "operations": [
+    {
+      "op": "add_hash",
+      "hash_hex": "00a8000000000000",
+      "source": "left"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00b4000000000000",
+      "source": "left"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00b2000000000000",
+      "source": "right"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00c8000000000000",
+      "source": "right"
+    }
+  ],
+  "expected": {
+    "estimate": 0,
+    "body": {
+      "representation_mode": "HLLPP_SPARSE",
+      "sparse_count": 4,
+      "sources": [
+        "left",
+        "right"
+      ]
+    }
+  },
+  "notes": "Operations are partitioned by source and merged at sparse precision; overlapping normal registers can remain distinct before promotion."
+}

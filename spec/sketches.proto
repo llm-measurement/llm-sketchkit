@@ -1,0 +1,128 @@
+// Code authors: Vijay Erramilli and Codex
+syntax = "proto3";
+
+package llm.sketchkit.v1;
+
+option go_package = "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb;sketchpb";
+
+// Status: version 1 with cross-language conformance.
+//
+// Canonical encoding rules
+//
+// The binary protobuf encoding is the wire container, but this specification
+// restricts it to one byte-level canonical form.
+//
+// 1. Writers MUST emit fields in ascending field-number order.
+// 2. Writers MUST use deterministic protobuf serialization.
+// 3. Writers MUST NOT emit unknown fields. Readers that preserve and
+//    reserialize unknown fields MUST reject the message for canonical use.
+// 4. This schema intentionally uses no protobuf map fields. Repeated entries
+//    with key semantics have kind-specific sort orders below.
+// 5. Non-optional scalar fields with default values MUST be omitted.
+// 6. Optional scalar fields MUST be emitted only when presence is explicitly
+//    set. Absence and a present default value are different states and MUST NOT
+//    be normalized into each other.
+// 7. The top-level Sketch message MUST contain field 1 (metadata) and exactly
+//    one body field. The body field MUST match metadata.kind.
+// 8. Metadata fields MUST be emitted in field-number order. Strings MUST be
+//    valid UTF-8 and profile/hash-domain/hash-algorithm strings MUST match the
+//    specs in this repository.
+// 9. metadata.representation_mode is mandatory for every sketch, even when a
+//    kind has one representation in v0.1. It is the byte-level discriminator
+//    for the supported sparse and dense representations.
+// 10. HLL++ sparse registers MUST be sorted by index ascending and MUST NOT
+//     contain duplicate indexes. Dense registers MUST be encoded only in
+//     dense_registers, never as a sparse list with every register present.
+// 11. Frequent-items entries MUST be sorted by hash ascending and MUST NOT
+//     contain duplicate hashes.
+// 12. Bloom bitsets MUST be little-endian within each byte: bit position n is
+//     stored at byte floor(n/8), bit (n mod 8). Unused high bits in the final
+//     byte MUST be zero.
+// 13. MinHash signatures MUST be in hash-family index order. Missing signature
+//     positions are not permitted.
+// 14. Re-serializing a canonical message without mutation MUST produce
+//     byte-identical output.
+// 15. Merge implementations MUST reject messages whose metadata differs in
+//     kind, profile, hash_domain, hash_algo, or any kind-specific shape field.
+
+enum SketchKind {
+  SKETCH_KIND_UNSPECIFIED = 0;
+  SKETCH_KIND_HLLPP = 1;
+  SKETCH_KIND_FREQUENT_ITEMS = 2;
+  SKETCH_KIND_BLOOM = 3;
+  SKETCH_KIND_MINHASH = 4;
+}
+
+enum HashAlgorithm {
+  HASH_ALGORITHM_UNSPECIFIED = 0;
+  HASH_ALGORITHM_HMAC_SHA256_64 = 1;
+  HASH_ALGORITHM_SIPHASH_64 = 2;
+}
+
+enum RepresentationMode {
+  REPRESENTATION_MODE_UNSPECIFIED = 0;
+  REPRESENTATION_MODE_HLLPP_SPARSE = 1;
+  REPRESENTATION_MODE_HLLPP_DENSE = 2;
+  REPRESENTATION_MODE_FREQUENT_ITEMS_BOUNDED_MAP = 3;
+  REPRESENTATION_MODE_BLOOM_BITSET = 4;
+  REPRESENTATION_MODE_MINHASH_SIGNATURE = 5;
+}
+
+message SketchMetadata {
+  SketchKind kind = 1;
+  uint32 wire_version = 2;
+  string profile = 3;
+  string hash_domain = 4;
+  HashAlgorithm hash_algo = 5;
+  RepresentationMode representation_mode = 6;
+
+  optional uint32 hllpp_normal_precision = 20;
+  optional uint32 hllpp_sparse_precision = 21;
+  optional uint32 frequent_items_map_size = 22;
+  optional uint64 bloom_bit_count = 23;
+  optional uint32 bloom_hash_count = 24;
+  optional uint32 minhash_signature_length = 25;
+}
+
+message Sketch {
+  SketchMetadata metadata = 1;
+
+  oneof body {
+    HllppSketch hllpp = 10;
+    FrequentItemsSketch frequent_items = 11;
+    BloomSketch bloom = 12;
+    MinHashSketch minhash = 13;
+  }
+}
+
+message HllppSketch {
+  repeated HllppSparseRegister sparse_registers = 1;
+  bytes dense_registers = 2;
+}
+
+message HllppSparseRegister {
+  uint32 index = 1;
+  uint32 value = 2;
+}
+
+message FrequentItemsSketch {
+  repeated FrequentItemsEntry entries = 1;
+  int64 total_weight = 2;
+  int64 max_error = 3;
+}
+
+message FrequentItemsEntry {
+  fixed64 hash = 1;
+  int64 estimate = 2;
+  int64 error = 3;
+}
+
+message BloomSketch {
+  bytes bitset = 1;
+  uint64 inserted_count = 2;
+}
+
+message MinHashSketch {
+  repeated fixed64 signature = 1;
+  uint64 populated_count = 2;
+}

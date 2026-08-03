@@ -1,0 +1,838 @@
+{
+  "datasketches_version": "5.2.0",
+  "oracle": "apache-datasketches-python",
+  "schema_version": 1,
+  "scope": "Weighted frequent-items query semantics only. HLL byte or estimate equality is deliberately out of scope because DataSketches HLL is a different algorithm family than llm-sketchkit HLL++.",
+  "workloads": [
+    {
+      "datasketches_lg_max_k": 10,
+      "datasketches_nominal_capacity": 768,
+      "distinct_keys": 14301,
+      "kind": "zipf",
+      "name": "zipf_1_1_weighted_small",
+      "partitioned_merge": {
+        "orders": [
+          {
+            "datasketches": {
+              "apriori_error_estimate": 800,
+              "epsilon": 0.00341796875,
+              "no_false_negatives_candidates": 20,
+              "no_false_positives_candidates": 18,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 233931,
+              "tracked_items": 362
+            },
+            "order": "forward",
+            "sketchkit": {
+              "max_error": 211,
+              "no_false_negatives_candidates": 20,
+              "no_false_positives_candidates": 17,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 233931,
+              "tracked_items": 467
+            }
+          },
+          {
+            "datasketches": {
+              "apriori_error_estimate": 800,
+              "epsilon": 0.00341796875,
+              "no_false_negatives_candidates": 20,
+              "no_false_positives_candidates": 18,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 233931,
+              "tracked_items": 345
+            },
+            "order": "reverse",
+            "sketchkit": {
+              "max_error": 212,
+              "no_false_negatives_candidates": 20,
+              "no_false_positives_candidates": 17,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 233931,
+              "tracked_items": 301
+            }
+          },
+          {
+            "datasketches": {
+              "apriori_error_estimate": 800,
+              "epsilon": 0.00341796875,
+              "no_false_negatives_candidates": 20,
+              "no_false_positives_candidates": 18,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 233931,
+              "tracked_items": 354
+            },
+            "order": "interleaved",
+            "sketchkit": {
+              "max_error": 211,
+              "no_false_negatives_candidates": 20,
+              "no_false_positives_candidates": 17,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 233931,
+              "tracked_items": 490
+            }
+          }
+        ],
+        "partitions": 5
+      },
+      "profile": "small",
+      "single_sketch": {
+        "checks": {
+          "datasketches_brackets_true_top_k": true,
+          "datasketches_no_false_negatives_top_k_recall": 1.0,
+          "datasketches_no_false_positives_valid": true,
+          "sketchkit_brackets_true_top_k": true,
+          "sketchkit_no_false_negatives_top_k_recall": 1.0,
+          "sketchkit_no_false_positives_valid": true
+        },
+        "datasketches": {
+          "apriori_error_estimate": 800,
+          "epsilon": 0.00341796875,
+          "no_false_negatives_candidates": 20,
+          "no_false_positives_candidates": 18,
+          "no_false_positives_valid": true,
+          "top_k_recall": 1.0,
+          "total_weight": 233931,
+          "tracked_items": 616
+        },
+        "sketchkit": {
+          "max_error": 213,
+          "no_false_negatives_candidates": 20,
+          "no_false_positives_candidates": 17,
+          "no_false_positives_valid": true,
+          "top_k_recall": 1.0,
+          "total_weight": 233931,
+          "tracked_items": 494
+        },
+        "top_items": [
+          {
+            "datasketches": {
+              "estimate": 34064,
+              "lower_bound": 33936,
+              "upper_bound": 34064
+            },
+            "hash_hex": "5692161d100b05e5",
+            "rank": 1,
+            "sketchkit": {
+              "estimate": 34064,
+              "lower_bound": 33851,
+              "upper_bound": 34064
+            },
+            "true_weight": 34064
+          },
+          {
+            "datasketches": {
+              "estimate": 15791,
+              "lower_bound": 15663,
+              "upper_bound": 15791
+            },
+            "hash_hex": "dbd238973a2b148a",
+            "rank": 2,
+            "sketchkit": {
+              "estimate": 15791,
+              "lower_bound": 15578,
+              "upper_bound": 15791
+            },
+            "true_weight": 15791
+          },
+          {
+            "datasketches": {
+              "estimate": 10165,
+              "lower_bound": 10037,
+              "upper_bound": 10165
+            },
+            "hash_hex": "1e535eede31428f0",
+            "rank": 3,
+            "sketchkit": {
+              "estimate": 10165,
+              "lower_bound": 9952,
+              "upper_bound": 10165
+            },
+            "true_weight": 10165
+          },
+          {
+            "datasketches": {
+              "estimate": 7510,
+              "lower_bound": 7382,
+              "upper_bound": 7510
+            },
+            "hash_hex": "b7a4712c74562914",
+            "rank": 4,
+            "sketchkit": {
+              "estimate": 7510,
+              "lower_bound": 7297,
+              "upper_bound": 7510
+            },
+            "true_weight": 7510
+          },
+          {
+            "datasketches": {
+              "estimate": 5830,
+              "lower_bound": 5702,
+              "upper_bound": 5830
+            },
+            "hash_hex": "b6bf613dbebb45dc",
+            "rank": 5,
+            "sketchkit": {
+              "estimate": 5830,
+              "lower_bound": 5617,
+              "upper_bound": 5830
+            },
+            "true_weight": 5830
+          },
+          {
+            "datasketches": {
+              "estimate": 4669,
+              "lower_bound": 4541,
+              "upper_bound": 4669
+            },
+            "hash_hex": "d17707977078336c",
+            "rank": 6,
+            "sketchkit": {
+              "estimate": 4669,
+              "lower_bound": 4456,
+              "upper_bound": 4669
+            },
+            "true_weight": 4669
+          },
+          {
+            "datasketches": {
+              "estimate": 4026,
+              "lower_bound": 3898,
+              "upper_bound": 4026
+            },
+            "hash_hex": "12ae30237b17df14",
+            "rank": 7,
+            "sketchkit": {
+              "estimate": 4026,
+              "lower_bound": 3813,
+              "upper_bound": 4026
+            },
+            "true_weight": 4026
+          },
+          {
+            "datasketches": {
+              "estimate": 3398,
+              "lower_bound": 3270,
+              "upper_bound": 3398
+            },
+            "hash_hex": "d56b1fbb9ceba9e8",
+            "rank": 8,
+            "sketchkit": {
+              "estimate": 3398,
+              "lower_bound": 3185,
+              "upper_bound": 3398
+            },
+            "true_weight": 3398
+          },
+          {
+            "datasketches": {
+              "estimate": 3027,
+              "lower_bound": 2899,
+              "upper_bound": 3027
+            },
+            "hash_hex": "826c6abf7fdd5ad7",
+            "rank": 9,
+            "sketchkit": {
+              "estimate": 3027,
+              "lower_bound": 2814,
+              "upper_bound": 3027
+            },
+            "true_weight": 3027
+          },
+          {
+            "datasketches": {
+              "estimate": 2647,
+              "lower_bound": 2519,
+              "upper_bound": 2647
+            },
+            "hash_hex": "075c8519a9320579",
+            "rank": 10,
+            "sketchkit": {
+              "estimate": 2647,
+              "lower_bound": 2434,
+              "upper_bound": 2647
+            },
+            "true_weight": 2647
+          },
+          {
+            "datasketches": {
+              "estimate": 2542,
+              "lower_bound": 2414,
+              "upper_bound": 2542
+            },
+            "hash_hex": "3462d848f53abb6d",
+            "rank": 11,
+            "sketchkit": {
+              "estimate": 2542,
+              "lower_bound": 2329,
+              "upper_bound": 2542
+            },
+            "true_weight": 2542
+          },
+          {
+            "datasketches": {
+              "estimate": 2241,
+              "lower_bound": 2113,
+              "upper_bound": 2241
+            },
+            "hash_hex": "37be58e8d7213bbc",
+            "rank": 12,
+            "sketchkit": {
+              "estimate": 2241,
+              "lower_bound": 2028,
+              "upper_bound": 2241
+            },
+            "true_weight": 2241
+          },
+          {
+            "datasketches": {
+              "estimate": 2009,
+              "lower_bound": 1881,
+              "upper_bound": 2009
+            },
+            "hash_hex": "dcfa9555b5f881d1",
+            "rank": 13,
+            "sketchkit": {
+              "estimate": 2009,
+              "lower_bound": 1796,
+              "upper_bound": 2009
+            },
+            "true_weight": 2009
+          },
+          {
+            "datasketches": {
+              "estimate": 1841,
+              "lower_bound": 1713,
+              "upper_bound": 1841
+            },
+            "hash_hex": "255c6046f62fbe29",
+            "rank": 14,
+            "sketchkit": {
+              "estimate": 1841,
+              "lower_bound": 1628,
+              "upper_bound": 1841
+            },
+            "true_weight": 1841
+          },
+          {
+            "datasketches": {
+              "estimate": 1672,
+              "lower_bound": 1544,
+              "upper_bound": 1672
+            },
+            "hash_hex": "0392754934ea1539",
+            "rank": 15,
+            "sketchkit": {
+              "estimate": 1672,
+              "lower_bound": 1459,
+              "upper_bound": 1672
+            },
+            "true_weight": 1672
+          },
+          {
+            "datasketches": {
+              "estimate": 1596,
+              "lower_bound": 1468,
+              "upper_bound": 1596
+            },
+            "hash_hex": "d9844bcecca4a8bd",
+            "rank": 16,
+            "sketchkit": {
+              "estimate": 1596,
+              "lower_bound": 1383,
+              "upper_bound": 1596
+            },
+            "true_weight": 1596
+          },
+          {
+            "datasketches": {
+              "estimate": 1485,
+              "lower_bound": 1357,
+              "upper_bound": 1485
+            },
+            "hash_hex": "302b8631721c51be",
+            "rank": 17,
+            "sketchkit": {
+              "estimate": 1485,
+              "lower_bound": 1272,
+              "upper_bound": 1485
+            },
+            "true_weight": 1485
+          },
+          {
+            "datasketches": {
+              "estimate": 1390,
+              "lower_bound": 1262,
+              "upper_bound": 1390
+            },
+            "hash_hex": "ffcb5c99f6aa8871",
+            "rank": 18,
+            "sketchkit": {
+              "estimate": 1390,
+              "lower_bound": 1177,
+              "upper_bound": 1390
+            },
+            "true_weight": 1390
+          },
+          {
+            "datasketches": {
+              "estimate": 1355,
+              "lower_bound": 1227,
+              "upper_bound": 1355
+            },
+            "hash_hex": "e34a1ed09841f857",
+            "rank": 19,
+            "sketchkit": {
+              "estimate": 1355,
+              "lower_bound": 1142,
+              "upper_bound": 1355
+            },
+            "true_weight": 1355
+          },
+          {
+            "datasketches": {
+              "estimate": 1244,
+              "lower_bound": 1116,
+              "upper_bound": 1244
+            },
+            "hash_hex": "0eb90a3352640af2",
+            "rank": 20,
+            "sketchkit": {
+              "estimate": 1244,
+              "lower_bound": 1031,
+              "upper_bound": 1244
+            },
+            "true_weight": 1244
+          }
+        ]
+      },
+      "sketchkit_map_size": 512,
+      "top_k": 20,
+      "top_k_threshold_exclusive": 1243,
+      "total_weight": 233931,
+      "updates": 200000
+    },
+    {
+      "datasketches_lg_max_k": 10,
+      "datasketches_nominal_capacity": 768,
+      "distinct_keys": 24032,
+      "kind": "tail_churn",
+      "name": "tail_churn_weighted_small",
+      "partitioned_merge": {
+        "orders": [
+          {
+            "datasketches": {
+              "apriori_error_estimate": 440,
+              "epsilon": 0.00341796875,
+              "no_false_negatives_candidates": 32,
+              "no_false_positives_candidates": 24,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 128728,
+              "tracked_items": 193
+            },
+            "order": "forward",
+            "sketchkit": {
+              "max_error": 46,
+              "no_false_negatives_candidates": 32,
+              "no_false_positives_candidates": 24,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 128728,
+              "tracked_items": 434
+            }
+          },
+          {
+            "datasketches": {
+              "apriori_error_estimate": 440,
+              "epsilon": 0.00341796875,
+              "no_false_negatives_candidates": 32,
+              "no_false_positives_candidates": 24,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 128728,
+              "tracked_items": 193
+            },
+            "order": "reverse",
+            "sketchkit": {
+              "max_error": 46,
+              "no_false_negatives_candidates": 32,
+              "no_false_positives_candidates": 24,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 128728,
+              "tracked_items": 434
+            }
+          },
+          {
+            "datasketches": {
+              "apriori_error_estimate": 440,
+              "epsilon": 0.00341796875,
+              "no_false_negatives_candidates": 32,
+              "no_false_positives_candidates": 24,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 128728,
+              "tracked_items": 193
+            },
+            "order": "interleaved",
+            "sketchkit": {
+              "max_error": 46,
+              "no_false_negatives_candidates": 32,
+              "no_false_positives_candidates": 24,
+              "no_false_positives_valid": true,
+              "top_k_recall": 1.0,
+              "total_weight": 128728,
+              "tracked_items": 434
+            }
+          }
+        ],
+        "partitions": 5
+      },
+      "profile": "small",
+      "single_sketch": {
+        "checks": {
+          "datasketches_brackets_true_top_k": true,
+          "datasketches_no_false_negatives_top_k_recall": 1.0,
+          "datasketches_no_false_positives_valid": true,
+          "sketchkit_brackets_true_top_k": true,
+          "sketchkit_no_false_negatives_top_k_recall": 1.0,
+          "sketchkit_no_false_positives_valid": true
+        },
+        "datasketches": {
+          "apriori_error_estimate": 440,
+          "epsilon": 0.00341796875,
+          "no_false_negatives_candidates": 24,
+          "no_false_positives_candidates": 0,
+          "no_false_positives_valid": true,
+          "top_k_recall": 1.0,
+          "total_weight": 128728,
+          "tracked_items": 448
+        },
+        "sketchkit": {
+          "max_error": 49,
+          "no_false_negatives_candidates": 24,
+          "no_false_positives_candidates": 0,
+          "no_false_positives_valid": true,
+          "top_k_recall": 1.0,
+          "total_weight": 128728,
+          "tracked_items": 463
+        },
+        "top_items": [
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "0724ea9269d42a72",
+            "rank": 1,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "075c8519a9320579",
+            "rank": 2,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "0eb90a3352640af2",
+            "rank": 3,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "12ae30237b17df14",
+            "rank": 4,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "1e535eede31428f0",
+            "rank": 5,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "255c6046f62fbe29",
+            "rank": 6,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "302b8631721c51be",
+            "rank": 7,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "32469675332a0efc",
+            "rank": 8,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "378a5760be593ca5",
+            "rank": 9,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "37be58e8d7213bbc",
+            "rank": 10,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "540f172e046ef165",
+            "rank": 11,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "826c6abf7fdd5ad7",
+            "rank": 12,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "adfb1ebb497fad45",
+            "rank": 13,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "b6bf613dbebb45dc",
+            "rank": 14,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "d59eef30db86cab8",
+            "rank": 15,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "d633b1846faf2b49",
+            "rank": 16,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "d7a982c106d3fe38",
+            "rank": 17,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "d9844bcecca4a8bd",
+            "rank": 18,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "dbd238973a2b148a",
+            "rank": 19,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          },
+          {
+            "datasketches": {
+              "estimate": 3273,
+              "lower_bound": 3241,
+              "upper_bound": 3273
+            },
+            "hash_hex": "dcfa9555b5f881d1",
+            "rank": 20,
+            "sketchkit": {
+              "estimate": 3273,
+              "lower_bound": 3224,
+              "upper_bound": 3273
+            },
+            "true_weight": 3273
+          }
+        ]
+      },
+      "sketchkit_map_size": 512,
+      "top_k": 20,
+      "top_k_threshold_exclusive": 3272,
+      "total_weight": 128728,
+      "updates": 120000
+    }
+  ]
+}

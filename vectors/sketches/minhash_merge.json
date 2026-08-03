@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "name": "MinHash element-wise merge",
+  "metadata": {
+    "kind": "MINHASH",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "MINHASH_SIGNATURE",
+    "minhash_signature_length": 64
+  },
+  "operations": [
+    {
+      "op": "add_hash",
+      "hash_hex": "0000000000000001",
+      "source": "left"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0000000000000002",
+      "source": "left"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0000000000000003",
+      "source": "left"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0000000000000002",
+      "source": "right"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0000000000000003",
+      "source": "right"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0000000000000004",
+      "source": "right"
+    }
+  ],
+  "expected": {
+    "body": {
+      "populated_count": 6,
+      "jaccard": 0.546875,
+      "signature_hex": [
+        "6fe5961b4d08d811",
+        "19922780094092c6",
+        "10c7bb3de20f95b0",
+        "59470229f9388347",
+        "001e25448472e887",
+        "34415b7241372b17",
+        "6e436fd824f4556f",
+        "742cc9c0e831ccd0",
+        "2090c4ab099f8f7e",
+        "5a955e0a1a32f85e",
+        "14c1007570d4df26",
+        "05e5f3b14c9e164e",
+        "2b6581f79ba672aa",
+        "b7a1b95719a72e5c",
+        "1ee0325364ec713e",
+        "6d425d944b46a5c0",
+        "0fc8741c61b5e7d4",
+        "0d91089c83e9a4ee",
+        "65e0bcc06381bb9d",
+        "33842f7630efa086",
+        "6d4019689cbc8d25",
+        "0bbe22340a54415b",
+        "48e2c4d646dc69c5",
+        "2ce3cfe7afca17c2",
+        "698a6b4012a31697",
+        "182d500f06d2a00f",
+        "550e625d91f513d3",
+        "0a8b2f8efa8ab899",
+        "3e75db6e086772f9",
+        "a990aec4162a9856",
+        "093dfb52a166991f",
+        "8519d050a46a397c",
+        "957d3fd41ac73e42",
+        "456200a281409166",
+        "51fbc9c5e34f8fd3",
+        "5c73dcbd8d150632",
+        "150e545e55c7401e",
+        "529436356505e7c7",
+        "291232eeca9d997f",
+        "042e3ef5996a6289",
+        "154a874dddac9a14",
+        "205d20de2ba1865a",
+        "273444f32ec6a959",
+        "1ae0791676b91a6e",
+        "14d5c34b3ce29075",
+        "1556dec7962eb7df",
+        "05f3e71f7c5e1289",
+        "25580f519a956ec8",
+        "5245b5d86fad91ff",
+        "4d0041eb006e050e",
+        "6e43595a378c03b0",
+        "02f7fed999bf0026",
+        "27361e857442710c",
+        "09c0c8584ba9ed5b",
+        "2f94e6b26b3442f8",
+        "07a8c7366ac1c5c2",
+        "3f70d46d9e4c8ba2",
+        "c3b4744615bd43a8",
+        "187ec13379f0f28c",
+        "218dcb000d6a6058",
+        "1f0ee245527339b3",
+        "135012155e837ab4",
+        "0469a7dcd4e78ec7",
+        "27e28ba81dd6b366"
+      ]
+    }
+  },
+  "notes": "Jaccard is the MinHash estimate between the left and right source signatures; merged signature is the element-wise minimum over both sources."
+}

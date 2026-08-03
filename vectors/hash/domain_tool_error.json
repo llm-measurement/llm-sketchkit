@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "name": "tool error signature domain",
+  "canonicalization": "text_v1",
+  "input": {
+    "encoding": "utf8",
+    "value": "weather.lookup\u0000TimeoutError"
+  },
+  "canonical_bytes_hex": "776561746865722e6c6f6f6b75700054696d656f75744572726f72",
+  "domain": "tool-error:v1",
+  "hash_algo": "hmac_sha256_64",
+  "secret": {
+    "utf8": "c5-domain-vector-secret"
+  },
+  "expected": {
+    "digest64_hex": "b9777db20cd4aaef",
+    "digest64_uint": 13364288622918150895
+  },
+  "notes": "Each tuple component uses text_v1 before the NUL separator makes the ordered (tool name, error type) tuple unambiguous."
+}

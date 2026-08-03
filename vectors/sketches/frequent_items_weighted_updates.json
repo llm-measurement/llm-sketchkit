@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "name": "Frequent-items weighted updates and bounds",
+  "metadata": {
+    "kind": "FREQUENT_ITEMS",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "FREQUENT_ITEMS_BOUNDED_MAP",
+    "frequent_items_map_size": 256
+  },
+  "operations": [
+    {
+      "op": "add_hash_weight",
+      "hash_hex": "0000000000000010",
+      "weight": 5
+    },
+    {
+      "op": "add_hash_weight",
+      "hash_hex": "0000000000000010",
+      "weight": 7
+    },
+    {
+      "op": "add_hash_weight",
+      "hash_hex": "0000000000000020",
+      "weight": 3
+    }
+  ],
+  "expected": {
+    "estimate": 0,
+    "serialized_hex": "0a1e080210011a056d6963726f220970726f6d70743a763128013003b00180025a1c0a0b091000000000000000100c0a0b0920000000000000001003100f",
+    "body": {
+      "total_weight": 15,
+      "max_error": 0,
+      "entries": [
+        {
+          "hash_hex": "0000000000000010",
+          "estimate": 12,
+          "error": 0,
+          "lower_bound": 12,
+          "upper_bound": 12
+        },
+        {
+          "hash_hex": "0000000000000020",
+          "estimate": 3,
+          "error": 0,
+          "lower_bound": 3,
+          "upper_bound": 3
+        }
+      ]
+    }
+  },
+  "notes": "Repeated weighted updates accumulate exact bounds while the active set is below the profile map size."
+}
