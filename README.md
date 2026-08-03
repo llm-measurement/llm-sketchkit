@@ -22,6 +22,29 @@ summarize locally and merge compatible sketches across processes or languages.
 The Go and Python implementations share the same profiles, hash domains, test
 vectors, and serialized representation.
 
+## Evidence At A Glance
+
+Measurements use deterministic workloads and report the least favorable of five
+Linux benchmark runs where applicable.
+
+- HMAC-SHA256-64 sustained at least **1.65 million 64-byte inputs/s/core** and
+  **850,340 1 KiB inputs/s/core** on an Intel Xeon Platinum 8573C with Go 1.26.5.
+- HLL++ and weighted frequent-items updates took at most **10.58 ns/op** and
+  **145.6 ns/op**, respectively, with **0 allocations/op** in the measured paths.
+- The HLL++ `small` profile's maximum observed relative error was **2.3301%**
+  across the characterization grid, within its **2.4375%** enforced bound.
+- Bloom profile false-positive rates were at or below their configured targets
+  in the measured trials, with zero false negatives among inserted hashes.
+- MinHash mean absolute error fell from **0.02845** at `k=128` to **0.02009** at
+  `k=256`, closely following the expected inverse-square-root relationship.
+- Both weighted frequent-items oracle workloads retained **100% true top-20
+  recall** and valid no-false-positive query results in both implementations.
+
+See the [visual scorecard](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/scorecard.md),
+[raw measurement records](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/README.md),
+and [DataSketches implementation rationale](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/DATASKETCHES.md)
+for methods, limitations, and reproduction commands.
+
 ## Requirements
 
 - Go 1.25 or newer, with the latest security patch for that release line
@@ -152,13 +175,15 @@ print(f"merged distinct prompts: {left.estimate():.0f}")
   APIs cap input size and reject invalid profiles, domains, shapes, counters, and
   register values.
 
-See [SECURITY.md](SECURITY.md) for private vulnerability reporting.
+See [SECURITY.md](https://github.com/llm-measurement/llm-sketchkit/blob/main/SECURITY.md)
+for private vulnerability reporting.
 
 ## Wire Compatibility
 
 Deterministic protobuf encoding is part of the compatibility surface. Go and
 Python are checked against the same canonicalization, hashing, sketch, and
-cross-language merge fixtures in [`vectors/`](vectors/).
+cross-language merge fixtures in
+[`vectors/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/vectors/).
 
 Run all local checks:
 
@@ -179,10 +204,11 @@ python scripts/datasketches_oracle.py --check
 
 ## Reference
 
-- [`spec/`](spec/) defines canonicalization, hashing, profiles, and wire encoding.
-- [`vectors/`](vectors/) contains executable conformance fixtures.
-- [`reports/`](reports/) contains benchmark, accuracy, and oracle results.
-- [`bench/`](bench/) contains the Go benchmark harnesses.
+- [`spec/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/spec/) defines canonicalization, hashing, profiles, and wire encoding.
+- [`vectors/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/vectors/) contains executable conformance fixtures.
+- [`reports/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/reports/) contains benchmark, accuracy, and oracle results.
+- [`bench/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/bench/) contains the Go benchmark harnesses.
+- [`CHANGELOG.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) records release-level changes.
 
 ## Status
 

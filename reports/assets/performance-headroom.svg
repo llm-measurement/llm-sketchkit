@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="272" viewBox="0 0 760 272" role="img" aria-labelledby="title desc">
+  <title id="title">Linux Performance Headroom</title>
+  <desc id="desc">Least favorable of five runs; 1x meets the stated target</desc>
+  <rect width="760" height="272" fill="#ffffff" />
+  <text x="24" y="32" fill="#17202a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">Linux Performance Headroom</text>
+  <text x="24" y="54" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="12">Least favorable of five runs; 1x meets the stated target</text>
+  <text x="24" y="95" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">HMAC 64 B</text>
+  <line x1="180" y1="90" x2="720" y2="90" stroke="#d7dde3" stroke-width="18" />
+  <line x1="180" y1="90" x2="197.85" y2="90" stroke="#27864b" stroke-width="18" />
+  <text x="205.85" y="95" fill="#17202a" font-family="system-ui, sans-serif" font-size="12" font-weight="700">1.65x</text>
+  <text x="24" y="143" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">HMAC 1 KiB</text>
+  <line x1="180" y1="138" x2="720" y2="138" stroke="#d7dde3" stroke-width="18" />
+  <line x1="180" y1="138" x2="225.92" y2="138" stroke="#27864b" stroke-width="18" />
+  <text x="233.92" y="143" fill="#17202a" font-family="system-ui, sans-serif" font-size="12" font-weight="700">4.25x</text>
+  <text x="24" y="191" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">HLL++ update</text>
+  <line x1="180" y1="186" x2="720" y2="186" stroke="#d7dde3" stroke-width="18" />
+  <line x1="180" y1="186" x2="690.4" y2="186" stroke="#27864b" stroke-width="18" />
+  <text x="698.4" y="191" fill="#17202a" font-family="system-ui, sans-serif" font-size="12" font-weight="700">47.26x</text>
+  <text x="24" y="239" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">Frequent-items update</text>
+  <line x1="180" y1="234" x2="720" y2="234" stroke="#d7dde3" stroke-width="18" />
+  <line x1="180" y1="234" x2="217.09" y2="234" stroke="#27864b" stroke-width="18" />
+  <text x="225.09" y="239" fill="#17202a" font-family="system-ui, sans-serif" font-size="12" font-weight="700">3.43x</text>
+</svg>

@@ -13,4 +13,6 @@ Normative behavior:
 Verification material:
 
 - [Conformance vectors](../vectors/sketches/README.md)
+- [Evidence scorecard](../reports/scorecard.md)
 - [Benchmark and characterization reports](../reports/README.md)
+- [Why this is not a DataSketches wrapper](DATASKETCHES.md)

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="176" viewBox="0 0 760 176" role="img" aria-labelledby="title desc">
+  <title id="title">HLL++ Small-Profile Relative Error</title>
+  <desc id="desc">Maximum observed across the grid compared with the enforced bound</desc>
+  <rect width="760" height="176" fill="#ffffff" />
+  <text x="24" y="32" fill="#17202a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">HLL++ Small-Profile Relative Error</text>
+  <text x="24" y="54" fill="#5f6b76" font-family="system-ui, sans-serif" font-size="12">Maximum observed across the grid compared with the enforced bound</text>
+  <text x="24" y="95" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">Observed max</text>
+  <line x1="180" y1="90" x2="720" y2="90" stroke="#d7dde3" stroke-width="18" />
+  <line x1="180" y1="90" x2="663.95" y2="90" stroke="#1976a3" stroke-width="18" />
+  <text x="671.95" y="95" fill="#17202a" font-family="system-ui, sans-serif" font-size="12" font-weight="700">2.330%</text>
+  <text x="24" y="143" fill="#17202a" font-family="system-ui, sans-serif" font-size="13">Enforced bound</text>
+  <line x1="180" y1="138" x2="720" y2="138" stroke="#d7dde3" stroke-width="18" />
+  <line x1="180" y1="138" x2="686.25" y2="138" stroke="#b7791f" stroke-width="18" />
+  <text x="694.25" y="143" fill="#17202a" font-family="system-ui, sans-serif" font-size="12" font-weight="700">2.438%</text>
+</svg>
