@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "text_v1 empty after trim",
+  "canonicalization": "text_v1",
+  "input": {
+    "encoding": "utf8",
+    "value": " \t\r\n "
+  },
+  "canonical_bytes_hex": "",
+  "domain": "prompt:v1",
+  "hash_algo": "hmac_sha256_64",
+  "secret": {
+    "utf8": "empty-vector-secret"
+  },
+  "expected": {
+    "digest64_hex": "1bfac8e409a6b89b",
+    "digest64_uint": 2016144664941738139
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "mcp method domain",
+  "canonicalization": "text_v1",
+  "input": {
+    "encoding": "utf8",
+    "value": "tools/call"
+  },
+  "canonical_bytes_hex": "746f6f6c732f63616c6c",
+  "domain": "mcp-method:v1",
+  "hash_algo": "hmac_sha256_64",
+  "secret": {
+    "utf8": "c5-domain-vector-secret"
+  },
+  "expected": {
+    "digest64_hex": "37ae62771add9e8d",
+    "digest64_uint": 4012252581725052557
+  }
+}

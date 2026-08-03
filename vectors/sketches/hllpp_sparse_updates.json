@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "name": "HLL++ sparse updates retain max register",
+  "metadata": {
+    "kind": "HLLPP",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "HLLPP_SPARSE",
+    "hllpp_normal_precision": 12,
+    "hllpp_sparse_precision": 16
+  },
+  "operations": [
+    {
+      "op": "add_hash",
+      "hash_hex": "0018000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0022000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0024000000000000"
+    }
+  ],
+  "expected": {
+    "estimate": 0,
+    "serialized_hex": "0a20080110011a056d6963726f220970726f6d70743a763128013001a0010ca8011052120a04081810310a04082210310a0408241031",
+    "body": {
+      "representation_mode": "HLLPP_SPARSE",
+      "sparse_registers": [
+        {
+          "index": 24,
+          "value": 49
+        },
+        {
+          "index": 34,
+          "value": 49
+        },
+        {
+          "index": 36,
+          "value": 49
+        }
+      ],
+      "sparse_count": 3
+    }
+  },
+  "notes": "Sparse indexes are at sparse precision sp=16; updates colliding at normal precision can remain distinct before promotion."
+}

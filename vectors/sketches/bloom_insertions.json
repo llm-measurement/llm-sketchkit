@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "name": "Bloom insertions",
+  "metadata": {
+    "kind": "BLOOM",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "BLOOM_BITSET",
+    "bloom_bit_count": 143776,
+    "bloom_hash_count": 10
+  },
+  "operations": [
+    {
+      "op": "add_hash",
+      "hash_hex": "0102030405060708"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "1112131415161718"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "f0e0d0c0b0a09080"
+    }
+  ],
+  "expected": {
+    "body": {
+      "inserted_count": 3,
+      "set_bits": [
+        3916,
+        6759,
+        14110,
+        23470,
+        29129,
+        34297,
+        34302,
+        35906,
+        36278,
+        36899,
+        41862,
+        46551,
+        52050,
+        62300,
+        64078,
+        67342,
+        69625,
+        78966,
+        80505,
+        88116,
+        93480,
+        93948,
+        95172,
+        97015,
+        98263,
+        107335,
+        108334,
+        116998,
+        124587,
+        127305
+      ],
+      "may_contain": [
+        "0102030405060708",
+        "1112131415161718",
+        "f0e0d0c0b0a09080"
+      ],
+      "may_not_contain": [
+        "deadbeefcafebabe"
+      ],
+      "false_positive_estimate": 1.5627715308604377e-37
+    }
+  },
+  "notes": "Set bits follow the sketch-local Bloom hash family from spec/hash.md."
+}

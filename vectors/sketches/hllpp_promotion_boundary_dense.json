@@ -1,0 +1,1053 @@
+{
+  "schema_version": 1,
+  "name": "HLL++ promotion boundary promotes to dense",
+  "metadata": {
+    "kind": "HLLPP",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "HLLPP_DENSE",
+    "hllpp_normal_precision": 12,
+    "hllpp_sparse_precision": 16
+  },
+  "operations": [
+    {
+      "op": "add_hash",
+      "hash_hex": "0008000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0018000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0028000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0038000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0048000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0058000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0068000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0078000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0088000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0098000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "00f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0108000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0118000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0128000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0138000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0148000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0158000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0168000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0178000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0188000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0198000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "01a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "01b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "01c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "01d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "01e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "01f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0208000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0218000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0228000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0238000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0248000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0258000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0268000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0278000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0288000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0298000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "02a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "02b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "02c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "02d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "02e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "02f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0308000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0318000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0328000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0338000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0348000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0358000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0368000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0378000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0388000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0398000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "03a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "03b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "03c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "03d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "03e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "03f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0408000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0418000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0428000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0438000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0448000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0458000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0468000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0478000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0488000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0498000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "04a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "04b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "04c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "04d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "04e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "04f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0508000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0518000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0528000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0538000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0548000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0558000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0568000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0578000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0588000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0598000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "05a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "05b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "05c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "05d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "05e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "05f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0608000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0618000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0628000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0638000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0648000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0658000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0668000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0678000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0688000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0698000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "06a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "06b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "06c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "06d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "06e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "06f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0708000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0718000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0728000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0738000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0748000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0758000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0768000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0778000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0788000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0798000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "07a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "07b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "07c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "07d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "07e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "07f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0808000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0818000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0828000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0838000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0848000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0858000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0868000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0878000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0888000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0898000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "08a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "08b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "08c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "08d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "08e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "08f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0908000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0918000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0928000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0938000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0948000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0958000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0968000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0978000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0988000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0998000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "09a8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "09b8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "09c8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "09d8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "09e8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "09f8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a08000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a18000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a28000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a38000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a48000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a58000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a68000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a78000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a88000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0a98000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0aa8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ab8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ac8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ad8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ae8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0af8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b08000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b18000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b28000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b38000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b48000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b58000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b68000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b78000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b88000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0b98000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ba8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0bb8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0bc8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0bd8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0be8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0bf8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c08000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c18000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c28000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c38000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c48000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c58000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c68000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c78000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c88000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0c98000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ca8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0cb8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0cc8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0cd8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ce8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0cf8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d08000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d18000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d28000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d38000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d48000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d58000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d68000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d78000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d88000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0d98000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0da8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0db8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0dc8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0dd8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0de8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0df8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e08000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e18000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e28000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e38000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e48000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e58000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e68000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e78000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e88000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0e98000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ea8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0eb8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ec8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ed8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ee8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ef8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f08000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f18000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f28000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f38000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f48000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f58000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f68000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f78000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f88000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0f98000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0fa8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0fb8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0fc8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0fd8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0fe8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "0ff8000000000000"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "1008000000000000"
+    }
+  ],
+  "expected": {
+    "estimate": 0,
+    "body": {
+      "representation_mode": "HLLPP_DENSE",
+      "sparse_count": 0,
+      "dense_nonzero_count": 257
+    }
+  },
+  "notes": "Adding one entry beyond the micro profile promotion threshold forces dense representation."
+}

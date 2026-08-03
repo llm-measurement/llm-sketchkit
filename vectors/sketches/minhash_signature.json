@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "name": "MinHash seeded signature",
+  "metadata": {
+    "kind": "MINHASH",
+    "wire_version": 1,
+    "profile": "micro",
+    "hash_domain": "prompt:v1",
+    "hash_algo": "hmac_sha256_64",
+    "representation_mode": "MINHASH_SIGNATURE",
+    "minhash_signature_length": 64
+  },
+  "operations": [
+    {
+      "op": "add_hash",
+      "hash_hex": "0102030405060708"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "1112131415161718"
+    },
+    {
+      "op": "add_hash",
+      "hash_hex": "f0e0d0c0b0a09080"
+    }
+  ],
+  "expected": {
+    "serialized_hex": "0a1d080410011a056d6963726f220970726f6d70743a763128013005c801406a85040a800416291e1ee42b6527f65c611ae59c0d0abda4d0511d89322288648564b13a70719aed11950d095c0f9d00b53d9165fd2a99cca2759c152d4ed1d378d43770125e095c4d89321b462af3d38e854cb2140336134e0eb9bd8d2be81fc2a83bbda01b571e200fd5f40479c39495d4b6ee65202de5daedb4e8402a1db29d23df741c2d19671fd133aa1d299eb7a6cfcd910c16560e9a3910f2455f7e36731aebe5ba13feef2be0d101840ad87b94b21b55b01ce284b9b82b3c6e4d368b14c84bc48d6e56c53e96d66e12195244e8c68eade5232ed342c0b81c54118fce652fe709a070a545c557bef94f04cadafc573c3090add60675b47c1435076ce766a619089948e8d9df3fc82f2f8ce79beed6a16e9c18dc95724956720b06b86ad87ac14e672a1086e31f87624360d26aa5847bd7f7448dd2e4030ca57525f17590fe9134d65fd27a25ff64be2f0e3a1322eb8beb6d29e9b44faf235f8508add3526218aac425fbff46a11512842901c9ae6679c89a271dbcd6254b1a9650ea1f4f5a2f7348407ce1ff133958633ff8c6621de490d3266480bd828b346a61bdad5a18cec4764c3567cb91effba933907f89fac7e1df2986bf82814ed30421e390ed5905df5c67f029d3a43b7122b83b7b0d12701abd2db0ba2ffff9a6eb8188e9bb3d68bd50b9edcca5aa9eabb345754fb1514766e2017ff4c545d51952a270ee9f4e43173f9c1003",
+    "body": {
+      "populated_count": 3,
+      "signature_hex": [
+        "27652be41e1e2916",
+        "0a0d9ce51a615cf6",
+        "2232891d51d0a4bd",
+        "71703ab164856488",
+        "0f5c090d9511ed9a",
+        "2afd65913db5009d",
+        "4e2d159c75a2cc99",
+        "5e127037d478d3d1",
+        "2a461b32894d5c09",
+        "0314b24c858ed3f3",
+        "2b8dbdb90e4e1336",
+        "1ba0bd3ba8c21fe8",
+        "7904f4d50f201e57",
+        "2065eeb6d49594c3",
+        "2a40e8b4eddae52d",
+        "2d1c74df239db21d",
+        "291daa33d11f6719",
+        "160c91cdcfa6b79e",
+        "5f45f210399a0e56",
+        "13bae5eb1a73367e",
+        "0a8401d1e02beffe",
+        "1cb0551bb2947bd8",
+        "4d6e3c2bb8b984e2",
+        "6e8dc44bc8148b36",
+        "19126ed6963ec556",
+        "23e5ad8ec6e84452",
+        "11541cb8c042d32e",
+        "70a009e72f65ce8f",
+        "044ff9be57c545a5",
+        "ad90303c57fcdaca",
+        "0735147cb47506d6",
+        "48990819a666e76c",
+        "8c2f2fc83fdfd9e8",
+        "189c6ea1d6ee9be7",
+        "060b7256497295dc",
+        "2a674ec17ad86ab8",
+        "604362871fe38610",
+        "44f7d77b84a56ad2",
+        "2575a50c03e4d28d",
+        "5fd63491fe9075f1",
+        "0e2fbe64ff257ad2",
+        "296deb8beb22133a",
+        "08855f23af4fb4e9",
+        "25c4aa186252d3ad",
+        "29841215a146fffb",
+        "279ac87966aec901",
+        "50961a4b25d6bc1d",
+        "4048732f5a4f1fea",
+        "3f63583913ffe17c",
+        "26d390e41d62c6f8",
+        "616a348b82bd8064",
+        "4c76c4ce185aadbd",
+        "33a9fbef91cb6735",
+        "29dfe1c7fa897f90",
+        "2104d34e8182bf86",
+        "675cdf0559ed90e3",
+        "b822713ba4d329f0",
+        "2dbd1a70120d7b3b",
+        "81eba6f9ff2fbab0",
+        "b950bd683dbbe988",
+        "45b3ab9eaaa5cced",
+        "01e2664751b14f75",
+        "a25219d545c5f47f",
+        "9c3f17434e9fee70"
+      ]
+    }
+  },
+  "notes": "Signature words are in hash-family index order."
+}

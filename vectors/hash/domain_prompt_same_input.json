@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "domain separation prompt",
+  "canonicalization": "text_v1",
+  "input": {
+    "encoding": "utf8",
+    "value": "same value"
+  },
+  "canonical_bytes_hex": "73616d652076616c7565",
+  "domain": "prompt:v1",
+  "hash_algo": "hmac_sha256_64",
+  "secret": {
+    "utf8": "domain-vector-secret"
+  },
+  "expected": {
+    "digest64_hex": "abafdbc7784ca045",
+    "digest64_uint": 12371348351173304389
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-measurement.github.io/llm-sketchkit/schemas/sketch-vector.schema.json",
+  "title": "llm-sketchkit sketch vector",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "metadata",
+    "operations",
+    "expected"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "wire_version",
+        "profile",
+        "hash_domain",
+        "hash_algo",
+        "representation_mode"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "HLLPP",
+            "FREQUENT_ITEMS",
+            "BLOOM",
+            "MINHASH"
+          ]
+        },
+        "wire_version": {
+          "const": 1
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hash_domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hash_algo": {
+          "type": "string",
+          "enum": [
+            "hmac_sha256_64",
+            "siphash_64"
+          ]
+        },
+        "representation_mode": {
+          "type": "string",
+          "enum": [
+            "HLLPP_SPARSE",
+            "HLLPP_DENSE",
+            "FREQUENT_ITEMS_BOUNDED_MAP",
+            "BLOOM_BITSET",
+            "MINHASH_SIGNATURE"
+          ]
+        },
+        "hllpp_normal_precision": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 25
+        },
+        "hllpp_sparse_precision": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 32
+        },
+        "frequent_items_map_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bloom_bit_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bloom_hash_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minhash_signature_length": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "op",
+          "hash_hex"
+        ],
+        "properties": {
+          "op": {
+            "type": "string",
+            "enum": [
+              "add_hash",
+              "add_hash_weight",
+              "merge"
+            ]
+          },
+          "hash_hex": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{16}$"
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "estimate": {
+          "type": "number"
+        },
+        "lower_bound": {
+          "type": "number"
+        },
+        "upper_bound": {
+          "type": "number"
+        },
+        "serialized_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]*$"
+        },
+        "body": {
+          "type": "object"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "name": "Cross-language frequent-items merge",
+  "metadata": {
+    "frequent_items_map_size": 256,
+    "hash_algo": "hmac_sha256_64",
+    "hash_domain": "prompt:v1",
+    "kind": "FREQUENT_ITEMS",
+    "profile": "micro",
+    "representation_mode": "FREQUENT_ITEMS_BOUNDED_MAP",
+    "wire_version": 1
+  },
+  "operations": [],
+  "expected": {
+    "serialized_hex": "0a1e080210011a056d6963726f220970726f6d70743a763128013003b00180025a430a0b091000000000000000100c0a0b09200000000000000010040a0b09300000000000000010020a0b09400000000000000010080a0b0950000000000000001001101b",
+    "body": {
+      "entries": [
+        {
+          "error": 0,
+          "estimate": 12,
+          "hash_hex": "0000000000000010",
+          "lower_bound": 12,
+          "upper_bound": 12
+        },
+        {
+          "error": 0,
+          "estimate": 4,
+          "hash_hex": "0000000000000020",
+          "lower_bound": 4,
+          "upper_bound": 4
+        },
+        {
+          "error": 0,
+          "estimate": 2,
+          "hash_hex": "0000000000000030",
+          "lower_bound": 2,
+          "upper_bound": 2
+        },
+        {
+          "error": 0,
+          "estimate": 8,
+          "hash_hex": "0000000000000040",
+          "lower_bound": 8,
+          "upper_bound": 8
+        },
+        {
+          "error": 0,
+          "estimate": 1,
+          "hash_hex": "0000000000000050",
+          "lower_bound": 1,
+          "upper_bound": 1
+        }
+      ],
+      "max_error": 0,
+      "merged_serialized_hex": "0a1e080210011a056d6963726f220970726f6d70743a763128013003b00180025a430a0b091000000000000000100c0a0b09200000000000000010040a0b09300000000000000010020a0b09400000000000000010080a0b0950000000000000001001101b",
+      "no_false_negatives": [
+        "0000000000000010",
+        "0000000000000040",
+        "0000000000000020",
+        "0000000000000030",
+        "0000000000000050"
+      ],
+      "no_false_positives": [
+        "0000000000000010",
+        "0000000000000040",
+        "0000000000000020",
+        "0000000000000030",
+        "0000000000000050"
+      ],
+      "source_serialized_hex": {
+        "left": "0a1e080210011a056d6963726f220970726f6d70743a763128013003b00180025a290a0b09100000000000000010090a0b09200000000000000010040a0b0930000000000000001002100f",
+        "right": "0a1e080210011a056d6963726f220970726f6d70743a763128013003b00180025a290a0b09100000000000000010030a0b09400000000000000010080a0b0950000000000000001001100c"
+      },
+      "total_weight": 27
+    }
+  },
+  "notes": "Frequent-items cross-language merge is checked semantically, not by byte equality."
+}

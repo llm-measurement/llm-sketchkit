@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "oracle": "apache-datasketches-python",
+  "purpose": "Reference-oracle comparison for weighted frequent-items query semantics. DataSketches is not a runtime dependency or byte-format authority.",
+  "workloads": [
+    {
+      "name": "zipf_1_1_weighted_small",
+      "kind": "zipf",
+      "profile": "small",
+      "datasketches_lg_max_k": 10,
+      "updates": 200000,
+      "key_count": 20000,
+      "alpha": 1.1,
+      "seed": 9901,
+      "top_k": 20,
+      "partitions": 5
+    },
+    {
+      "name": "tail_churn_weighted_small",
+      "kind": "tail_churn",
+      "profile": "small",
+      "datasketches_lg_max_k": 10,
+      "updates": 120000,
+      "heavy_keys": 32,
+      "tail_keys": 40000,
+      "top_k": 20,
+      "partitions": 5
+    }
+  ]
+}
