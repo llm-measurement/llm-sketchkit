@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # Code authors: Vijay and Codex
 """Published HLL++ bias-correction constants for v0.1 profiles."""
 

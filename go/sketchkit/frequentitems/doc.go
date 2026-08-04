@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
 // Package frequentitems implements the Go weighted frequent-items sketch for
 // llm-sketchkit.
