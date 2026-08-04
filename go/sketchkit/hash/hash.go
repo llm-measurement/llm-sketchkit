@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay Erramilli and Codex
 // Package hash implements domain-separated keyed hashing for sketch inputs.
 package hash

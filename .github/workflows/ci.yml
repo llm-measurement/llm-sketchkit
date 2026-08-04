@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # Code authors: Vijay Erramilli and Codex
 name: ci
 
@@ -34,6 +35,21 @@ jobs:
           ! git grep -nEi
           '(/[U]sers/|[g]ithub_pat_|[B]EGIN (RSA |EC |OPENSSH )?PRIVATE KEY|(^|[^[:alnum:]_])([g]ate(s)?|[r]oadmap|[p]rd|[p]rogress)([^[:alnum:]_]|$)|[o]telcol-genai-sketches)'
           -- .
+      - name: SPDX header guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          while IFS= read -r file; do
+            if ! head -n 10 "$file" | grep -Fqx '# SPDX-License-Identifier: Apache-2.0' &&
+               ! head -n 10 "$file" | grep -Fqx '// SPDX-License-Identifier: Apache-2.0'; then
+              missing+=("$file")
+            fi
+          done < <(git ls-files -- '*.go' '*.py' '*.proto' '*.sh' '*.yml' '*.yaml' '*.toml')
+          if (( ${#missing[@]} )); then
+            printf 'missing Apache-2.0 SPDX header: %s\n' "${missing[@]}" >&2
+            exit 1
+          fi
 
   python:
     runs-on: ubuntu-latest

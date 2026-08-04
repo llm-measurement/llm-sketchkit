@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # Code authors: Vijay Erramilli and Codex
 set -euo pipefail
 
@@ -43,14 +44,17 @@ python3 - "${ROOT}/go/sketchkit/internal/pb/sketches.pb.go" \
 from pathlib import Path
 import sys
 
+spdx_line = "SPDX-License-Identifier: Apache-2.0"
 author_line = "Code authors: Vijay Erramilli and Codex"
 for raw_path in sys.argv[1:]:
     path = Path(raw_path)
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
-    comment = f"// {author_line}\n" if path.suffix == ".go" else f"# {author_line}\n"
-    if comment not in lines:
-        lines.insert(1, comment)
-        path.write_text("".join(lines), encoding="utf-8")
+    marker = "//" if path.suffix == ".go" else "#"
+    header = [f"{marker} {spdx_line}\n", f"{marker} {author_line}\n"]
+    lines = [line for line in lines if line not in header]
+    insert_at = 1 if path.suffix == ".py" and "coding" in lines[0] else 0
+    lines[insert_at:insert_at] = header
+    path.write_text("".join(lines), encoding="utf-8")
 PY
 
 if [[ "${1:-}" == "--check" ]]; then

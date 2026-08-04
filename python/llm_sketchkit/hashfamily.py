@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # Code authors: Vijay Erramilli and Codex
 """Deterministic sketch-local hash families from `spec/hash.md`."""
 

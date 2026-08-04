@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # Code authors: Vijay Erramilli and Codex
 """Small typed wrappers around generated protobuf classes."""
 

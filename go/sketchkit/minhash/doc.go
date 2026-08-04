@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay Erramilli and Codex
 // Package minhash implements the Go MinHash sketch for llm-sketchkit.
 //

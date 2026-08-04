@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: Apache-2.0
+// Code authors: Vijay Erramilli and Codex
+
 //go:build !race
 
-// Code authors: Vijay Erramilli and Codex
 package hllpp
 
 import "testing"
