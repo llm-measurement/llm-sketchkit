@@ -124,6 +124,6 @@ jobs:
           import importlib.resources
           import llm_sketchkit
 
-          assert importlib.metadata.version("llm-sketchkit") == "0.1.0a3"
+          assert importlib.metadata.version("llm-sketchkit") == "0.1.0a4"
           assert importlib.resources.files(llm_sketchkit).joinpath("py.typed").is_file()
           PY
