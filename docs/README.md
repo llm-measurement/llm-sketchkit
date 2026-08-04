@@ -3,6 +3,11 @@
 Start with the repository [README](../README.md) for installation, a working
 example, merge behavior, and security guidance.
 
+Adoption guidance:
+
+- [Frequently asked questions](FAQ.md)
+- [Why this is not a DataSketches wrapper](DATASKETCHES.md)
+
 Normative behavior:
 
 - [Canonicalization](../spec/canonicalization.md)
@@ -15,4 +20,3 @@ Verification material:
 - [Conformance vectors](../vectors/sketches/README.md)
 - [Evidence scorecard](../reports/scorecard.md)
 - [Benchmark and characterization reports](../reports/README.md)
-- [Why this is not a DataSketches wrapper](DATASKETCHES.md)

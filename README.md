@@ -10,6 +10,31 @@ deterministic protobuf wire format.
 Raw prompts and identifiers do not need to enter sketch state. Producers can
 summarize locally and merge compatible sketches across processes or languages.
 
+## When This Fits
+
+Use `llm-sketchkit` inside telemetry producers and processing components when
+exact per-key state would grow with cardinality or retain values that should not
+enter aggregate state.
+
+Typical uses include:
+
+- estimating distinct prompts, users, sessions, tools, or documents without
+  keeping one counter per value;
+- identifying token-heavy or request-heavy keys with deterministic lower and
+  upper bounds;
+- testing approximate set membership for bounded deduplication;
+- comparing large sets using fixed-size similarity signatures; and
+- producing summaries in Go that can be read and merged in Python with the
+  same profiles and wire semantics.
+
+Inputs can be canonicalized and keyed before entering sketch state. This keeps
+raw values out of the sketch, but the resulting hashes remain pseudonymous and
+linkable while the same secret is in use.
+
+This is a sketch library, not a trace collector, sampling processor, storage
+backend, dashboard, or differential-privacy system. The [FAQ](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md)
+answers common questions about fit, memory, accuracy, and interoperability.
+
 ## Included Sketches
 
 | Component | Use it for | Important property |
@@ -208,6 +233,7 @@ python scripts/datasketches_oracle.py --check
 - [`vectors/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/vectors/) contains executable conformance fixtures.
 - [`reports/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/reports/) contains benchmark, accuracy, and oracle results.
 - [`bench/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/bench/) contains the Go benchmark harnesses.
+- [`docs/FAQ.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md) answers common adoption questions.
 - [`CHANGELOG.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) records release-level changes.
 
 ## Status
