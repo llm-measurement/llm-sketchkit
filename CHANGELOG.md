@@ -4,6 +4,16 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 [Semantic Versioning](https://semver.org/) with alpha prereleases while the API
 and wire-compatibility surface are being established.
 
+## [0.1.0-alpha.4] - 2026-08-04
+
+- Added task-oriented adoption guidance and answers to common integration,
+  capacity, privacy, and compatibility questions.
+- Added Apache-2.0 SPDX identifiers to source files and an automated check that
+  keeps new source files consistent.
+
+No sketch semantics, profiles, hash domains, or wire encodings changed in this
+release.
+
 ## [0.1.0-alpha.3] - 2026-08-02
 
 - Added a reproducible visual scorecard for performance, accuracy, and oracle
@@ -34,5 +44,6 @@ release.
 - Added accuracy characterization, Go microbenchmarks, and an Apache
   DataSketches frequent-items oracle.
 
+[0.1.0-alpha.4]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/llm-measurement/llm-sketchkit/releases/tag/v0.1.0-alpha.2
