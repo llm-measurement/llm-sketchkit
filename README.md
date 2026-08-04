@@ -77,10 +77,10 @@ for methods, limitations, and reproduction commands.
 
 ## Install
 
-Go:
+Go, using the package from the HLL++ quick start:
 
 ```sh
-go get github.com/llm-measurement/llm-sketchkit@latest
+go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp@latest
 ```
 
 Python from a checkout:
