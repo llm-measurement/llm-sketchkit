@@ -39,7 +39,7 @@ answers common questions about fit, memory, accuracy, and interoperability.
 
 | Your pipeline | Use | Why |
 |---|---|---|
-| GenAI spans already flow through an OpenTelemetry Collector | `otelcol-genai-sketches` | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
+| GenAI spans already flow through an OpenTelemetry Collector | OpenTelemetry Collector connector (coming soon) | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
 | A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Update sketches inside each bounded window, then serialize or merge compatible summaries. |
 | A batch or warehouse job reads stored events | `llm-sketchkit` directly | Build bounded summaries per partition or window and merge them before publishing results. |
 | You only need to store or visualize finished metrics | Your existing backend integration | The library is not an exporter; ClickHouse, Datadog, Prometheus, and similar systems normally sit downstream of aggregation. |
