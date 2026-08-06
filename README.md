@@ -16,6 +16,10 @@ Use `llm-sketchkit` inside telemetry producers and processing components when
 exact per-key state would grow with cardinality or retain values that should not
 enter aggregate state.
 
+Agent fleets and multi-agent systems can produce more identities and events than
+exact per-entity state can safely retain. The library provides fixed-memory,
+mergeable summaries across workers and windows.
+
 Typical uses include:
 
 - estimating distinct prompts, users, sessions, tools, or documents without
@@ -26,6 +30,11 @@ Typical uses include:
 - comparing large sets using fixed-size similarity signatures; and
 - producing summaries in Go that can be read and merged in Python with the
   same profiles and wire semantics.
+
+For token-maxing investigations, reported token counts can be used as weights in
+the frequent-items sketch to identify which keyed values account for the most token
+volume. The library measures concentration; it does not infer task value, enforce
+budgets, or stop agent loops.
 
 Inputs can be canonicalized and keyed before entering sketch state. This keeps
 raw values out of the sketch, but the resulting hashes remain pseudonymous and
