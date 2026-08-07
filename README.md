@@ -16,6 +16,10 @@ Use `llm-sketchkit` inside telemetry producers and processing components when
 exact per-key state would grow with cardinality or retain values that should not
 enter aggregate state.
 
+Agent fleets and multi-agent systems can produce more identities and events than
+exact per-entity state can safely retain. The library provides fixed-memory,
+mergeable summaries across workers and windows.
+
 Typical uses include:
 
 - estimating distinct prompts, users, sessions, tools, or documents without
@@ -26,6 +30,11 @@ Typical uses include:
 - comparing large sets using fixed-size similarity signatures; and
 - producing summaries in Go that can be read and merged in Python with the
   same profiles and wire semantics.
+
+For token-maxing investigations, reported token counts can be used as weights in
+the frequent-items sketch to identify which keyed values account for the most token
+volume. The library measures concentration; it does not infer task value, enforce
+budgets, or stop agent loops.
 
 Inputs can be canonicalized and keyed before entering sketch state. This keeps
 raw values out of the sketch, but the resulting hashes remain pseudonymous and
@@ -39,7 +48,7 @@ answers common questions about fit, memory, accuracy, and interoperability.
 
 | Your pipeline | Use | Why |
 |---|---|---|
-| GenAI spans already flow through an OpenTelemetry Collector | OpenTelemetry Collector connector (coming soon) | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
+| GenAI spans already flow through an OpenTelemetry Collector | [OpenTelemetry Collector connector](https://github.com/llm-measurement/otelcol-genai-sketches) | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
 | A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Update sketches inside each bounded window, then serialize or merge compatible summaries. |
 | A batch or warehouse job reads stored events | `llm-sketchkit` directly | Build bounded summaries per partition or window and merge them before publishing results. |
 | You only need to store or visualize finished metrics | Your existing backend integration | The library is not an exporter; ClickHouse, Datadog, Prometheus, and similar systems normally sit downstream of aggregation. |
