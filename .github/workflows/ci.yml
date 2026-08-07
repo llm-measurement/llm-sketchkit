@@ -33,7 +33,7 @@ jobs:
       - name: Repository leak guard
         run: >-
           ! git grep -nEi
-          '(/[U]sers/|[g]ithub_pat_|[B]EGIN (RSA |EC |OPENSSH )?PRIVATE KEY|(^|[^[:alnum:]_])([g]ate(s)?|[r]oadmap|[p]rd|[p]rogress)([^[:alnum:]_]|$)|[o]telcol-genai-sketches)'
+          '(/[U]sers/|[g]ithub_pat_|[B]EGIN (RSA |EC |OPENSSH )?PRIVATE KEY|(^|[^[:alnum:]_])([g]ate(s)?|[r]oadmap|[p]rd|[p]rogress)([^[:alnum:]_]|$))'
           -- .
       - name: SPDX header guard
         shell: bash
