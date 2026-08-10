@@ -1,11 +1,17 @@
-# Why This Is Not A DataSketches Wrapper
+# What llm-sketchkit Adds To General-Purpose Sketch Libraries
 
-Apache DataSketches is mature, carefully engineered prior art. `llm-sketchkit`
-uses its Python frequent-items implementation as an independent behavioral
-oracle. It does not use DataSketches as a runtime dependency because this
-library's compatibility contract extends beyond the sketch algorithm itself.
+Apache DataSketches provides a broad collection of general-purpose sketch
+algorithms. `llm-sketchkit` addresses a narrower integration problem: producing
+bounded, pseudonymous summaries of high-cardinality LLM and agent telemetry that
+behave consistently across services, languages, and merge boundaries.
 
-## The Compatibility Contract
+The contribution is the complete measurement contract around the sketch method,
+not a claim that the underlying algorithms were invented here. Without that
+contract, every telemetry pipeline must independently decide how values are
+canonicalized and keyed, what state may be merged, which memory and error profiles
+are compatible, and how summaries move between runtimes.
+
+## The Additional Contract
 
 `llm-sketchkit` defines one contract across Go and pure Python:
 
@@ -17,6 +23,22 @@ library's compatibility contract extends beyond the sketch algorithm itself.
   fixtures.
 
 A backend is interchangeable only if it satisfies that complete contract.
+
+The companion
+[`otelcol-genai-sketches`](https://github.com/llm-measurement/otelcol-genai-sketches)
+collector applies these rules to GenAI spans with bounded windows, explicit missing
+token accounting, cardinality controls, and restricted metric and top-k surfaces.
+
+## Choosing Between Them
+
+Use `llm-sketchkit` when the application needs the complete contract above, matching
+Go and pure-Python behavior, or direct compatibility with components built on that
+contract. Use DataSketches when its algorithms, APIs, binary formats, and packaging
+already fit and the additional LLM-telemetry integration rules are unnecessary.
+
+`llm-sketchkit` uses the DataSketches Python frequent-items implementation as an
+independent behavioral oracle. This tests shared frequent-items guarantees without
+making DataSketches a runtime dependency or claiming binary compatibility.
 
 ## Where The Implementations Differ
 
@@ -59,7 +81,7 @@ python -m pip install -e '.[oracle]'
 python scripts/datasketches_oracle.py --check
 ```
 
-## Honest Limits
+## Scope Of The Comparison
 
 The comparison is evidence about weighted frequent-items query behavior on two
 specified workloads. It does not establish wire compatibility, identical error
