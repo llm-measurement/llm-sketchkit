@@ -29,7 +29,7 @@ returns only keys whose lower bound clears the sketch's error threshold. The
 [profile specification](../spec/profiles.md#weighted-frequent-items-metadata)
 defines the guarantees and merge behavior.
 
-## Can This Detect Or Stop Token Maxing?
+## Can This Help Investigate "Tokenmaxxing" Or "Token-Maxing"?
 
 It can detect concentration in reported token volume. Use a prompt template, tool,
 user, or another identity with an appropriate registered hash domain as the keyed
@@ -106,17 +106,22 @@ Protect the secret, separate domains, rotate when the trust boundary changes,
 and control access to serialized sketches. Rotation intentionally breaks
 comparison with older state.
 
-## When Should I Use Apache DataSketches Instead?
+## How Does This Differ From A General-Purpose Sketch Library?
 
-Use DataSketches when its algorithms, APIs, binary formats, and native Python
-distribution fit the application and this project's cross-language contract is
-unnecessary. It is a mature library with a broader algorithm surface.
+`llm-sketchkit` packages the decisions a high-cardinality LLM telemetry pipeline
+otherwise has to make around each sketch: text canonicalization, domain-separated
+keyed hashing, bounded profiles, strict merge authorization, deterministic wire
+semantics, and matching Go and pure-Python behavior. The sketch algorithm is one
+part of that contract rather than the complete integration.
 
-Use `llm-sketchkit` when Go and pure Python must agree on canonicalization,
-domain-separated keyed hashing, named profiles, strict merge authorization, and
-the checked-in protobuf representation. The detailed tradeoffs and independent
-frequent-items comparison are in [Why This Is Not A DataSketches
-Wrapper](DATASKETCHES.md).
+Use it when producers and analysis systems must produce compatible, pseudonymous
+summaries without defining those rules independently in every service. Apache
+DataSketches is a better fit when its broader general-purpose algorithm surface,
+APIs, and binary formats already satisfy the application and this additional
+telemetry contract is unnecessary.
+
+The [general-purpose library comparison](DATASKETCHES.md) explains the boundary and
+records the independent frequent-items oracle results.
 
 ## Is This A Trace Collector Or Sampling System?
 
