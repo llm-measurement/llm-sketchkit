@@ -20,22 +20,28 @@ Agent fleets and multi-agent systems can produce more identities and events than
 exact per-entity state can safely retain. The library provides fixed-memory,
 mergeable summaries across workers and windows.
 
-Typical uses include:
+Questions it can help answer include:
 
-- estimating distinct prompts, users, sessions, tools, or documents without
-  keeping one counter per value;
-- identifying token-heavy or request-heavy keys with deterministic lower and
-  upper bounds;
-- testing approximate set membership for bounded deduplication;
-- comparing large sets using fixed-size similarity signatures; and
-- producing summaries in Go that can be read and merged in Python with the
-  same profiles and wire semantics.
+- **How many distinct prompts, users, sessions, tools, or documents are active
+  without keeping one counter per value?** HLL++ provides a fixed-memory estimate.
+- **Your token budget is climbing and FinOps wants to know which configured
+  identities account for the reported volume. How certain is the answer?** Weighted
+  frequent-items identifies token-heavy or request-heavy keys with deterministic
+  lower and upper bounds.
+- **Have we already observed this request or document without retaining an
+  unbounded set?** Bloom filters provide bounded approximate membership checks.
+- **Did the prompt, tool, or retrieval-document population change materially after
+  a deployment or model change?** MinHash compares large sets using fixed-size
+  similarity signatures.
+- **Can Go services summarize locally while Python analysis jobs read and merge the
+  same state?** Shared profiles, fixtures, and wire semantics keep the two
+  implementations compatible.
 
-For token-maxing investigations, reported token counts can be used as weights in
-the frequent-items sketch to identify which keyed values account for the most token
-volume. The library measures concentration; it does not infer task value, enforce
-budgets, or stop agent loops. See [Token-Volume Heavy
-Hitters](#token-volume-heavy-hitters) for a runnable example.
+For investigations described as "tokenmaxxing" (also written "token-maxing"),
+reported token counts can be used as weights in the frequent-items sketch to identify
+which keyed values account for the most token volume. The library measures
+concentration; it does not infer task value, enforce budgets, or stop agent loops.
+See [Token-Volume Heavy Hitters](#token-volume-heavy-hitters) for a runnable example.
 
 Inputs can be canonicalized and keyed before entering sketch state. This keeps
 raw values out of the sketch, but the resulting hashes remain pseudonymous and
@@ -91,7 +97,7 @@ Linux benchmark runs where applicable.
 
 See the [visual scorecard](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/scorecard.md),
 [raw measurement records](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/README.md),
-and [DataSketches implementation rationale](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/DATASKETCHES.md)
+and [general-purpose library comparison](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/DATASKETCHES.md)
 for methods, limitations, and reproduction commands.
 
 ## Requirements
@@ -192,11 +198,11 @@ print(f"estimated distinct prompts: {sketch.estimate():.0f}")
 
 ## Token-Volume Heavy Hitters
 
-If token maxing means unexpected or runaway token consumption, use a bounded
-frequent-items sketch to find where reported volume is concentrated. Hash the value
-being investigated, such as a prompt template, tool, or user, with the registered
-domain for that entity class, and use the reported token count as its weight. This
-example measures prompt templates with `prompt:v1`:
+If by "tokenmaxxing" (also written "token-maxing") you mean unexpected or runaway
+token consumption, use a bounded frequent-items sketch to find where reported volume
+is concentrated. Hash the value being investigated, such as a prompt template, tool,
+or user, with the registered domain for that entity class, and use the reported token
+count as its weight. This example measures prompt templates with `prompt:v1`:
 
 ```python
 from llm_sketchkit import PROMPT_V1, canonicalize_text_v1, frequentitems
