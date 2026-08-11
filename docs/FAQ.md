@@ -29,6 +29,25 @@ returns only keys whose lower bound clears the sketch's error threshold. The
 [profile specification](../spec/profiles.md#weighted-frequent-items-metadata)
 defines the guarantees and merge behavior.
 
+## Can This Detect Or Stop Token Maxing?
+
+It can detect concentration in reported token volume. Use a prompt template, tool,
+user, or another identity with an appropriate registered hash domain as the keyed
+item and its reported token count as the update weight. Merge compatible summaries
+across workers or windows, then inspect estimates with their deterministic lower and
+upper bounds.
+
+It does not receive telemetry, infer missing token counts, determine whether token
+use was productive, enforce a budget, stop an agent loop, or prevent a model
+context-window error. Count missing usage separately, and place alerts or controls in
+the application or telemetry system that embeds the library.
+
+For GenAI spans already flowing through OpenTelemetry, the
+[`otelcol-genai-sketches`](https://github.com/llm-measurement/otelcol-genai-sketches)
+distribution supplies collection, bounded metrics, and structured top-k surfaces.
+The [README example](../README.md#token-volume-heavy-hitters) shows direct library
+use in a custom pipeline.
+
 ## Can Sketches Produced In Go Be Read And Merged In Python?
 
 Yes. Both implementations use the same canonicalization profiles, hash

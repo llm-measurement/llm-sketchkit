@@ -34,7 +34,8 @@ Typical uses include:
 For token-maxing investigations, reported token counts can be used as weights in
 the frequent-items sketch to identify which keyed values account for the most token
 volume. The library measures concentration; it does not infer task value, enforce
-budgets, or stop agent loops.
+budgets, or stop agent loops. See [Token-Volume Heavy
+Hitters](#token-volume-heavy-hitters) for a runnable example.
 
 Inputs can be canonicalized and keyed before entering sketch state. This keeps
 raw values out of the sketch, but the resulting hashes remain pseudonymous and
@@ -188,6 +189,51 @@ sketch.add_hash(hash64(secret, PROMPT_V1, canonical))
 
 print(f"estimated distinct prompts: {sketch.estimate():.0f}")
 ```
+
+## Token-Volume Heavy Hitters
+
+If token maxing means unexpected or runaway token consumption, use a bounded
+frequent-items sketch to find where reported volume is concentrated. Hash the value
+being investigated, such as a prompt template, tool, or user, with the registered
+domain for that entity class, and use the reported token count as its weight. This
+example measures prompt templates with `prompt:v1`:
+
+```python
+from llm_sketchkit import PROMPT_V1, canonicalize_text_v1, frequentitems
+from llm_sketchkit import hash64, secret_from_env
+
+secret = secret_from_env("LLM_SKETCHKIT_SECRET")
+sketch = frequentitems.Sketch("small", PROMPT_V1)
+
+events = [
+    ("support/refund", 1_240),
+    ("research/synthesis", 8_900),
+    ("support/refund", 980),
+    ("coding/review", 3_600),
+]
+
+for prompt_template, reported_tokens in events:
+    canonical = canonicalize_text_v1(prompt_template)
+    digest = hash64(secret, PROMPT_V1, canonical)
+    sketch.add_hash(digest, reported_tokens)
+
+for item in sketch.frequent_items(frequentitems.NO_FALSE_NEGATIVES)[:10]:
+    print(
+        f"{item.hash:016x} estimate={item.estimate} "
+        f"bounds=[{item.lower_bound}, {item.upper_bound}]"
+    )
+```
+
+The sketch retains at most the selected profile's bounded map size. Returned hashes
+are pseudonymous and remain linkable while the same secret and domain are in use.
+The estimate is not a billing total; use the lower and upper bounds when deciding
+whether an item is meaningfully heavy.
+
+Do not substitute guessed weights when token usage is missing. Count missing usage
+separately so operators know how complete the reported totals are. For an OTLP
+pipeline with ready-made metrics, bounded slices, missing-usage accounting, and
+token-weighted top-k snapshots, use
+[`otelcol-genai-sketches`](https://github.com/llm-measurement/otelcol-genai-sketches).
 
 ## Merge Sketches
 
