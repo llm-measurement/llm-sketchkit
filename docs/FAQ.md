@@ -3,6 +3,18 @@
 These answers cover using `llm-sketchkit` to summarize high-volume,
 high-cardinality LLM telemetry with bounded state.
 
+## How Does This Fit Into An Agent Observability Stack?
+
+Trace and evaluation systems explain individual agent runs. `llm-sketchkit`
+provides bounded measurement primitives for summaries across many runs, workers,
+and windows, including distinct populations, heavy-item concentration, approximate
+membership, and set change.
+
+The library can be embedded in an agent observability pipeline when raw prompts or
+identifiers should not enter aggregate state, or when exact per-entity state would
+grow without bound. It complements trace explorers, evaluation systems, anomaly
+detectors, and control planes rather than replacing them.
+
 ## How Can I Count Distinct LLM Prompts Without Storing Prompt Text?
 
 Canonicalize the prompt, hash the canonical bytes with a registered domain and
