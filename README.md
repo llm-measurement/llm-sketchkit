@@ -7,6 +7,10 @@ summaries of high-cardinality LLM data. It provides matching semantics for text
 canonicalization, privacy-preserving keyed hashes, bounded sketches, and a
 deterministic protobuf wire format.
 
+It provides bounded measurement primitives for AI agent observability pipelines,
+especially when agent fleets produce more identities and events than exact
+per-entity state can safely retain.
+
 Raw prompts and identifiers do not need to enter sketch state. Producers can
 summarize locally and merge compatible sketches across processes or languages.
 
