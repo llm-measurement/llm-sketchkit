@@ -1,7 +1,8 @@
 # Frequently Asked Questions
 
-These answers cover using `llm-sketchkit` to summarize high-volume,
-high-cardinality LLM telemetry with bounded state.
+These answers cover using `llm-sketchkit` to obtain continuous, bounded answers
+about high-cardinality agent traffic without exporting or indexing every underlying
+value.
 
 ## How Does This Fit Into An Agent Observability Stack?
 
@@ -11,9 +12,53 @@ and windows, including distinct populations, heavy-item concentration, approxima
 membership, and set change.
 
 The library can be embedded in an agent observability pipeline when raw prompts or
-identifiers should not enter aggregate state, or when exact per-entity state would
-grow without bound. It complements trace explorers, evaluation systems, anomaly
-detectors, and control planes rather than replacing them.
+identifiers should not enter aggregate state, or when exporting and indexing every
+value would make operational cost or query latency unpredictable. It complements
+trace explorers, evaluation systems, anomaly detectors, and control planes rather
+than replacing them.
+
+## When Is This Not For You?
+
+If telemetry volume is moderate, the underlying values are safe to retain, and exact
+warehouse queries are operationally fast and affordable, use exact data. A database
+table or bounded exact map is simpler and returns exact answers. Sketches deliberately
+exchange some exactness for predictable resource use and mergeable state.
+
+Sketches are therefore best understood as an **always-on bounded evidence plane**,
+not a cheaper archive. Keep selected raw traces or events when they are needed for
+diagnosis, audit, or replay; use sketches when continuous aggregate visibility must
+remain bounded.
+
+Memory savings are only one property. Depending on the selected sketch and the system
+embedding it, sketches can provide:
+
+- bounded cardinality;
+- bounded export volume per summary or window;
+- explicit uncertainty;
+- mergeability across processes, languages, or locations;
+- privacy-conscious aggregation that keeps raw values out of sketch state;
+- predictable processing cost; and
+- query latency and operational responsiveness that do not depend on scanning the
+  complete event history.
+
+With the current alpha primitives, an embedding pipeline can directly investigate:
+
+- Which keyed agents, prompts, tools, or other identities account for most of a
+  reported capacity unit? Weighted frequent-items reports estimates with deterministic
+  lower and upper bounds.
+- How many distinct identities or workflows were active? HLL++ provides a bounded
+  distinct-count estimate.
+- Is reported usage concentrated in a small set of keyed values? Weighted
+  frequent-items exposes the heavy portion without retaining every key.
+- Did a population change materially between observations? MinHash compares set
+  similarity using fixed-size signatures.
+
+"What changed between these windows?" can currently be answered at the aggregate
+set-similarity level, or by application code comparing bounded frequent-item outputs.
+The current alpha does not provide a high-level heavy-mover comparison that discovers
+which unknown keys increased or decreased most. "Did a policy change improve the
+measured outcome?" requires window, policy, and outcome context from the system
+embedding the library; sketchkit alone does not own that context.
 
 ## How Can I Count Distinct LLM Prompts Without Storing Prompt Text?
 
@@ -29,7 +74,7 @@ and domain are in use. Secret handling and rotation requirements are described
 in the [security guidance](../README.md#security-and-privacy) and
 [hash specification](../spec/hash.md).
 
-## How Can I Find The Largest Token Consumers Without An Unbounded Per-Key Map?
+## How Can I Find The Largest Token Consumers Without Indexing Every Key?
 
 Use weighted frequent-items. Hash the identity being measured, such as a model,
 user, prompt template, or tool, and use its token count as the update weight.
