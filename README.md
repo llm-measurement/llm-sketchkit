@@ -2,14 +2,14 @@
 
 [![CI](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml)
 
-`llm-sketchkit` is a small Go and Python library for deterministic, mergeable
-summaries of high-cardinality LLM data. It provides matching semantics for text
-canonicalization, privacy-preserving keyed hashes, bounded sketches, and a
-deterministic protobuf wire format.
+`llm-sketchkit` provides continuous, bounded answers about high-cardinality agent
+traffic without exporting or indexing every underlying value. It is a small Go and
+Python library with matching semantics for text canonicalization, privacy-preserving
+keyed hashes, mergeable sketches, and a deterministic protobuf wire format.
 
 It provides bounded measurement primitives for AI agent observability pipelines,
-especially when agent fleets produce more identities and events than exact
-per-entity state can safely retain.
+especially when exporting and indexing every identity or event would be expensive,
+slow to query, or inappropriate to retain.
 
 Raw prompts and identifiers do not need to enter sketch state. Producers can
 summarize locally and merge compatible sketches across processes or languages.
@@ -17,25 +17,26 @@ summarize locally and merge compatible sketches across processes or languages.
 ## When This Fits
 
 Use `llm-sketchkit` inside telemetry producers and processing components when
-exact per-key state would grow with cardinality or retain values that should not
-enter aggregate state.
+exporting and indexing every key would create uncontrolled cardinality, make
+operational queries slow or unpredictable, or retain values that should not enter
+aggregate state.
 
 Agent fleets and multi-agent systems can produce more identities and events than
-exact per-entity state can safely retain. The library provides fixed-memory,
+an observability backend should continuously index. The library provides bounded,
 mergeable summaries across workers and windows.
 
 Questions it can help answer include:
 
 - **How many distinct prompts, users, sessions, tools, or documents are active
-  without keeping one counter per value?** HLL++ provides a fixed-memory estimate.
+  without keeping one counter per value?** HLL++ provides a bounded estimate.
 - **Your token budget is climbing and FinOps wants to know which configured
   identities account for the reported volume. How certain is the answer?** Weighted
   frequent-items identifies token-heavy or request-heavy keys with deterministic
   lower and upper bounds.
-- **Have we already observed this request or document without retaining an
-  unbounded set?** Bloom filters provide bounded approximate membership checks.
+- **Have we already observed this request or document without maintaining an exact
+  set of every value?** Bloom filters provide bounded approximate membership checks.
 - **Did the prompt, tool, or retrieval-document population change materially after
-  a deployment or model change?** MinHash compares large sets using fixed-size
+  a deployment or model change?** MinHash compares large sets using bounded
   similarity signatures.
 - **Can Go services summarize locally while Python analysis jobs read and merge the
   same state?** Shared profiles, fixtures, and wire semantics keep the two
@@ -53,7 +54,8 @@ linkable while the same secret is in use.
 
 This is a sketch library, not a trace collector, sampling processor, storage
 backend, dashboard, or differential-privacy system. The [FAQ](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md)
-answers common questions about fit, memory, accuracy, and interoperability.
+answers common questions about fit, operational bounds, accuracy, and
+interoperability.
 
 ## Choosing An Integration
 
@@ -73,10 +75,10 @@ must agree on profile, hash domain, hash algorithm, secret, and window boundarie
 
 | Component | Use it for | Important property |
 |---|---|---|
-| HLL++ | Approximate distinct counts | Fixed memory and mergeable state |
+| HLL++ | Approximate distinct counts | Bounded, mergeable state |
 | Weighted frequent-items | Heavy hitters and top items | Deterministic lower and upper bounds |
 | Bloom filter | Set membership | No false negatives; configurable false-positive rate |
-| MinHash | Approximate Jaccard similarity | Fixed-size mergeable signatures |
+| MinHash | Approximate Jaccard similarity | Bounded, mergeable signatures |
 
 The Go and Python implementations share the same profiles, hash domains, test
 vectors, and serialized representation.
