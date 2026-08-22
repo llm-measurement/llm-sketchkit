@@ -4,6 +4,14 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 [Semantic Versioning](https://semver.org/) with alpha prereleases while the API
 and wire-compatibility surface are being established.
 
+## Unreleased
+
+- Made the published Python package the primary installation path.
+- Added a runnable Go-to-Python notebook with cross-language wire validation,
+  compatible merges, explicit mismatch rejection, and bounded plots.
+
+No sketch semantics, profiles, hash domains, or wire encodings changed.
+
 ## [0.1.0-alpha.4] - 2026-08-04
 
 - Added task-oriented adoption guidance and answers to common integration,

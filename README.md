@@ -113,27 +113,16 @@ for methods, limitations, and reproduction commands.
 
 ## Install
 
+Python:
+
+```sh
+python -m pip install llm-sketchkit
+```
+
 Go, using the package from the HLL++ quick start:
 
 ```sh
 go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp@latest
-```
-
-Python from a checkout:
-
-```sh
-git clone https://github.com/llm-measurement/llm-sketchkit.git
-cd llm-sketchkit
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip==26.2 setuptools==83.0.0
-python -m pip install .
-```
-
-For development checks, install the optional tools:
-
-```sh
-python -m pip install -e '.[dev]'
 ```
 
 ## Quick Start
@@ -201,6 +190,19 @@ sketch.add_hash(hash64(secret, PROMPT_V1, canonical))
 
 print(f"estimated distinct prompts: {sketch.estimate():.0f}")
 ```
+
+## Go To Python Notebook
+
+The [runnable notebook](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/go-to-python.ipynb) produces
+per-service HLL++ and weighted frequent-items summaries in Go, then loads,
+validates, merges, and plots them in Python. It shows byte-identical round trips,
+explicit merge rejection for incompatible profiles, distinct-count estimates,
+and deterministic bounds around token-heavy pseudonymous keys.
+
+The tutorial uses an exact synthetic side channel only to check its estimates.
+Raw synthetic identifiers do not enter the emitted files. See the
+[example guide](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/README.md)
+for setup and security details.
 
 ## Token-Volume Heavy Hitters
 
@@ -283,6 +285,17 @@ print(f"merged distinct prompts: {left.estimate():.0f}")
 
 See [SECURITY.md](https://github.com/llm-measurement/llm-sketchkit/blob/main/SECURITY.md)
 for private vulnerability reporting.
+
+## Development
+
+```sh
+git clone https://github.com/llm-measurement/llm-sketchkit.git
+cd llm-sketchkit
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip==26.2 setuptools==83.0.0
+python -m pip install -e '.[dev]'
+```
 
 ## Wire Compatibility
 

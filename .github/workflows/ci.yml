@@ -77,6 +77,64 @@ jobs:
       - name: Scorecard assets
         run: python scripts/render_scorecard.py --check
 
+  notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.6"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - name: Install notebook dependencies
+        run: |
+          python -m pip install --upgrade pip==26.2 setuptools==83.0.0
+          python -m pip install -e .
+          python -m pip install \
+            pandas==3.0.5 \
+            matplotlib==3.11.1 \
+            nbclient==0.11.0 \
+            nbformat==5.11.1 \
+            ipykernel==7.3.0 \
+            pip-audit==2.10.1
+          python -m pip_audit
+      - name: Execute Go-to-Python notebook
+        env:
+          MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+          JUPYTER_RUNTIME_DIR: ${{ runner.temp }}/jupyter
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          import nbformat
+          from nbclient import NotebookClient
+
+          root = Path.cwd()
+          path = root / "examples" / "go-to-python" / "go-to-python.ipynb"
+          notebook = nbformat.read(path, as_version=4)
+
+          if any(cell.get("outputs") for cell in notebook.cells):
+              raise RuntimeError("source notebook must not contain executed outputs")
+
+          NotebookClient(
+              notebook,
+              timeout=180,
+              kernel_name="python3",
+              resources={"metadata": {"path": str(root)}},
+          ).execute()
+
+          images = sum(
+              "image/png" in output.get("data", {})
+              for cell in notebook.cells
+              for output in cell.get("outputs", [])
+          )
+          if images != 2:
+              raise RuntimeError(f"expected 2 rendered plots, found {images}")
+          PY
+
   proto:
     runs-on: ubuntu-latest
     steps:
