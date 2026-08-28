@@ -21,8 +21,8 @@ than replacing them.
 
 If telemetry volume is moderate, the underlying values are safe to retain, and exact
 warehouse queries are operationally fast and affordable, use exact data. A database
-table or bounded exact map is simpler and returns exact answers. Sketches deliberately
-exchange some exactness for predictable resource use and mergeable state.
+table or bounded exact map is simpler and returns exact answers. Sketches return
+approximate answers but keep resource use predictable and state mergeable.
 
 Sketches are therefore best understood as an **always-on bounded evidence plane**,
 not a cheaper archive. Keep selected raw traces or events when they are needed for
@@ -58,7 +58,7 @@ set-similarity level, or by application code comparing bounded frequent-item out
 The current alpha does not provide a high-level heavy-mover comparison that discovers
 which unknown keys increased or decreased most. "Did a policy change improve the
 measured outcome?" requires window, policy, and outcome context from the system
-embedding the library; sketchkit alone does not own that context.
+embedding the library; sketchkit does not provide that context.
 
 ## How Can I Count Distinct LLM Prompts Without Storing Prompt Text?
 
@@ -112,7 +112,7 @@ domains, sketch shapes, and deterministic protobuf representation. Shared
 fixtures exercise Go-origin state, Python parsing and merging, and expected
 serialized output.
 
-Merges are deliberately strict: sketch kind, profile, hash domain, hash
+Merge validation is strict: sketch kind, profile, hash domain, hash
 algorithm, and shape metadata must match. Incompatible state produces an error
 instead of an implicit conversion. The executable examples are in
 [`vectors/`](../vectors/).

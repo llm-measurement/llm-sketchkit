@@ -1,6 +1,6 @@
 # Reports
 
-This directory holds reproducible measurement records for `llm-sketchkit`.
+This directory contains reproducible measurement records for `llm-sketchkit`.
 
 - [Evidence scorecard](scorecard.md)
 - [Benchmark results](benchmarks.md)
