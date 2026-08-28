@@ -38,7 +38,7 @@ ignored by Git.
 ## What It Demonstrates
 
 - Go and Python parse the same canonical wire representation.
-- Re-serializing an unchanged Go-produced sketch in Python is byte-identical.
+- Re-serializing an unchanged Go-produced sketch in Python returns the same bytes.
 - Incompatible profile merges fail explicitly.
 - Compatible service shards merge by window.
 - HLL++ distinct estimates can be compared with a documented profile-level

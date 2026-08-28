@@ -64,9 +64,9 @@ interoperability.
 | GenAI spans already flow through an OpenTelemetry Collector | [OpenTelemetry Collector connector](https://github.com/llm-measurement/otelcol-genai-sketches) | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
 | A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Update sketches inside each bounded window, then serialize or merge compatible summaries. |
 | A batch or warehouse job reads stored events | `llm-sketchkit` directly | Build bounded summaries per partition or window and merge them before publishing results. |
-| You only need to store or visualize finished metrics | Your existing backend integration | The library is not an exporter; ClickHouse, Datadog, Prometheus, and similar systems normally sit downstream of aggregation. |
+| You only need to store or visualize finished metrics | Your existing backend integration | The library is not an exporter; ClickHouse, Datadog, Prometheus, and similar systems normally receive the aggregated results. |
 
-Use the collector path when OpenTelemetry already carries the source spans. Use
+Use the collector path when the source spans already flow through OpenTelemetry. Use
 the library when you own the event-processing code or need matching Go and Python
 summaries outside an OpenTelemetry pipeline. In either case, compatible producers
 must agree on profile, hash domain, hash algorithm, secret, and window boundaries.
@@ -195,7 +195,8 @@ print(f"estimated distinct prompts: {sketch.estimate():.0f}")
 
 The [runnable notebook](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/go-to-python.ipynb) produces
 per-service HLL++ and weighted frequent-items summaries in Go, then loads,
-validates, merges, and plots them in Python. It shows byte-identical round trips,
+validates, merges, and plots them in Python. It checks that serialization round trips
+return the same bytes,
 explicit merge rejection for incompatible profiles, distinct-count estimates,
 and deterministic bounds around token-heavy pseudonymous keys.
 
