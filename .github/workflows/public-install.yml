@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: Apache-2.0
+# Code authors: Vijay Erramilli and Codex
+name: public-install
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing release tag to verify, for example v0.1.0-alpha.4
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.release.tag_name || inputs.release_tag }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.6"
+      - name: Resolve release versions
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import tomllib
+
+          version = tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"]
+          base, alpha = version.rsplit("a", 1)
+          expected_tag = f"v{base}-alpha.{alpha}"
+          release_tag = os.environ["RELEASE_TAG"]
+          if release_tag != expected_tag:
+              raise SystemExit(f"release tag {release_tag!r} != {expected_tag!r}")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              print(f"python_version={version}", file=output)
+              print(f"go_version={release_tag}", file=output)
+          PY
+      - name: Install the published Python package
+        env:
+          EXPECTED_VERSION: ${{ steps.release.outputs.python_version }}
+        run: |
+          set -euo pipefail
+          python -m venv "${RUNNER_TEMP}/llm-sketchkit-public-python"
+          python_bin="${RUNNER_TEMP}/llm-sketchkit-public-python/bin/python"
+
+          installed=false
+          for attempt in $(seq 1 30); do
+            if "${python_bin}" -m pip install \
+              --disable-pip-version-check \
+              --no-cache-dir \
+              --index-url https://pypi.org/simple \
+              "llm-sketchkit==${EXPECTED_VERSION}"; then
+              installed=true
+              break
+            fi
+            echo "PyPI has not served ${EXPECTED_VERSION} yet; retrying (${attempt}/30)"
+            sleep 10
+          done
+          if [[ "${installed}" != true ]]; then
+            echo "PyPI did not serve llm-sketchkit==${EXPECTED_VERSION}" >&2
+            exit 1
+          fi
+
+          PYTHONPATH= "${python_bin}" - <<'PY'
+          import importlib.metadata
+          import os
+
+          from llm_sketchkit import PROMPT_V1, hllpp
+
+          assert importlib.metadata.version("llm-sketchkit") == os.environ["EXPECTED_VERSION"]
+          sketch = hllpp.new("small", PROMPT_V1)
+          sketch.add_hash(1)
+          assert sketch.estimate() > 0
+          PY
+      - name: Install the tagged Go module
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.go_version }}
+        run: |
+          set -euo pipefail
+          smoke_dir="${RUNNER_TEMP}/llm-sketchkit-public-go"
+          mkdir -p "${smoke_dir}"
+          cd "${smoke_dir}"
+
+          GOWORK=off go mod init public-install-smoke
+          GOWORK=off GOPROXY=https://proxy.golang.org,direct go get \
+            "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp@${RELEASE_TAG}"
+
+          resolved="$(GOWORK=off go list -m -f '{{.Version}}' github.com/llm-measurement/llm-sketchkit)"
+          if [[ "${resolved}" != "${RELEASE_TAG}" ]]; then
+            echo "resolved Go module ${resolved}, expected ${RELEASE_TAG}" >&2
+            exit 1
+          fi
+          GOWORK=off go test \
+            github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp \
+            -run '^$'
