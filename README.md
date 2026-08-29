@@ -113,27 +113,50 @@ for methods, limitations, and reproduction commands.
 
 ## Install
 
-Python:
+### Python
 
 ```sh
 python -m pip install llm-sketchkit
 ```
 
-Go, using the package from the HLL++ quick start:
-
-```sh
-go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp@latest
-```
-
-## Quick Start
-
-Generate a deployment secret and expose it to the process:
+Generate a process secret:
 
 ```sh
 export LLM_SKETCHKIT_SECRET="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 ```
 
-Go HLL++ example:
+Run a distinct-count example:
+
+```sh
+python - <<'PY'
+from llm_sketchkit import PROMPT_V1, canonicalize_text_v1, hash64, hllpp
+from llm_sketchkit import secret_from_env
+
+secret = secret_from_env("LLM_SKETCHKIT_SECRET")
+sketch = hllpp.new("small", PROMPT_V1)
+
+canonical = canonicalize_text_v1("  cafe\u0301\r\n")
+sketch.add_hash(hash64(secret, PROMPT_V1, canonical))
+
+print(f"estimated distinct prompts: {sketch.estimate():.0f}")
+PY
+```
+
+Expected output:
+
+```text
+estimated distinct prompts: 1
+```
+
+### Go
+
+From an existing Go module, add the package used by the equivalent example:
+
+```sh
+go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp@latest
+```
+
+Use the same `LLM_SKETCHKIT_SECRET` and run:
 
 ```go
 package main
@@ -174,21 +197,6 @@ func main() {
 	sketch.AddHash(digest)
 	fmt.Printf("estimated distinct prompts: %.0f\n", sketch.Estimate())
 }
-```
-
-Python HLL++ example:
-
-```python
-from llm_sketchkit import PROMPT_V1, canonicalize_text_v1, hash64, hllpp
-from llm_sketchkit import secret_from_env
-
-secret = secret_from_env("LLM_SKETCHKIT_SECRET")
-sketch = hllpp.new("small", PROMPT_V1)
-
-canonical = canonicalize_text_v1("  cafe\u0301\r\n")
-sketch.add_hash(hash64(secret, PROMPT_V1, canonical))
-
-print(f"estimated distinct prompts: {sketch.estimate():.0f}")
 ```
 
 ## Go To Python Notebook
