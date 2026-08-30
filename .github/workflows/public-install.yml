@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Existing release tag to verify, for example v0.1.0-alpha.4
+        description: Existing release tag to verify, for example v0.1.0
         required: true
         type: string
 
@@ -34,23 +34,10 @@ jobs:
         id: release
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
-        run: |
-          python - <<'PY'
-          import os
-          import pathlib
-          import tomllib
-
-          version = tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"]
-          base, alpha = version.rsplit("a", 1)
-          expected_tag = f"v{base}-alpha.{alpha}"
-          release_tag = os.environ["RELEASE_TAG"]
-          if release_tag != expected_tag:
-              raise SystemExit(f"release tag {release_tag!r} != {expected_tag!r}")
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-              print(f"python_version={version}", file=output)
-              print(f"go_version={release_tag}", file=output)
-          PY
+        run: >-
+          python scripts/release_metadata.py
+          --tag "${RELEASE_TAG}"
+          --github-output "${GITHUB_OUTPUT}"
       - name: Install the published Python package
         env:
           EXPECTED_VERSION: ${{ steps.release.outputs.python_version }}

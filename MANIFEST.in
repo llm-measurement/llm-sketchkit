@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+include scripts/__init__.py
+include scripts/release_metadata.py
+recursive-include vectors *.json

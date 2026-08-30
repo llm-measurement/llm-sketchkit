@@ -1,14 +1,22 @@
 # Changelog
 
 All notable changes to `llm-sketchkit` are recorded here. Versions follow
-[Semantic Versioning](https://semver.org/) with alpha prereleases while the API
-and wire-compatibility surface are being established.
+[Semantic Versioning](https://semver.org/). Within the supported `0.1.x` line,
+patch releases preserve the documented wire formats, named hash domains, and
+public Go and Python APIs exercised by the conformance vectors.
 
 ## Unreleased
 
+## [0.1.0] - 2026-08-30
+
+- Promoted the documented compatibility surface to a supported `0.1.x` release
+  line.
 - Made the published Python package the primary installation path.
 - Added a runnable Go-to-Python notebook with cross-language wire validation,
   compatible merges, explicit mismatch rejection, and bounded plots.
+- Generalized release checks for final and prerelease version tags.
+- Made source distributions self-contained for their shipped conformance tests
+  and refreshed the patched packaging-tool pin.
 
 No sketch semantics, profiles, hash domains, or wire encodings changed.
 
@@ -52,6 +60,7 @@ release.
 - Added accuracy characterization, Go microbenchmarks, and an Apache
   DataSketches frequent-items oracle.
 
+[0.1.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.4...v0.1.0
 [0.1.0-alpha.4]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/llm-measurement/llm-sketchkit/releases/tag/v0.1.0-alpha.2
