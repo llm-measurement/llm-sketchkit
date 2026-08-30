@@ -302,7 +302,7 @@ git clone https://github.com/llm-measurement/llm-sketchkit.git
 cd llm-sketchkit
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip==26.2 setuptools==83.0.0
+python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
 python -m pip install -e '.[dev]'
 ```
 
@@ -341,9 +341,11 @@ python scripts/datasketches_oracle.py --check
 
 ## Status
 
-`llm-sketchkit` is an alpha library. The compatibility surface consists of the
-specifications, the Go and Python APIs exercised by the vectors, and the checked-in
-conformance fixtures.
+`llm-sketchkit 0.1.x` is a supported release line. Patch releases preserve the
+documented wire formats, named hash domains, and Go and Python APIs exercised by
+the checked-in conformance vectors. Additive or incompatible changes to that
+surface receive a new minor version and are called out in the changelog before
+`1.0`.
 
 ## License
 

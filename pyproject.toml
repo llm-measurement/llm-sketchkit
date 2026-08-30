@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-sketchkit"
-version = "0.1.0a4"
+version = "0.1.0"
 description = "Deterministic Go and Python sketches for high-cardinality LLM data."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,7 +13,7 @@ license = "Apache-2.0"
 authors = [{name = "Vijay Erramilli"}, {name = "Codex"}]
 keywords = ["sketches", "hyperloglog", "minhash", "bloom-filter", "streaming"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
@@ -70,4 +70,5 @@ files = ["python", "tests"]
 exclude = ["python/llm_sketchkit/.*_pb2\\.py"]
 
 [tool.pytest.ini_options]
+pythonpath = ["."]
 testpaths = ["tests"]
