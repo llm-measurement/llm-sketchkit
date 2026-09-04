@@ -23,7 +23,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "protobuf>=6.33.5,<7",
+  "protobuf>=6.33.5,<8",
 ]
 
 [project.urls]
