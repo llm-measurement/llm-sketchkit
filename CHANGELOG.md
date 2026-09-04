@@ -7,6 +7,18 @@ public Go and Python APIs exercised by the conformance vectors.
 
 ## Unreleased
 
+- Added test coverage for every supported Go and Python runtime.
+- Added continuous and scheduled fuzzing for untrusted wire input,
+  canonicalization, merge behavior, and generated Go/Python differential cases.
+- Added operational contracts for thread safety, mutation ownership, resource
+  ceilings, upgrades, support lifetime, deprecation, and security backports.
+- Added automated dependency updates and review, release SBOMs and checksums, and
+  documented PyPI attestation verification.
+- Added versioned `v0.1.0` state fixtures loaded by both implementations to protect
+  patch and minor upgrade compatibility.
+
+No sketch semantics, profiles, hash domains, or wire encodings changed.
+
 ## [0.1.0] - 2026-08-30
 
 - Promoted the documented compatibility surface to a supported `0.1.x` release

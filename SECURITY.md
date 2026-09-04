@@ -1,5 +1,17 @@
 # Security Policy
 
+## Supported Versions
+
+| Version | Security fixes |
+|---|---|
+| Latest `0.1.x` | Yes |
+| Superseded alpha releases | No |
+
+The current stable pre-1.0 minor receives fixes. After a new stable minor is
+released, the previous stable minor receives critical and high-severity security
+fixes for 90 days. See the [operational contracts](docs/OPERATIONS.md) for the full
+runtime and deprecation policy.
+
 ## Reporting A Vulnerability
 
 Please use GitHub's private vulnerability reporting for this repository. Do not
@@ -10,6 +22,11 @@ Include the affected version or commit, a minimal reproducer, expected and
 observed behavior, and your assessment of impact. Reports involving malformed
 wire input, resource exhaustion, secret exposure, cross-language disagreement,
 or dependency compromise are especially useful.
+
+Maintainers aim to acknowledge a complete report within five business days. This is
+a target, not a contractual response-time promise. Confirmed issues are handled with
+a GitHub security advisory and coordinated disclosure when appropriate. Do not
+publish exploit details before a fix or mitigation is available to affected users.
 
 ## Security Model
 
