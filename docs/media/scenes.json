@@ -1,0 +1,12 @@
+{
+  "captured": "2026-09-04",
+  "format": "90-second silent, captioned walkthrough of executed notebook plots; not a real-time screen recording",
+  "scenes": [
+    {"image": "../images/distinct-users.png", "seconds": 15, "caption": "Go services can summarize locally. Python can read the same sketch bytes.\nThis notebook merges two service shards within each of two windows."},
+    {"image": "../images/distinct-users.png", "seconds": 15, "caption": "The notebook checks byte-for-byte round trips and rejects incompatible profiles.\nIt then compares merged distinct estimates with known synthetic counts."},
+    {"image": "../images/distinct-users.png", "seconds": 15, "caption": "HLL++ gives a distinct-count estimate, not a list of identities.\nIts characterization envelope is not a per-estimate confidence interval."},
+    {"image": "../images/token-bounds.png", "seconds": 15, "caption": "Weighted frequent-items returns token-volume intervals for pseudonymous keys.\nGreen crosses are exact synthetic values used to check those intervals."},
+    {"image": "../images/token-bounds.png", "seconds": 15, "caption": "Each interval is scaled to its own upper estimate to show its width.\nThis axis is not the key's share of all token consumption."},
+    {"image": "../images/token-bounds.png", "seconds": 15, "caption": "Hashes stay linkable under one secret. The notebook cannot name the user.\nStart with python -m pip install llm-sketchkit and the Go-to-Python example."}
+  ]
+}
