@@ -7,6 +7,7 @@ public Go and Python APIs exercised by the conformance vectors.
 
 ## Unreleased
 
+- Replaced stale alpha wording in the FAQ with the current supported-release status.
 - Added test coverage for every supported Go and Python runtime.
 - Added continuous and scheduled fuzzing for untrusted wire input,
   canonicalization, merge behavior, and generated Go/Python differential cases.
