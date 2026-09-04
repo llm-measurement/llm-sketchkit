@@ -14,6 +14,15 @@ slow to query, or inappropriate to retain.
 Raw prompts and identifiers do not need to enter sketch state. Producers can
 summarize locally and merge compatible sketches across processes or languages.
 
+![Python notebook showing synthetic truth inside token-volume bounds from Go summaries](docs/images/token-bounds.png)
+
+Actual output from the [Go-to-Python notebook](examples/go-to-python/README.md).
+Go produces the summaries; Python reads the same wire bytes, merges service shards,
+and plots the results. The green marks are known synthetic counts used to check the
+bounds, not information that a production sketch recovers. The horizontal axis
+normalizes each interval to its own upper estimate; it does not show share of total
+token volume. [Watch the 90-second walkthrough](docs/media/README.md).
+
 ## When This Fits
 
 Use `llm-sketchkit` inside telemetry producers and processing components when
