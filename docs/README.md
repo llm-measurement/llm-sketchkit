@@ -7,6 +7,8 @@ Adoption guidance:
 
 - [Frequently asked questions](FAQ.md)
 - [Why this is not a DataSketches wrapper](DATASKETCHES.md)
+- [Operational contracts](OPERATIONS.md)
+- [Supply-chain controls and artifact verification](SUPPLY_CHAIN.md)
 
 Runnable example:
 
@@ -22,5 +24,6 @@ Normative behavior:
 Verification material:
 
 - [Conformance vectors](../vectors/sketches/README.md)
+- [Release compatibility fixtures](../vectors/compat/README.md)
 - [Evidence scorecard](../reports/scorecard.md)
 - [Benchmark and characterization reports](../reports/README.md)

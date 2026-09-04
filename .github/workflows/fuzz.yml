@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: Apache-2.0
+# Code authors: Vijay Erramilli and Codex
+name: fuzz
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  go-fuzz:
+    name: go-fuzz-${{ matrix.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - FuzzCanonicalization
+          - FuzzCompatibleMerges
+          - FuzzUntrustedParse
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.6"
+      - name: Run fuzz target
+        env:
+          FUZZ_TARGET: ${{ matrix.target }}
+        run: go test ./go/sketchkit/fuzz -run '^$' -fuzz "^${FUZZ_TARGET}$" -fuzztime=5m
+
+  cross-language:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.6"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
+          python -m pip install -e .
+      - name: Run deterministic cross-language stress cases
+        run: python scripts/differential_fuzz.py --seed 20260903 --cases 80 --max-updates 800
