@@ -250,6 +250,70 @@ def test_cross_language_merge_vectors() -> None:
             raise AssertionError(f"unsupported cross-language kind {kind!r}")
 
 
+def test_v010_serialized_state_compatibility() -> None:
+    manifest = load_json(ROOT / "vectors" / "compat" / "v0.1.0.json")
+    assert manifest["schema_version"] == 1
+    assert manifest["release"] == "v0.1.0"
+
+    fixtures = as_list(manifest["fixtures"])
+    assert len(fixtures) == 5
+    names: set[str] = set()
+    for fixture_any in fixtures:
+        fixture = as_dict(fixture_any)
+        name = as_str(fixture["name"])
+        assert name not in names
+        names.add(name)
+
+        vector = load_json(ROOT / as_str(fixture["source"]))
+        encoded = bytes.fromhex(as_str(as_dict(vector["expected"])["serialized_hex"]))
+        assert hashlib.sha256(encoded).hexdigest() == fixture["wire_sha256"]
+
+        expected = as_dict(fixture["expected"])
+        kind = as_str(fixture["kind"])
+        if kind == "HLLPP":
+            assert_compatible_hllpp(encoded, expected)
+        elif kind == "FREQUENT_ITEMS":
+            assert_compatible_frequent_items(encoded, expected)
+        elif kind == "BLOOM":
+            assert_compatible_bloom(encoded, expected)
+        elif kind == "MINHASH":
+            assert_compatible_minhash(encoded, expected)
+        else:
+            raise AssertionError(f"unsupported compatibility kind {kind!r}")
+
+
+def assert_compatible_hllpp(encoded: bytes, expected: dict[str, Any]) -> None:
+    sketch = hllpp.parse(encoded)
+    assert sketch.sparse_count() == as_int(expected["sparse_count"])
+    assert sketch.dense_nonzero_count() == as_int(expected["dense_nonzero_count"])
+    assert sketch.marshal_binary() == encoded
+
+
+def assert_compatible_frequent_items(
+    encoded: bytes,
+    expected: dict[str, Any],
+) -> None:
+    sketch = frequentitems.parse(encoded)
+    assert sketch.total_weight() == as_int(expected["total_weight"])
+    assert sketch.max_error() == as_int(expected["max_error"])
+    assert len(sketch) == as_int(expected["item_count"])
+    assert sketch.marshal_binary() == encoded
+
+
+def assert_compatible_bloom(encoded: bytes, expected: dict[str, Any]) -> None:
+    sketch = bloom.parse(encoded)
+    assert sketch.inserted_count() == as_int(expected["inserted_count"])
+    assert sketch.set_bit_count() == as_int(expected["set_bit_count"])
+    assert sketch.marshal_binary() == encoded
+
+
+def assert_compatible_minhash(encoded: bytes, expected: dict[str, Any]) -> None:
+    sketch = minhash.parse(encoded)
+    assert sketch.populated_count() == as_int(expected["populated_count"])
+    assert sketch.signature_length() == as_int(expected["signature_length"])
+    assert sketch.marshal_binary() == encoded
+
+
 def test_datasketches_oracle_fixture_shape() -> None:
     fixture = load_json(
         ROOT / "vectors" / "oracles" / "datasketches_frequent_items.json"

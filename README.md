@@ -108,8 +108,8 @@ for methods, limitations, and reproduction commands.
 
 ## Requirements
 
-- Go 1.25 or newer, with the latest security patch for that release line
-- Python 3.11 or newer
+- Go 1.25 or 1.26, with the latest security patch for that release line
+- Python 3.11, 3.12, 3.13, or 3.14
 
 ## Install
 
@@ -293,7 +293,9 @@ print(f"merged distinct prompts: {left.estimate():.0f}")
   register values.
 
 See [SECURITY.md](https://github.com/llm-measurement/llm-sketchkit/blob/main/SECURITY.md)
-for private vulnerability reporting.
+for private vulnerability reporting and
+[Operational Contracts](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md)
+for concurrency, ownership, resource, upgrade, and support guarantees.
 
 ## Development
 
@@ -312,6 +314,9 @@ Deterministic protobuf encoding is part of the compatibility surface. Go and
 Python are checked against the same canonicalization, hashing, sketch, and
 cross-language merge fixtures in
 [`vectors/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/vectors/).
+Released state is also pinned by digest in
+[`vectors/compat/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/vectors/compat/)
+and loaded by both implementations on every test run.
 
 Run all local checks:
 
@@ -337,6 +342,8 @@ python scripts/datasketches_oracle.py --check
 - [`reports/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/reports/) contains benchmark, accuracy, and oracle results.
 - [`bench/`](https://github.com/llm-measurement/llm-sketchkit/tree/main/bench/) contains the Go benchmark harnesses.
 - [`docs/FAQ.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md) answers common adoption questions.
+- [`docs/OPERATIONS.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md) defines runtime, concurrency, resource, upgrade, and support contracts.
+- [`docs/SUPPLY_CHAIN.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/SUPPLY_CHAIN.md) documents dependency controls, SBOMs, checksums, and PyPI attestation verification.
 - [`CHANGELOG.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) records release-level changes.
 
 ## Status
@@ -345,7 +352,8 @@ python scripts/datasketches_oracle.py --check
 documented wire formats, named hash domains, and Go and Python APIs exercised by
 the checked-in conformance vectors. Additive or incompatible changes to that
 surface receive a new minor version and are called out in the changelog before
-`1.0`.
+`1.0`. Supported runtimes, deprecation notice, and security backports follow the
+[operational policy](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#support-and-deprecation).
 
 ## License
 

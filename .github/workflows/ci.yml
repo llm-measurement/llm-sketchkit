@@ -51,6 +51,23 @@ jobs:
             exit 1
           fi
 
+  go-supported:
+    name: go-supported-${{ matrix.go-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: ["1.25.x"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Go tests
+        run: go test ./...
+
   python:
     runs-on: ubuntu-latest
     steps:
@@ -76,6 +93,46 @@ jobs:
         run: pytest -q
       - name: Scorecard assets
         run: python scripts/render_scorecard.py --check
+
+  python-supported:
+    name: python-supported-${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
+          python -m pip install -e '.[dev]'
+      - name: Python tests
+        run: pytest -q
+
+  differential:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.6"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
+          python -m pip install -e .
+      - name: Go and Python differential cases
+        run: python scripts/differential_fuzz.py --seed 20260903 --cases 12 --max-updates 320
 
   notebook:
     runs-on: ubuntu-latest
@@ -174,6 +231,7 @@ jobs:
           ! unzip -Z1 dist/*.whl | grep -q '^spec/'
           tar -tzf dist/*.tar.gz | grep -q '/scripts/release_metadata.py$'
           tar -tzf dist/*.tar.gz | grep -q '/vectors/sketches/cross_language_hllpp_dense.json$'
+          tar -tzf dist/*.tar.gz | grep -q '/vectors/compat/v0.1.0.json$'
       - name: Install wheel in a clean environment
         run: |
           python -m venv /tmp/llm-sketchkit-wheel

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "release": "v0.1.0",
+  "release_commit": "9f085d16fe5e3397eb2f9c75beb7cea789c03a53",
+  "fixtures": [
+    {
+      "name": "hllpp-sparse",
+      "kind": "HLLPP",
+      "source": "vectors/sketches/hllpp_sparse_updates.json",
+      "wire_sha256": "acf5182138e9038405278aa823518be5176d5a12cd86a9783288cf0ec8c3e7ef",
+      "expected": {
+        "sparse_count": 3,
+        "dense_nonzero_count": 0
+      }
+    },
+    {
+      "name": "hllpp-dense",
+      "kind": "HLLPP",
+      "source": "vectors/sketches/cross_language_hllpp_dense.json",
+      "wire_sha256": "a51bdbc9b98cfa1e4c5ebb0c2404b1551120288c169497459d5597e7d37c0fa5",
+      "expected": {
+        "sparse_count": 0,
+        "dense_nonzero_count": 316
+      }
+    },
+    {
+      "name": "frequent-items",
+      "kind": "FREQUENT_ITEMS",
+      "source": "vectors/sketches/frequent_items_weighted_updates.json",
+      "wire_sha256": "d00f5088726de79a965cc343a9499a7fc38974e1852b87ed2807bea0e9c1a32f",
+      "expected": {
+        "total_weight": 15,
+        "max_error": 0,
+        "item_count": 2
+      }
+    },
+    {
+      "name": "bloom",
+      "kind": "BLOOM",
+      "source": "vectors/sketches/cross_language_bloom.json",
+      "wire_sha256": "ab1efd956ad373303dc0cdc1e12f27a2876d93605b0f5ca876d7113bb9689c82",
+      "expected": {
+        "inserted_count": 4,
+        "set_bit_count": 40
+      }
+    },
+    {
+      "name": "minhash",
+      "kind": "MINHASH",
+      "source": "vectors/sketches/minhash_signature.json",
+      "wire_sha256": "c84ae33241c31f1d0b7faedf57c205760f75f9aa4c5543b643954bc8787e188c",
+      "expected": {
+        "populated_count": 3,
+        "signature_length": 64
+      }
+    }
+  ]
+}
