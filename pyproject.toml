@@ -42,7 +42,7 @@ oracle = [
 ]
 release = [
   "build==1.6.0",
-  "twine==6.2.0",
+  "twine==7.0.0",
 ]
 
 [tool.setuptools]
