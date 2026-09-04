@@ -41,7 +41,7 @@ embedding it, sketches can provide:
 - query latency and operational responsiveness that do not depend on scanning the
   complete event history.
 
-With the current alpha primitives, an embedding pipeline can directly investigate:
+With the current release, an embedding pipeline can directly investigate:
 
 - Which keyed agents, prompts, tools, or other identities account for most of a
   reported capacity unit? Weighted frequent-items reports estimates with deterministic
@@ -55,7 +55,7 @@ With the current alpha primitives, an embedding pipeline can directly investigat
 
 "What changed between these windows?" can currently be answered at the aggregate
 set-similarity level, or by application code comparing bounded frequent-item outputs.
-The current alpha does not provide a high-level heavy-mover comparison that discovers
+The current release does not provide a high-level heavy-mover comparison that discovers
 which unknown keys increased or decreased most. "Did a policy change improve the
 measured outcome?" requires window, policy, and outcome context from the system
 embedding the library; sketchkit does not provide that context.
