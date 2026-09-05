@@ -150,6 +150,9 @@ func newSketch(
 }
 
 // AddHash updates the sketch with a pre-hashed key and non-negative weight.
+// Negative weights and the initial total-weight overflow check leave s unchanged;
+// zero weight is a no-op. Later errors can leave total weight or counters changed.
+// ErrWeightOverflow alone does not imply rollback. Clone first if rollback is needed.
 func (s *Sketch) AddHash(hash uint64, weight int64) error {
 	if weight < 0 {
 		return fmt.Errorf("%w: %d", ErrNegativeWeight, weight)
@@ -166,6 +169,10 @@ func (s *Sketch) AddHash(hash uint64, weight int64) error {
 }
 
 // Merge adds other into s. Metadata must match under the v0.1 merge policy.
+// Metadata mismatch and the initial total-weight/max-error overflow checks leave s
+// unchanged. An error while rebuilding counters can leave s partially rebuilt;
+// clone first if rollback is needed. A nil source is a no-op. A distinct source
+// is never modified, including on error.
 func (s *Sketch) Merge(other *Sketch) error {
 	if other == nil {
 		return nil

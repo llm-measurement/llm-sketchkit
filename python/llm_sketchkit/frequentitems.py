@@ -137,7 +137,13 @@ class Sketch:
         return sketch
 
     def add_hash(self, value: int, weight: int) -> None:
-        """Update a pre-hashed key by non-negative weight."""
+        """Update a pre-hashed key by non-negative weight.
+
+        NegativeWeightError and the initial total-weight overflow check leave
+        self unchanged; zero weight is a no-op. Later errors can leave weight
+        or counters changed. WeightOverflowError alone does not imply rollback.
+        Clone first when rollback is needed.
+        """
 
         if weight < 0:
             raise NegativeWeightError(weight)
@@ -149,7 +155,13 @@ class Sketch:
         self._add_residual(value & MASK64, weight)
 
     def merge(self, other: Sketch | None) -> None:
-        """Merge another frequent-items sketch with identical metadata."""
+        """Merge another frequent-items sketch with identical metadata.
+
+        Metadata mismatch and initial total-weight/max-error overflow checks
+        leave self unchanged. A later counter error can leave self partially
+        rebuilt; clone first when rollback is needed. None is a no-op. A distinct
+        source is never modified, including on error.
+        """
 
         if other is None:
             return
