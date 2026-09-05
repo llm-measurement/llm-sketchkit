@@ -50,6 +50,11 @@ Questions it can help answer include:
 - **Can Go services summarize locally while Python analysis jobs read and merge the
   same state?** Shared profiles, fixtures, and wire semantics keep the two
   implementations compatible.
+- **Can separately operated agent systems combine measurements without pooling
+  their raw telemetry?** The [summary exchange API](examples/summary-exchange/README.md)
+  combines compatible window snapshots, handles replay and restart epochs, and
+  reports missing producers. This addition is available in the source checkout,
+  not the `0.1.0` PyPI release.
 
 For investigations described as "tokenmaxxing" (also written "token-maxing"),
 reported token counts can be used as weights in the frequent-items sketch to identify
@@ -79,6 +84,12 @@ Use the collector path when the source spans already flow through OpenTelemetry.
 the library when you own the event-processing code or need matching Go and Python
 summaries outside an OpenTelemetry pipeline. In either case, compatible producers
 must agree on profile, hash domain, hash algorithm, secret, and window boundaries.
+
+For measurements spanning independently operated systems, the
+[summary envelope](spec/summary.md) also carries scope, accounting rules, producer
+identity, and key version. No hashing secret is needed to combine compatible state.
+Operators must authorize identity linkage and assign disjoint observation streams;
+the envelope does not authenticate producers or deduplicate overlapping events.
 
 ## Included Sketches
 
