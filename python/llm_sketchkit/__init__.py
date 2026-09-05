@@ -2,7 +2,7 @@
 # Code authors: Vijay Erramilli and Codex
 """Pure-Python semantic core for llm-sketchkit."""
 
-from . import bloom, canon, frequentitems, hash, hllpp, minhash
+from . import bloom, canon, frequentitems, hash, hllpp, minhash, summary
 from .canon import canonicalize, canonicalize_text_v1
 from .hash import (
     HMAC_SHA256_64,
@@ -48,4 +48,5 @@ __all__ = [
     "is_registered_domain",
     "minhash",
     "secret_from_env",
+    "summary",
 ]
