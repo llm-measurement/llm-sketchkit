@@ -69,11 +69,11 @@ class Sketch:
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("hllpp"):
             raise InvalidWireEncodingError("missing HLL++ metadata or body")
-        if metadata.kind != _proto.sketch_kind_hllpp():
+        if metadata.kind != _proto.SKETCH_KIND_HLLPP:
             raise InvalidWireEncodingError("wrong sketch kind")
         if metadata.wire_version != _proto.WIRE_VERSION:
             raise InvalidWireEncodingError("wrong wire version")
-        if metadata.hash_algo != _proto.hash_algorithm_hmac_sha256_64():
+        if metadata.hash_algo != _proto.HASH_ALGORITHM_HMAC_SHA256_64:
             raise InvalidWireEncodingError("wrong hash algorithm")
 
         profile = cast(str, metadata.profile)
@@ -91,7 +91,7 @@ class Sketch:
         sketch = cls(profile, cast(str, metadata.hash_domain), profiles.HMAC_SHA256_64)
         body = message.hllpp
         mode = cast(int, metadata.representation_mode)
-        if mode == _proto.representation_hllpp_sparse():
+        if mode == _proto.REPRESENTATION_HLLPP_SPARSE:
             if len(body.sparse_registers) > config.promotion_threshold:
                 raise InvalidWireEncodingError("too many sparse registers")
             sketch._sparse = {}
@@ -111,7 +111,7 @@ class Sketch:
                 previous = index
             if len(cast(bytes, body.dense_registers)) != 0:
                 raise InvalidWireEncodingError("sparse body contains dense bytes")
-        elif mode == _proto.representation_hllpp_dense():
+        elif mode == _proto.REPRESENTATION_HLLPP_DENSE:
             dense_registers = cast(bytes, body.dense_registers)
             expected = 1 << normal_precision
             if len(dense_registers) != expected:
@@ -297,15 +297,15 @@ class Sketch:
 
     def _to_proto(self) -> Any:
         metadata = _proto.sketchpb.SketchMetadata(
-            kind=_proto.sketch_kind_hllpp(),
+            kind=_proto.SKETCH_KIND_HLLPP,
             wire_version=_proto.WIRE_VERSION,
             profile=self._profile,
             hash_domain=self._domain,
-            hash_algo=_proto.hash_algorithm_hmac_sha256_64(),
+            hash_algo=_proto.HASH_ALGORITHM_HMAC_SHA256_64,
             representation_mode=(
-                _proto.representation_hllpp_sparse()
+                _proto.REPRESENTATION_HLLPP_SPARSE
                 if self._sparse is not None
-                else _proto.representation_hllpp_dense()
+                else _proto.REPRESENTATION_HLLPP_DENSE
             ),
         )
         metadata.hllpp_normal_precision = self._p

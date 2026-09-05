@@ -4,6 +4,7 @@ name: ci
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -162,35 +163,7 @@ jobs:
         env:
           MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
           JUPYTER_RUNTIME_DIR: ${{ runner.temp }}/jupyter
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          import nbformat
-          from nbclient import NotebookClient
-
-          root = Path.cwd()
-          path = root / "examples" / "go-to-python" / "go-to-python.ipynb"
-          notebook = nbformat.read(path, as_version=4)
-
-          if any(cell.get("outputs") for cell in notebook.cells):
-              raise RuntimeError("source notebook must not contain executed outputs")
-
-          NotebookClient(
-              notebook,
-              timeout=180,
-              kernel_name="python3",
-              resources={"metadata": {"path": str(root)}},
-          ).execute()
-
-          images = sum(
-              "image/png" in output.get("data", {})
-              for cell in notebook.cells
-              for output in cell.get("outputs", [])
-          )
-          if images != 2:
-              raise RuntimeError(f"expected 2 rendered plots, found {images}")
-          PY
+        run: python examples/go-to-python/render.py --check
 
   proto:
     runs-on: ubuntu-latest
