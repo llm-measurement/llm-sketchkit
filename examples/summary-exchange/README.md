@@ -4,11 +4,11 @@ Two teams can keep their collectors and raw telemetry separate, then exchange
 bounded summary files for an agreed scope. No hashing secret is needed on the
 machine combining compatible summaries.
 
-This example uses the summary API in the source checkout. It is not included in
-the `0.1.0` PyPI release. From the repository root:
+This example uses the summary API available from `0.2.0`. From the repository
+root, install the published package and run the example:
 
 ```sh
-python -m pip install -e .
+python -m pip install 'llm-sketchkit==0.2.0'
 python examples/summary-exchange/combine.py \
   --expected platform data \
   --window-start 120000000000 \

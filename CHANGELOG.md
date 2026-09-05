@@ -1,11 +1,20 @@
 # Changelog
 
 All notable changes to `llm-sketchkit` are recorded here. Versions follow
-[Semantic Versioning](https://semver.org/). Within the supported `0.1.x` line,
+[Semantic Versioning](https://semver.org/). Within each supported minor line,
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
-## Unreleased
+## [0.2.0] - 2026-09-05
+
+- Added a versioned summary envelope and matching Go/Python APIs for combining
+  measurements across independently operated producers without sharing raw input.
+- Added snapshot replay handling, restart epochs, compatibility checks, and
+  missing-producer and partial-window reporting, with shared canonical fixtures.
+- Added a local summary-file example and an API contract for failure atomicity.
+- Kept existing sketch algorithms and protobuf encodings unchanged. The optional
+  JSON envelope wraps existing state and requires disjoint observation streams;
+  it does not authenticate producers or deduplicate overlapping events.
 
 - Replaced stale alpha wording in the FAQ with the current supported-release status.
 - Added test coverage for every supported Go and Python runtime.
@@ -73,6 +82,7 @@ release.
 - Added accuracy characterization, Go microbenchmarks, and an Apache
   DataSketches frequent-items oracle.
 
+[0.2.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.4...v0.1.0
 [0.1.0-alpha.4]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.2...v0.1.0-alpha.3

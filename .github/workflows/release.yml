@@ -11,7 +11,7 @@ on:
         description: Version tag whose package metadata should be validated
         required: true
         type: string
-        default: v0.1.0
+        default: v0.2.0
       publish_pypi:
         description: Publish with PyPI trusted publishing when the repository is public
         required: true
@@ -28,6 +28,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          ref: ${{ github.event.release.tag_name || inputs.release_tag }}
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
@@ -49,6 +50,7 @@ jobs:
           tar -tzf dist/*.tar.gz | grep -q '/scripts/release_metadata.py$'
           tar -tzf dist/*.tar.gz | grep -q '/vectors/sketches/cross_language_hllpp_dense.json$'
           tar -tzf dist/*.tar.gz | grep -q '/vectors/compat/v0.1.0.json$'
+          tar -tzf dist/*.tar.gz | grep -q '/vectors/summaries/envelope.json$'
       - name: Stage release assets
         run: |
           mkdir -p release
@@ -115,4 +117,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "${RELEASE_TAG}" release/* --clobber
+        run: gh release upload "${RELEASE_TAG}" release/* --repo "${GITHUB_REPOSITORY}" --clobber
