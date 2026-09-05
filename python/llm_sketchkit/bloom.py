@@ -70,13 +70,13 @@ class Sketch:
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("bloom"):
             raise InvalidWireEncodingError("missing Bloom metadata or body")
-        if metadata.kind != _proto.sketch_kind_bloom():
+        if metadata.kind != _proto.SKETCH_KIND_BLOOM:
             raise InvalidWireEncodingError("wrong sketch kind")
         if metadata.wire_version != _proto.WIRE_VERSION:
             raise InvalidWireEncodingError("wrong wire version")
-        if metadata.hash_algo != _proto.hash_algorithm_hmac_sha256_64():
+        if metadata.hash_algo != _proto.HASH_ALGORITHM_HMAC_SHA256_64:
             raise InvalidWireEncodingError("wrong hash algorithm")
-        if metadata.representation_mode != _proto.representation_bloom_bitset():
+        if metadata.representation_mode != _proto.REPRESENTATION_BLOOM_BITSET:
             raise InvalidWireEncodingError("wrong representation")
 
         profile = cast(str, metadata.profile)
@@ -226,12 +226,12 @@ class Sketch:
 
     def _to_proto(self) -> Any:
         metadata = _proto.sketchpb.SketchMetadata(
-            kind=_proto.sketch_kind_bloom(),
+            kind=_proto.SKETCH_KIND_BLOOM,
             wire_version=_proto.WIRE_VERSION,
             profile=self._profile,
             hash_domain=self._domain,
-            hash_algo=_proto.hash_algorithm_hmac_sha256_64(),
-            representation_mode=_proto.representation_bloom_bitset(),
+            hash_algo=_proto.HASH_ALGORITHM_HMAC_SHA256_64,
+            representation_mode=_proto.REPRESENTATION_BLOOM_BITSET,
         )
         metadata.bloom_bit_count = self._config.bit_count
         metadata.bloom_hash_count = self._config.hash_count
