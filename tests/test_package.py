@@ -137,7 +137,7 @@ def test_hllpp_rejects_malformed_wire_state() -> None:
             sparse=[(i, 1) for i in range(257)],
         ),
         "dense_rank_invalid": hllpp_message(
-            mode=_proto.representation_hllpp_dense(),
+            mode=_proto.REPRESENTATION_HLLPP_DENSE,
             dense=bytes([64 - 14 + 2]) + bytes((1 << 14) - 1),
         ),
         "too_large": bytes(_proto.MAX_WIRE_BYTES + 1),
@@ -555,12 +555,12 @@ def hllpp_message(
     dense: bytes = b"",
 ) -> bytes:
     metadata = _proto.sketchpb.SketchMetadata(
-        kind=_proto.sketch_kind_hllpp(),
+        kind=_proto.SKETCH_KIND_HLLPP,
         wire_version=_proto.WIRE_VERSION,
         profile=profile,
         hash_domain="prompt:v1",
-        hash_algo=_proto.hash_algorithm_hmac_sha256_64(),
-        representation_mode=mode or _proto.representation_hllpp_sparse(),
+        hash_algo=_proto.HASH_ALGORITHM_HMAC_SHA256_64,
+        representation_mode=mode or _proto.REPRESENTATION_HLLPP_SPARSE,
     )
     metadata.hllpp_normal_precision = p
     metadata.hllpp_sparse_precision = sp
