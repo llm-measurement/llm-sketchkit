@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Existing release tag to verify, for example v0.1.0
+        description: Existing release tag to verify, for example v0.2.0
         required: true
         type: string
 
@@ -67,13 +67,21 @@ jobs:
           PYTHONPATH= "${python_bin}" - <<'PY'
           import importlib.metadata
           import os
+          from pathlib import Path
 
-          from llm_sketchkit import PROMPT_V1, hllpp
+          from llm_sketchkit import PROMPT_V1, hllpp, summary
 
           assert importlib.metadata.version("llm-sketchkit") == os.environ["EXPECTED_VERSION"]
           sketch = hllpp.new("small", PROMPT_V1)
           sketch.add_hash(1)
           assert sketch.estimate() > 0
+          fixture = Path("vectors/summaries/envelope.json").read_bytes()
+          doc = summary.Envelope.parse(fixture)
+          assert doc.marshal_binary() == fixture
+          result = summary.combine([doc, doc], [doc.producer_id, "absent"])
+          assert result.counters == doc.counters
+          assert result.missing == ["absent"]
+          assert result.sketches == doc.sketches
           PY
       - name: Install the tagged Go module
         env:
@@ -96,3 +104,5 @@ jobs:
           GOWORK=off go test \
             github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp \
             -run '^$'
+          GOWORK=off go test \
+            github.com/llm-measurement/llm-sketchkit/go/sketchkit/summary

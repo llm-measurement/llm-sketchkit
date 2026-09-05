@@ -4,7 +4,8 @@
 
 | Version | Security fixes |
 |---|---|
-| Latest `0.1.x` | Yes |
+| Latest `0.2.x` | Yes |
+| Latest `0.1.x` | Critical and high-severity fixes through 2026-12-04 |
 | Superseded alpha releases | No |
 
 The current stable pre-1.0 minor receives fixes. After a new stable minor is
