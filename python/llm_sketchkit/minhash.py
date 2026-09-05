@@ -101,7 +101,11 @@ class Sketch:
         return sketch
 
     def add_hash(self, value: int) -> None:
-        """Update the signature with a pre-hashed unsigned 64-bit value."""
+        """Update the signature with a pre-hashed unsigned 64-bit value.
+
+        CountOverflowError leaves self unchanged. Runtime failures and inputs
+        outside the documented types have no rollback guarantee.
+        """
 
         if self._populated_count == MAX_UINT64:
             raise CountOverflowError("populated count")
@@ -113,7 +117,12 @@ class Sketch:
         self._populated_count += 1
 
     def merge(self, other: Sketch | None) -> None:
-        """Merge another MinHash sketch with identical metadata."""
+        """Merge another MinHash sketch with identical metadata.
+
+        IncompatibleMergeError and CountOverflowError leave self unchanged.
+        None is a no-op; a distinct source is never modified. Runtime failures,
+        invalid private state, and concurrent use have no rollback guarantee.
+        """
 
         if other is None:
             return

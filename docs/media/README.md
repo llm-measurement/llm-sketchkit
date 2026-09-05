@@ -1,6 +1,8 @@
 # Go-To-Python Walkthrough
 
-[Watch or download the 90-second video](walkthrough.mp4).
+[Download the 90-second MP4](https://raw.githubusercontent.com/llm-measurement/llm-sketchkit/main/docs/media/walkthrough.mp4).
+No account is needed. Open the downloaded file in a video player; GitHub does not
+provide an embedded player for this file.
 
 This silent, captioned video uses actual plots from the executed
 [Go-to-Python notebook](../../examples/go-to-python/README.md), captured on 2026-09-04.

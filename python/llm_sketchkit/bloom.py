@@ -103,7 +103,11 @@ class Sketch:
         return sketch
 
     def add_hash(self, value: int) -> None:
-        """Insert a pre-hashed unsigned 64-bit value."""
+        """Insert a pre-hashed unsigned 64-bit value.
+
+        CountOverflowError leaves self unchanged. Runtime failures and inputs
+        outside the documented types have no rollback guarantee.
+        """
 
         if self._inserted_count == MAX_UINT64:
             raise CountOverflowError("inserted count")
@@ -122,7 +126,12 @@ class Sketch:
         return True
 
     def merge(self, other: Sketch | None) -> None:
-        """OR another Bloom sketch with identical metadata into this sketch."""
+        """OR another Bloom sketch with identical metadata into this sketch.
+
+        IncompatibleMergeError and CountOverflowError leave self unchanged.
+        None is a no-op; a distinct source is never modified. Runtime failures,
+        invalid private state, and concurrent use have no rollback guarantee.
+        """
 
         if other is None:
             return
