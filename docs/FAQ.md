@@ -17,6 +17,25 @@ value would make operational cost or query latency unpredictable. It complements
 trace explorers, evaluation systems, anomaly detectors, and control planes rather
 than replacing them.
 
+## Can I Use This With Self-Hosted Models Or A Mix Of Providers?
+
+Yes. The library works on data your application supplies, whether the model runs
+behind a hosted API, on your own infrastructure, or across both. It does not call a
+model provider or require a hosted analysis service. Your pipeline extracts the
+identities and reported usage, applies keyed hashing, and updates the sketches.
+
+Separate teams can combine compatible measurements using the
+[summary exchange API](../examples/summary-exchange/README.md). Producers must agree
+on scope, keys, accounting rules, and windows, and observe disjoint request streams.
+The API checks compatibility; it does not translate provider-specific fields or
+deduplicate overlapping requests. Keyed identities remain pseudonymous, and linking
+them across systems requires the operators' agreement.
+
+Keep model and usage definitions explicit when comparing deployments. Reported
+tokens describe volume, not a common unit of cost or compute across models. The
+same library semantics apply to compatible inputs; that is not a claim of tested
+integration with every model SDK or serving engine.
+
 ## When Is This Not For You?
 
 If telemetry volume is moderate, the underlying values are safe to retain, and exact
@@ -93,6 +112,12 @@ user, or another identity with an appropriate registered hash domain as the keye
 item and its reported token count as the update weight. Merge compatible summaries
 across workers or windows, then inspect estimates with their deterministic lower and
 upper bounds.
+
+This supports token-accounting investigations for both API spending and self-hosted
+workloads. Without a per-token invoice, long responses and repeated calls can still
+occupy shared serving capacity. Compare token concentration with queueing and
+latency measurements from your serving system; the sketch does not measure GPU
+utilization or convert tokens into infrastructure cost.
 
 It does not receive telemetry, infer missing token counts, determine whether token
 use was productive, enforce a budget, stop an agent loop, or prevent a model
