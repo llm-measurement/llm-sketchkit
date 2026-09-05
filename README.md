@@ -34,6 +34,12 @@ Agent fleets and multi-agent systems can produce more identities and events than
 an observability backend should continuously index. The library provides bounded,
 mergeable summaries across workers and windows.
 
+Use it with hosted model APIs, self-hosted models, or a mixture of both. Your
+pipeline supplies the identities and reported usage; the library processes that
+data locally without calling a model provider. See the
+[deployment FAQ](docs/FAQ.md#can-i-use-this-with-self-hosted-models-or-a-mix-of-providers)
+for input and comparison requirements.
+
 Questions it can help answer include:
 
 - **How many distinct prompts, users, sessions, tools, or documents are active
@@ -60,6 +66,11 @@ reported token counts can be used as weights in the frequent-items sketch to ide
 which keyed values account for the most token volume. The library measures
 concentration; it does not infer task value, enforce budgets, or stop agent loops.
 See [Token-Volume Heavy Hitters](#token-volume-heavy-hitters) for a runnable example.
+
+Token accounting matters with self-hosted models too: there may be no per-token
+invoice, but long responses and repeated calls can occupy shared serving capacity.
+Use reported token volume alongside serving metrics; tokens alone do not measure
+GPU time, cost, or useful work.
 
 Inputs can be canonicalized and keyed before entering sketch state. This keeps
 raw values out of the sketch, but the resulting hashes remain pseudonymous and
