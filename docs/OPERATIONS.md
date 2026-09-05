@@ -20,11 +20,15 @@ Sketch instances are mutable and are not internally synchronized. A caller must
 confine each instance to one goroutine or thread, or protect every read and write
 with the same external lock. Distinct sketch instances can be used concurrently.
 
-Update and merge methods mutate the receiver. A successful merge does not mutate
-its source. `Clone`/`clone` returns independent state and is the supported way to
+Update and merge methods mutate the receiver. A merge does not mutate a distinct
+source. `Clone`/`clone` returns independent state and is the supported way to
 retain a pre-merge snapshot. Treat a receiver as unusable after a failed mutation
 unless the method's API explicitly promises otherwise; cloning before a risky merge
 provides transactional behavior at the application boundary.
+
+The [per-method error reference](API.md) lists the unchanged-on-error cases and
+the frequent-items operations that may leave partial changes. These are failure
+contracts, not thread-safety guarantees.
 
 Serialization and estimate methods do not intentionally mutate state, but they must
 not run concurrently with an update or merge on the same instance. Returned MinHash

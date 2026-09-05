@@ -100,6 +100,7 @@ func newSketch(
 }
 
 // AddHash updates the signature with a pre-hashed value.
+// ErrCountOverflow leaves the receiver unchanged.
 func (s *Sketch) AddHash(hash uint64) error {
 	if s.populatedCount == math.MaxUint64 {
 		return ErrCountOverflow
@@ -116,6 +117,8 @@ func (s *Sketch) AddHash(hash uint64) error {
 }
 
 // Merge applies element-wise minimum with other. Metadata must match.
+// A returned error leaves s unchanged. A nil source is a no-op, and a distinct
+// source is never modified. This does not cover runtime panics or concurrent use.
 func (s *Sketch) Merge(other *Sketch) error {
 	if other == nil {
 		return nil
