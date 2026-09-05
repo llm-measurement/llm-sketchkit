@@ -1,0 +1,11 @@
+{
+  "cases": [
+    {"name":"two_producers", "documents":[["a","one",1,2],["b","two",1,3]], "requests":5, "missing":[]},
+    {"name":"replay", "documents":[["a","one",1,2],["a","one",1,2],["b","two",1,3]], "requests":5, "missing":[]},
+    {"name":"replace_out_of_order", "documents":[["a","one",2,5],["a","one",1,2],["b","two",1,3]], "requests":8, "missing":[]},
+    {"name":"missing_reporter", "documents":[["a","one",1,2]], "requests":2, "missing":["b"]},
+    {"name":"conflicting_sequence", "documents":[["a","one",1,2],["a","one",1,3]], "error":true},
+    {"name":"counter_regression", "documents":[["a","one",1,3],["a","one",2,2]], "error":true},
+    {"name":"unexpected_producer", "documents":[["c","one",1,2]], "error":true}
+  ]
+}
