@@ -67,3 +67,15 @@ an existing receiver. A failed parse does not replace an application-owned sketc
 `Clone` / `clone` creates independent state. Queries and serialization do not mutate
 the receiver, including when a query or serialization reports an error. They still
 must not run concurrently with a mutation on the same instance.
+
+## Summary Exchange
+
+The optional `summary` package wraps existing sketch bytes without changing them.
+`Envelope.Validate`, `MarshalBinary`, `Parse`, `Compatible`, and `Combine` (Python:
+`validate`, `marshal_binary`, `parse`, `compatible`, `combine`) never mutate supplied
+state. Combination returns independent counters and sketch bytes. Any reported
+error returns no partial aggregate. Concurrent mutation of inputs is unsupported.
+
+See the [exchange example](../examples/summary-exchange/README.md) and
+[format contract](../spec/summary.md). This API is available in the source checkout;
+it is not part of the `0.1.0` package release.
