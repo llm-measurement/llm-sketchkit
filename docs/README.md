@@ -8,6 +8,7 @@ Adoption guidance:
 - [Frequently asked questions](FAQ.md)
 - [Why this is not a DataSketches wrapper](DATASKETCHES.md)
 - [Operational contracts](OPERATIONS.md)
+- [Per-method mutation and error behavior](API.md)
 - [Supply-chain controls and artifact verification](SUPPLY_CHAIN.md)
 
 Runnable example:

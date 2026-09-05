@@ -305,6 +305,8 @@ See [SECURITY.md](https://github.com/llm-measurement/llm-sketchkit/blob/main/SEC
 for private vulnerability reporting and
 [Operational Contracts](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md)
 for concurrency, ownership, resource, upgrade, and support guarantees.
+The [API reference](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/API.md)
+lists which failed mutations leave a sketch unchanged.
 
 ## Development
 

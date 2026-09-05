@@ -129,6 +129,7 @@ func newSketch(
 }
 
 // AddHash updates the sketch with a pre-hashed uint64.
+// It has no recoverable error return; runtime panics have no rollback guarantee.
 func (s *Sketch) AddHash(hash uint64) {
 	if s.sparse != nil {
 		index, rank := sparseRegister(hash, s.sp)
@@ -146,6 +147,8 @@ func (s *Sketch) AddHash(hash uint64) {
 }
 
 // Merge adds other into s. Metadata must match under the v0.1 merge policy.
+// A returned error leaves s unchanged. A nil source is a no-op, and a distinct
+// source is never modified. This does not cover runtime panics or concurrent use.
 func (s *Sketch) Merge(other *Sketch) error {
 	if other == nil {
 		return nil
@@ -241,6 +244,7 @@ func (s *Sketch) RegisterStorageBytes() int {
 }
 
 // ForceDense promotes a sparse sketch to dense representation.
+// It has no recoverable error return; runtime panics have no rollback guarantee.
 func (s *Sketch) ForceDense() {
 	if s.sparse != nil {
 		s.promote()

@@ -129,7 +129,11 @@ class Sketch:
         return sketch
 
     def add_hash(self, value: int) -> None:
-        """Update the sketch with a pre-hashed unsigned 64-bit value."""
+        """Update the sketch with a pre-hashed unsigned 64-bit value.
+
+        No documented error occurs for valid state and an integer input.
+        Runtime failures, including MemoryError, have no rollback guarantee.
+        """
 
         value &= MASK64
         if self._sparse is not None:
@@ -148,7 +152,12 @@ class Sketch:
             self._dense[index] = rank
 
     def merge(self, other: Sketch | None) -> None:
-        """Merge another HLL++ sketch with identical metadata."""
+        """Merge another HLL++ sketch with identical metadata.
+
+        PrecisionMismatchError and IncompatibleMergeError leave self unchanged.
+        None is a no-op; a distinct source is never modified. Runtime failures,
+        invalid private state, and concurrent use have no rollback guarantee.
+        """
 
         if other is None:
             return
@@ -225,7 +234,11 @@ class Sketch:
         return bytes(self._dense)
 
     def force_dense(self) -> None:
-        """Promote a sparse sketch to dense representation."""
+        """Promote a sparse sketch to dense representation.
+
+        No documented error occurs for valid state. Runtime failures have no
+        rollback guarantee.
+        """
 
         if self._sparse is None:
             return
