@@ -93,15 +93,15 @@ class Sketch:
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("frequent_items"):
             raise InvalidWireEncodingError("missing frequent-items metadata or body")
-        if metadata.kind != _proto.sketch_kind_frequent_items():
+        if metadata.kind != _proto.SKETCH_KIND_FREQUENT_ITEMS:
             raise InvalidWireEncodingError("wrong sketch kind")
         if metadata.wire_version != _proto.WIRE_VERSION:
             raise InvalidWireEncodingError("wrong wire version")
-        if metadata.hash_algo != _proto.hash_algorithm_hmac_sha256_64():
+        if metadata.hash_algo != _proto.HASH_ALGORITHM_HMAC_SHA256_64:
             raise InvalidWireEncodingError("wrong hash algorithm")
         if (
             metadata.representation_mode
-            != _proto.representation_frequent_items_bounded_map()
+            != _proto.REPRESENTATION_FREQUENT_ITEMS_BOUNDED_MAP
         ):
             raise InvalidWireEncodingError("wrong representation")
 
@@ -335,12 +335,12 @@ class Sketch:
 
     def _to_proto(self) -> Any:
         metadata = _proto.sketchpb.SketchMetadata(
-            kind=_proto.sketch_kind_frequent_items(),
+            kind=_proto.SKETCH_KIND_FREQUENT_ITEMS,
             wire_version=_proto.WIRE_VERSION,
             profile=self._profile,
             hash_domain=self._domain,
-            hash_algo=_proto.hash_algorithm_hmac_sha256_64(),
-            representation_mode=_proto.representation_frequent_items_bounded_map(),
+            hash_algo=_proto.HASH_ALGORITHM_HMAC_SHA256_64,
+            representation_mode=_proto.REPRESENTATION_FREQUENT_ITEMS_BOUNDED_MAP,
         )
         metadata.frequent_items_map_size = self._map_size
 
