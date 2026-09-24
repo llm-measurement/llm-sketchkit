@@ -420,6 +420,7 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 
 	sketch.totalWeight = body.GetTotalWeight()
 	sketch.maxError = body.GetMaxError()
+	unassigned := sketch.totalWeight
 	var previous uint64
 	for i, entry := range body.GetEntries() {
 		hash := entry.GetHash()
@@ -431,8 +432,17 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 		if estimate <= 0 || errorValue != sketch.maxError || estimate <= sketch.maxError {
 			return nil, fmt.Errorf("%w: invalid entry estimate/error", ErrInvalidWireEncoding)
 		}
+		// Consume the retained lower bounds without summing untrusted int64s.
+		lower := estimate - sketch.maxError
+		if estimate > sketch.totalWeight || lower > unassigned {
+			return nil, fmt.Errorf("%w: inconsistent total weight", ErrInvalidWireEncoding)
+		}
+		unassigned -= lower
 		sketch.insertCounter(hash, estimate)
 		previous = hash
+	}
+	if sketch.maxError == 0 && unassigned != 0 {
+		return nil, fmt.Errorf("%w: incomplete exact total weight", ErrInvalidWireEncoding)
 	}
 
 	return sketch, nil

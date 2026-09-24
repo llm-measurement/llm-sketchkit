@@ -48,6 +48,13 @@ precision construction is unsupported.
 Weighted frequent-items uses non-negative signed 64-bit weights in version 1.
 Implementations MUST reject negative weights.
 
+Decoded state MUST satisfy `0 <= max_error <= total_weight`. Each retained
+estimate MUST be greater than `max_error` and no greater than `total_weight`.
+The sum of retained lower bounds (`estimate - max_error`) MUST NOT exceed
+`total_weight`; when `max_error` is zero, that sum MUST equal `total_weight`.
+Validate this sum without overflowing signed 64-bit arithmetic. These checks
+reject internally inconsistent state; they do not authenticate its source.
+
 Weighted frequent-items serialization is deterministic for a fixed sketch
 state: entries are encoded in hash-ascending order with a single global
 `max_error`. Merge order is not a byte-stability promise. Because v0.1

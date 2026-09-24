@@ -1,0 +1,17 @@
+{
+  "profile": "micro",
+  "cases": [
+    {"name": "empty", "total_weight": 0, "max_error": 0, "entries": [], "valid": true},
+    {"name": "exact", "total_weight": 10, "max_error": 0, "entries": [{"hash_hex": "0000000000000001", "estimate": 5, "error": 0}, {"hash_hex": "0000000000000002", "estimate": 5, "error": 0}], "valid": true},
+    {"name": "lossy_empty", "total_weight": 257, "max_error": 1, "entries": [], "valid": true},
+    {"name": "lossy_retained", "total_weight": 267, "max_error": 1, "entries": [{"hash_hex": "0000000000000001", "estimate": 11, "error": 1}], "valid": true},
+    {"name": "maximum_exact_weight", "total_weight": 9223372036854775807, "max_error": 0, "entries": [{"hash_hex": "0000000000000001", "estimate": 9223372036854775807, "error": 0}], "valid": true},
+    {"name": "entry_above_zero_total", "total_weight": 0, "max_error": 0, "entries": [{"hash_hex": "0000000000000001", "estimate": 5, "error": 0}], "valid": false},
+    {"name": "upper_bound_above_total", "total_weight": 5, "max_error": 1, "entries": [{"hash_hex": "0000000000000001", "estimate": 6, "error": 1}], "valid": false},
+    {"name": "retained_lower_sum_above_total", "total_weight": 6, "max_error": 0, "entries": [{"hash_hex": "0000000000000001", "estimate": 5, "error": 0}, {"hash_hex": "0000000000000002", "estimate": 5, "error": 0}], "valid": false},
+    {"name": "lossy_lower_sum_above_total", "total_weight": 6, "max_error": 1, "entries": [{"hash_hex": "0000000000000001", "estimate": 5, "error": 1}, {"hash_hex": "0000000000000002", "estimate": 5, "error": 1}], "valid": false},
+    {"name": "exact_total_not_accounted_for", "total_weight": 20, "max_error": 0, "entries": [{"hash_hex": "0000000000000001", "estimate": 5, "error": 0}, {"hash_hex": "0000000000000002", "estimate": 5, "error": 0}], "valid": false},
+    {"name": "exact_empty_nonzero_total", "total_weight": 1, "max_error": 0, "entries": [], "valid": false},
+    {"name": "retained_lower_sum_overflows_int64", "total_weight": 9223372036854775807, "max_error": 0, "entries": [{"hash_hex": "0000000000000001", "estimate": 9223372036854775807, "error": 0}, {"hash_hex": "0000000000000002", "estimate": 1, "error": 0}], "valid": false}
+  ]
+}
