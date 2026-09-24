@@ -5,6 +5,13 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
+## Unreleased
+
+- Reject frequent-items wire states whose retained bounds contradict total
+  weight, including exact states with unaccounted weight. Go and Python share
+  validation cases for exact, lossy, empty, and signed-integer-limit states.
+  Valid sketch encodings, algorithms, and public APIs are unchanged.
+
 ## [0.2.0] - 2026-09-05
 
 - Added a versioned summary envelope and matching Go/Python APIs for combining

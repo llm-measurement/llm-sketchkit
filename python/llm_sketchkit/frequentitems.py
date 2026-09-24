@@ -123,6 +123,7 @@ class Sketch:
 
         sketch._total_weight = total_weight
         sketch._max_error = max_error
+        unassigned = total_weight
         previous = -1
         for entry in body.entries:
             key = cast(int, entry.hash)
@@ -132,8 +133,15 @@ class Sketch:
                 raise InvalidWireEncodingError("entries unsorted")
             if estimate <= 0 or error != max_error or estimate <= max_error:
                 raise InvalidWireEncodingError("invalid entry")
+            # Match the overflow-safe retained-weight check in the Go decoder.
+            lower = estimate - max_error
+            if estimate > total_weight or lower > unassigned:
+                raise InvalidWireEncodingError("inconsistent total weight")
+            unassigned -= lower
             sketch._items[key] = estimate
             previous = key
+        if max_error == 0 and unassigned != 0:
+            raise InvalidWireEncodingError("incomplete exact total weight")
         return sketch
 
     def add_hash(self, value: int, weight: int) -> None:
