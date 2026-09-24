@@ -185,6 +185,32 @@ def test_frequent_items_sketch_vectors() -> None:
         assert_serialized_hex(vector, sketch.marshal_binary(), frequentitems.parse)
 
 
+def test_frequent_items_total_validation_vectors() -> None:
+    vector = load_json(ROOT / "vectors" / "validation" / "frequent_items_totals.json")
+    for value in as_list(vector["cases"]):
+        case = as_dict(value)
+        sketch = frequentitems.Sketch(as_str(vector["profile"]))
+        message = _proto.parse_sketch(sketch.marshal_binary())
+        body = message.frequent_items
+        body.total_weight = as_int(case["total_weight"])
+        body.max_error = as_int(case["max_error"])
+        for raw_entry in as_list(case["entries"]):
+            entry = as_dict(raw_entry)
+            body.entries.add(
+                hash=int(as_str(entry["hash_hex"]), 16),
+                estimate=as_int(entry["estimate"]),
+                error=as_int(entry["error"]),
+            )
+        encoded = message.SerializeToString(deterministic=True)
+        try:
+            parsed = frequentitems.parse(encoded)
+        except frequentitems.InvalidWireEncodingError:
+            assert case["valid"] is False, case["name"]
+        else:
+            assert case["valid"] is True, case["name"]
+            assert parsed.marshal_binary() == encoded
+
+
 def test_bloom_sketch_vectors() -> None:
     for path in sorted((ROOT / "vectors" / "sketches").glob("bloom_*.json")):
         vector = load_json(path)

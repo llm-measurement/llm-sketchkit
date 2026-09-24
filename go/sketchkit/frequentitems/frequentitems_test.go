@@ -139,6 +139,58 @@ func TestParseRejectsNonProfileMapSize(t *testing.T) {
 	}
 }
 
+func TestTotalWeightValidationVectors(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join("..", "..", "..", "vectors", "validation", "frequent_items_totals.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var vector struct {
+		Profile Profile `json:"profile"`
+		Cases   []struct {
+			Name        string `json:"name"`
+			TotalWeight int64  `json:"total_weight"`
+			MaxError    int64  `json:"max_error"`
+			Valid       bool   `json:"valid"`
+			Entries     []struct {
+				HashHex  string `json:"hash_hex"`
+				Estimate int64  `json:"estimate"`
+				Error    int64  `json:"error"`
+			} `json:"entries"`
+		} `json:"cases"`
+	}
+	if err := json.Unmarshal(data, &vector); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range vector.Cases {
+		t.Run(tc.Name, func(t *testing.T) {
+			message := newTestSketch(t, vector.Profile).toProto()
+			body := message.GetFrequentItems()
+			body.TotalWeight, body.MaxError = tc.TotalWeight, tc.MaxError
+			for _, entry := range tc.Entries {
+				body.Entries = append(body.Entries, &sketchpb.FrequentItemsEntry{Hash: parseHashHex(t, entry.HashHex), Estimate: entry.Estimate, Error: entry.Error})
+			}
+			encoded, err := proto.MarshalOptions{Deterministic: true}.Marshal(message)
+			if err != nil {
+				t.Fatal(err)
+			}
+			parsed, err := Parse(encoded)
+			if !tc.Valid {
+				if !errors.Is(err, ErrInvalidWireEncoding) || parsed != nil {
+					t.Fatal("invalid totals accepted", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if parsed.TotalWeight() != tc.TotalWeight || parsed.MaxError() != tc.MaxError {
+				t.Fatal("totals changed")
+			}
+			assertSerializedHex(t, parsed, hex.EncodeToString(encoded))
+		})
+	}
+}
+
 func TestSerializationRoundTripStable(t *testing.T) {
 	t.Parallel()
 
