@@ -5,12 +5,14 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
-## Unreleased
+## [0.2.1] - 2026-09-25
 
 - Reject frequent-items wire states whose retained bounds contradict total
   weight, including exact states with unaccounted weight. Go and Python share
   validation cases for exact, lossy, empty, and signed-integer-limit states.
   Valid sketch encodings, algorithms, and public APIs are unchanged.
+- Updated the package build dependency and clarified hosted and self-hosted
+  token-accounting examples.
 
 ## [0.2.0] - 2026-09-05
 
@@ -89,6 +91,7 @@ release.
 - Added accuracy characterization, Go microbenchmarks, and an Apache
   DataSketches frequent-items oracle.
 
+[0.2.1]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.4...v0.1.0
 [0.1.0-alpha.4]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
