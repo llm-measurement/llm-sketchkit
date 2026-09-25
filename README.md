@@ -86,6 +86,7 @@ interoperability.
 | Your pipeline | Use | Why |
 |---|---|---|
 | GenAI spans already flow through an OpenTelemetry Collector | [OpenTelemetry Collector connector](https://github.com/llm-measurement/otelcol-genai-sketches) | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
+| You have compatible summary exports and want to compare two windows across operators | [fleetdiff](https://github.com/llm-measurement/fleetdiff) | A local, read-only command reports usage changes, distinct activity, tracked-item bounds, and missing coverage. |
 | A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Update sketches inside each bounded window, then serialize or merge compatible summaries. |
 | A batch or warehouse job reads stored events | `llm-sketchkit` directly | Build bounded summaries per partition or window and merge them before publishing results. |
 | You only need to store or visualize finished metrics | Your existing backend integration | The library is not an exporter; ClickHouse, Datadog, Prometheus, and similar systems normally receive the aggregated results. |
@@ -100,6 +101,10 @@ For measurements spanning independently operated systems, the
 identity, and key version. No hashing secret is needed to combine compatible state.
 Operators must authorize identity linkage and assign disjoint observation streams;
 the envelope does not authenticate producers or deduplicate overlapping events.
+
+For a complete comparison example, try [fleetdiff's two-operator demo](https://github.com/llm-measurement/fleetdiff#try-it-in-a-minute).
+It shows how one team's reported token usage can fall while the combined fleet
+total rises, using synthetic data. No account, upload, or model API key is needed.
 
 ## Included Sketches
 

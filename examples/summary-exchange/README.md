@@ -44,6 +44,20 @@ read. `combined.Missing` and `combined.Partial` must remain visible to callers.
 
 ## Compare Windows
 
+Use [fleetdiff](https://github.com/llm-measurement/fleetdiff) for a local, read-only
+comparison without writing your own report code. Put each window's exports from
+all expected producers in a separate directory, then run the installed command:
+
+```sh
+fleetdiff compare --before ./before --after ./after --expected platform,data
+```
+
+It reports counter changes, distinct estimates, tracked-item change bounds, and
+missing coverage. See the [two-operator trial](https://github.com/llm-measurement/fleetdiff/blob/main/docs/TWO_OPERATOR_TRIAL.md)
+for setup and sharing requirements. It does not recover every unknown heavy mover
+or prove why a change happened.
+
+To build a custom comparison with the library instead:
 `summary.Compatible` in Go or `summary.compatible` in Python checks whether two
 envelopes have the same measurement contract, allowing different window starts.
 Combine producers separately for each window, then compare the resulting counts
