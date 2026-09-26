@@ -7,8 +7,12 @@ for embedding `llm-sketchkit` in a long-running process.
 
 | Runtime | Supported versions | Continuous integration |
 |---|---|---|
-| Go | 1.25 and 1.26, latest patch release | Tests run on both release lines |
+| Go | 1.26, latest patch release | Tests run on the pinned toolchain and latest 1.26 patch |
 | Python | 3.11, 3.12, 3.13, and 3.14 | Tests run on every listed version |
+
+This table describes `main`. The published `v0.2.1` release supports Go 1.25 and
+1.26. The Go 1.26 minimum on `main` is for the next minor release, not a `0.2.x`
+patch release.
 
 A runtime line is removed only in a minor release and is called out in the
 changelog. Security patches to a supported runtime should be applied promptly by
