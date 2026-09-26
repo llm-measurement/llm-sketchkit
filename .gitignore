@@ -10,3 +10,4 @@ __pycache__/
 *.swp
 /examples/go-to-python/generated/
 /exports/
+.DS_Store
