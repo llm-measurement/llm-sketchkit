@@ -5,6 +5,12 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
+## Unreleased (Next Minor)
+
+- Updated `golang.org/x/text` to `v0.42.0`, which raises the minimum Go version
+  to 1.26. CI and source-build documentation now reflect that requirement.
+  Published `v0.2.1` artifacts are unchanged and continue to support Go 1.25.
+
 ## [0.2.1] - 2026-09-25
 
 - Reject frequent-items wire states whose retained bounds contradict total

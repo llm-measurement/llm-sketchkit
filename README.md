@@ -143,7 +143,8 @@ for methods, limitations, and reproduction commands.
 
 ## Requirements
 
-- Go 1.25 or 1.26, with the latest security patch for that release line
+- Go 1.26, with the latest security patch, for builds from `main`.
+  The published `v0.2.1` release also supports Go 1.25.
 - Python 3.11, 3.12, 3.13, or 3.14
 
 ## Install
