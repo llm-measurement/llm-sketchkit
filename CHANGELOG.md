@@ -9,7 +9,15 @@ public Go and Python APIs exercised by the conformance vectors.
 
 - Updated `golang.org/x/text` to `v0.42.0`, which raises the minimum Go version
   to 1.26. CI and source-build documentation now reflect that requirement.
-  Published `v0.2.1` artifacts are unchanged and continue to support Go 1.25.
+  Published `0.2.x` artifacts are unchanged and continue to support Go 1.25.
+
+## [0.2.2] - 2026-09-29
+
+- Use Vijay consistently in author metadata and source headers.
+- Add a regression check for the package author display names.
+
+This metadata-only maintenance release is based on `v0.2.1`. Sketch algorithms,
+wire formats, public APIs, dependencies, and Go 1.25/1.26 support are unchanged.
 
 ## [0.2.1] - 2026-09-25
 
@@ -97,6 +105,7 @@ release.
 - Added accuracy characterization, Go microbenchmarks, and an Apache
   DataSketches frequent-items oracle.
 
+[0.2.2]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/llm-measurement/llm-sketchkit/compare/v0.1.0-alpha.4...v0.1.0
