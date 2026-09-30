@@ -12,7 +12,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -107,7 +106,7 @@ func TestREADMEGatewayRecipe(t *testing.T) {
 		t.Fatal(err)
 	}
 	secret := testSecret(t)
-	command := exec.Command(filepath.Join(runtime.GOROOT(), "bin", "go"), "run", program)
+	command := exec.Command("go", "run", program)
 	result, err := command.CombinedOutput()
 	if err != nil {
 		t.Fatalf("README Go program: %v\n%s", err, result)
