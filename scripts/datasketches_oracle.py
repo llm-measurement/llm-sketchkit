@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 """Generate Apache DataSketches frequent-items oracle comparison evidence."""
 
 from __future__ import annotations

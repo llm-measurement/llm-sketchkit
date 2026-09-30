@@ -1,10 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 from __future__ import annotations
+
+import tomllib
+from pathlib import Path
 
 import pytest
 
 from scripts.release_metadata import release_tag
+
+
+def test_package_author_display_names() -> None:
+    project = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    metadata = tomllib.loads(project.read_text())
+    assert metadata["project"]["authors"] == [{"name": "Vijay"}, {"name": "Codex"}]
 
 
 @pytest.mark.parametrize(

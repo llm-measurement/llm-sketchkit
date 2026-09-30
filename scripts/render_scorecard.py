@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 """Render deterministic, dependency-free SVG charts from scorecard.json."""
 
 from __future__ import annotations

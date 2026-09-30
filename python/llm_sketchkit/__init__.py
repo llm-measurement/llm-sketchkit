@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 """Pure-Python semantic core for llm-sketchkit."""
 
 from . import bloom, canon, frequentitems, hash, hllpp, minhash, summary

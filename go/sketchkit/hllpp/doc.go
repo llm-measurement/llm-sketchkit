@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Code authors: Vijay Erramilli and Codex
+// Code authors: Vijay and Codex
 // Package hllpp implements the Go HLL++ sketch for llm-sketchkit.
 //
 // The estimator follows "HyperLogLog in Practice: Algorithmic Engineering of

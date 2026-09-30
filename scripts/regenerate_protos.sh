@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -45,7 +45,7 @@ from pathlib import Path
 import sys
 
 spdx_line = "SPDX-License-Identifier: Apache-2.0"
-author_line = "Code authors: Vijay Erramilli and Codex"
+author_line = "Code authors: Vijay and Codex"
 for raw_path in sys.argv[1:]:
     path = Path(raw_path)
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
