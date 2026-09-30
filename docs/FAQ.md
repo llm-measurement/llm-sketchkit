@@ -95,8 +95,10 @@ in the [security guidance](../README.md#security-and-privacy) and
 
 ## How Can I Find The Largest Token Consumers Without Indexing Every Key?
 
-Use weighted frequent-items. Hash the identity being measured, such as a model,
-user, prompt template, or tool, and use its token count as the update weight.
+Use weighted frequent-items. Hash a user or API/virtual key ID with `user:v1`,
+a prompt template with `prompt:v1`, or a tool with `tool:v1`, and use its reported
+token count as the update weight. There is no registered model hash domain;
+keep model names as a bounded application dimension rather than inventing one.
 The sketch retains at most the selected profile's map size and returns an
 estimate with deterministic lower and upper bounds for each tracked key.
 
@@ -104,6 +106,11 @@ The no-false-negative query mode favors recall; the no-false-positive mode
 returns only keys whose lower bound clears the sketch's error threshold. The
 [profile specification](../spec/profiles.md#weighted-frequent-items-metadata)
 defines the guarantees and merge behavior.
+
+Results sort by estimate descending, then unsigned hash ascending for ties.
+`user:v1` covers both end users and API/virtual keys for now, but one sketch must
+use one agreed identity meaning. Dedicated `api-key:v1` and `tenant:v1` domains
+are not yet registered. See the [domain contract](../spec/hash.md#domains).
 
 ## Can This Help Investigate "Tokenmaxxing" Or "Token-Maxing"?
 

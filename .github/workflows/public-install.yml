@@ -94,7 +94,7 @@ jobs:
 
           GOWORK=off go mod init public-install-smoke
           GOWORK=off GOPROXY=https://proxy.golang.org,direct go get \
-            "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp@${RELEASE_TAG}"
+            "github.com/llm-measurement/llm-sketchkit/go/sketchkit/...@${RELEASE_TAG}"
 
           resolved="$(GOWORK=off go list -m -f '{{.Version}}' github.com/llm-measurement/llm-sketchkit)"
           if [[ "${resolved}" != "${RELEASE_TAG}" ]]; then
@@ -102,6 +102,7 @@ jobs:
             exit 1
           fi
           GOWORK=off go test \
+            github.com/llm-measurement/llm-sketchkit/go/sketchkit/canon \
             github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp \
             -run '^$'
           GOWORK=off go test \
