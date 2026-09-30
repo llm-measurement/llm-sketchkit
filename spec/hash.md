@@ -25,7 +25,7 @@ Registered version 1 domains:
 | Domain | Use |
 |---|---|
 | `prompt:v1` | Prompt or prompt-signature content |
-| `user:v1` | End-user or account identity keys |
+| `user:v1` | End-user, account, API key, or virtual key identities |
 | `tool:v1` | Tool names, tool call keys, or tool argument signatures |
 | `retrieval-doc:v1` | Retrieval document identifiers |
 | `session:v1` | Session, conversation, trace, or request grouping keys |
@@ -35,6 +35,17 @@ Registered version 1 domains:
 
 For `tool-error:v1`, canonicalize each value with `text_v1`, join the two byte
 strings with one NUL byte, and hash the result.
+
+`user:v1` currently covers end users and API or virtual keys. Choose one identity
+meaning per sketch and agree on it across producers; counting virtual keys does
+not count people. Use stable non-secret key IDs, not API credential material.
+Do not mix user IDs and key IDs in one sketch or merge their states: matching
+domain metadata cannot detect that semantic mismatch. If multiple identity
+classes coexist, keep separate sketches and an agreed input namespace.
+
+`api-key:v1`, `tenant:v1`, and `model:v1` are not registered and are rejected.
+Dedicated API-key and tenant domains would require a future registry addition;
+do not substitute a made-up domain or reuse `user:v1` for model names.
 
 Reusing a registered domain for a different semantic field is a compatibility
 break. Implementations MUST reject unregistered domains.

@@ -99,7 +99,7 @@ def digest64(secret: Secret, domain: Domain, canonical_bytes: bytes) -> bytes:
 
     _validate_secret(secret._value)
     if not is_registered_domain(domain):
-        raise UnregisteredDomainError(domain)
+        raise UnregisteredDomainError(f"unregistered hash domain: {domain}")
     message = domain.encode("ascii") + b"\x00" + canonical_bytes
     return hmac.new(secret._value, message, hashlib.sha256).digest()[:8]
 

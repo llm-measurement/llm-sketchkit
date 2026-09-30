@@ -27,6 +27,7 @@ dependencies = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/llm-measurement/llm-sketchkit"
 Documentation = "https://github.com/llm-measurement/llm-sketchkit#readme"
 Issues = "https://github.com/llm-measurement/llm-sketchkit/issues"
 Source = "https://github.com/llm-measurement/llm-sketchkit"

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
+
 package frequentitems
 
 import (
@@ -258,7 +259,9 @@ func (s *Sketch) UpperBoundHash(hash uint64) int64 {
 }
 
 // FrequentItems returns deterministic frequent items using max_error as the
-// implicit threshold.
+// implicit threshold. Results sort by estimate descending, then unsigned hash
+// ascending for ties. The query-mode guarantee applies to the full list, not a
+// top-k slice.
 func (s *Sketch) FrequentItems(mode QueryMode) ([]Item, error) {
 	items := s.itemsSortedByHash()
 	out := make([]Item, 0, len(items))

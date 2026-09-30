@@ -11,3 +11,5 @@ __pycache__/
 /examples/go-to-python/generated/
 /exports/
 .DS_Store
+/docs/local/
+/examples/summary-exchange/generated/

@@ -4,18 +4,34 @@ Two teams can keep their collectors and raw telemetry separate, then exchange
 bounded summary files for an agreed scope. No hashing secret is needed on the
 machine combining compatible summaries.
 
-This example uses the summary API available from `0.2.0`. From the repository
-root, install the published package and run the example:
+This example uses the summary API available from `0.2.0`. It generates its own
+four synthetic requests; no collector, account, or model API key is required.
+From the repository root, with Python 3.11 or later:
 
 ```sh
-python -m pip install 'llm-sketchkit==0.2.0'
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+export LLM_SKETCHKIT_SECRET="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+python examples/summary-exchange/generate.py
+unset LLM_SKETCHKIT_SECRET
 python examples/summary-exchange/combine.py \
   --expected platform data \
   --window-start 120000000000 \
-  -- exports/platform/*.json exports/data/*.json
+  -- examples/summary-exchange/generated/*.json
 ```
 
-Replace the window start with a value from your files. Output includes window
+The generator writes two summary envelopes to the ignored `generated/` directory.
+The combiner runs without the secret. Expected counters are `requests: 4` and
+`tokens: 14720`, with `missing: []`, `partial: []`, and two source records. The
+distinct estimate rounds to 3; the token estimates are 8900, 3600, and 2220 with
+equal lower and upper bounds for this tiny input. Hashes and unrounded HLL++
+estimates depend on the generated secret. These are example outputs, not accuracy
+or throughput claims. Re-running the generator replaces only its two named files;
+do not mix generated files from runs with different secrets under one key ID.
+
+For real exports, replace the file paths and window start with your own values.
+Output includes window
 counters, distinct estimates, tracked heavy items with bounds, contributing
 epochs, missing producers, and partial observation intervals. Files are read
 locally; nothing is uploaded. The `--` separates the expected producer list from
@@ -28,17 +44,40 @@ across collectors are not. Producer declarations are not authentication.
 
 ## Go
 
+This complete program reads the same generated inputs. Put it in a separate
+directory as `main.go`, run `go mod init example`, then
+`go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/...@latest`.
+From the repository root, run `go run /path/to/main.go`:
+
 ```go
-left, err := summary.Parse(leftBytes)
-if err != nil { return err }
-right, err := summary.Parse(rightBytes)
-if err != nil { return err }
-combined, err := summary.Combine(
-    []summary.Envelope{left, right}, []string{"platform", "data"},
+package main
+
+import (
+    "fmt"
+    "log"
+    "os"
+
+    "github.com/llm-measurement/llm-sketchkit/go/sketchkit/summary"
 )
+
+func main() {
+    var inputs []summary.Envelope
+    for _, name := range []string{"platform", "data"} {
+        data, err := os.ReadFile("examples/summary-exchange/generated/" + name + ".json")
+        if err != nil { log.Fatal(err) }
+        doc, err := summary.Parse(data)
+        if err != nil { log.Fatal(err) }
+        inputs = append(inputs, doc)
+    }
+    combined, err := summary.Combine(inputs, []string{"platform", "data"})
+    if err != nil { log.Fatal(err) }
+    fmt.Printf("requests=%d tokens=%d missing=%v partial=%v\n",
+        combined.Counters["requests"], combined.Counters["tokens"],
+        combined.Missing, combined.Partial)
+}
 ```
 
-Import `github.com/llm-measurement/llm-sketchkit/go/sketchkit/summary`.
+Expected output: `requests=4 tokens=14720 missing=[] partial=[]`.
 `combined.Sketches` contains complete new state that existing sketch parsers can
 read. `combined.Missing` and `combined.Partial` must remain visible to callers.
 

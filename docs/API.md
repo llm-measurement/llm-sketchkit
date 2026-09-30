@@ -16,6 +16,14 @@ runtime failures such as `MemoryError`, direct changes to private fields, or
 concurrent access. Error-message text is not a stable way to determine whether
 rollback occurred.
 
+## Hash Domain Errors
+
+Unregistered hash domains produce `unregistered hash domain: <domain>` in both
+languages. Go callers can use `errors.Is(err, hash.ErrUnregisteredDomain)` for
+hashing and sketch construction. Python hashing raises `UnregisteredDomainError`;
+sketch constructors retain their existing per-module `IncompatibleMergeError`
+type for compatibility. Catch these types, not message text.
+
 ## Mutating Methods
 
 | Sketch | Go / Python method | Receiver on failure |

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
+
 package hash_test
 
 import (
@@ -175,6 +176,9 @@ func TestHash64RejectsUnregisteredDomain(t *testing.T) {
 	_, err = sketchhash.Hash64(secret, sketchhash.Domain("unknown:v1"), []byte("value"))
 	if !errors.Is(err, sketchhash.ErrUnregisteredDomain) {
 		t.Fatalf("Hash64() error = %v, want %v", err, sketchhash.ErrUnregisteredDomain)
+	}
+	if err.Error() != "unregistered hash domain: unknown:v1" {
+		t.Fatalf("Hash64() diagnostic = %q", err.Error())
 	}
 }
 

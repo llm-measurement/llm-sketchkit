@@ -23,8 +23,10 @@ or a performance benchmark.
   user without a separately authorized mapping. Start with
   `python -m pip install llm-sketchkit` and the notebook's setup instructions.
 
-The collector dashboard is a separate workflow. The connector currently exports
-metrics and bounded structured logs, not the serialized sketch files used here.
+The collector dashboard is a separate workflow. The connector exports metrics,
+bounded structured logs, and optional summary envelopes containing sketch state.
+This notebook reads its own producer's manifest and individual sketch files,
+not collector envelopes; see [summary exchange](../../examples/summary-exchange/README.md).
 
 ## Reproduce It
 

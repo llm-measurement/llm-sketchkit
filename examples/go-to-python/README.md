@@ -20,8 +20,10 @@ not a ranking by token share. Green crosses are exact synthetic validation value
 Hashes and HLL++ estimates can differ between runs because the demo secret changes.
 
 The [90-second captioned walkthrough](../../docs/media/README.md) shows the same
-outputs. The library notebook and collector dashboard are separate workflows: the
-connector does not yet emit these serialized sketch files.
+outputs. The library notebook and collector dashboard are separate workflows.
+The connector can export window-scoped summary envelopes containing serialized
+sketches; this notebook uses its own producer's manifest and individual sketch
+files. See [summary exchange](../summary-exchange/README.md) for envelope inputs.
 
 ## Run It
 
@@ -83,6 +85,7 @@ while the same secret and domain are in use, and anyone with the secret can test
 a candidate value. Protect both the secret and serialized summaries. Secret
 rotation intentionally breaks comparability and mergeability with older state.
 
-The OpenTelemetry connector currently exports Prometheus metrics and bounded
-structured top-item records. It does not export these serialized sketch files;
-this example is specifically the library-to-notebook workflow.
+The OpenTelemetry connector exports Prometheus metrics, bounded structured
+top-item records, and optional summary envelopes. Those envelopes are not this
+notebook's manifest format; use the [summary API](../summary-exchange/README.md)
+to parse and combine them. This example is the library-to-notebook workflow.

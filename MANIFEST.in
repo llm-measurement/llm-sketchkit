@@ -2,3 +2,4 @@
 include scripts/__init__.py
 include scripts/release_metadata.py
 recursive-include vectors *.json
+recursive-include examples/summary-exchange *.py *.md

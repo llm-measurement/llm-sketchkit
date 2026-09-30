@@ -71,7 +71,7 @@ class Sketch:
         if map_size is None:
             raise UnknownProfileError(profile)
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(domain)
+            raise IncompatibleMergeError(f"unregistered hash domain: {domain}")
         if algorithm != profiles.HMAC_SHA256_64:
             raise IncompatibleMergeError(algorithm)
 
@@ -222,7 +222,10 @@ class Sketch:
         return self._items.get(value & MASK64, self._max_error)
 
     def frequent_items(self, mode: str) -> list[Item]:
-        """Return deterministic frequent items under the selected query mode."""
+        """Return items by estimate descending, then unsigned hash ascending.
+
+        The query-mode guarantee applies to the full list, not a top-k slice.
+        """
 
         out: list[Item] = []
         for item in self.items():

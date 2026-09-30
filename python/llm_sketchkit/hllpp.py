@@ -46,7 +46,7 @@ class Sketch:
         if config is None:
             raise UnknownProfileError(profile)
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(domain)
+            raise IncompatibleMergeError(f"unregistered hash domain: {domain}")
         if algorithm != profiles.HMAC_SHA256_64:
             raise IncompatibleMergeError(algorithm)
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
+
 // Package bloom implements the Go Bloom sketch for llm-sketchkit.
 //
 // The implementation uses a fixed bitset representation with profile-derived
