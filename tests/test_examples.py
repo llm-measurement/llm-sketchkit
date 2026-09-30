@@ -23,9 +23,11 @@ def test_readme_python_recipes() -> None:
     snippets = [distinct.group(1), *re.findall(r"```python\n(.*?)```", readme, re.S)]
     expected = [
         "estimated distinct prompts: 1\n",
-        "research/synthesis estimate=8900 bounds=[8900, 8900]\n"
-        "coding/review estimate=3600 bounds=[3600, 3600]\n"
-        "support/refund estimate=2220 bounds=[2220, 2220]\n",
+        (
+            "research/synthesis estimate=8900 bounds=[8900, 8900]\n"
+            "coding/review estimate=3600 bounds=[3600, 3600]\n"
+            "support/refund estimate=2220 bounds=[2220, 2220]\n"
+        ),
         "merged distinct prompts: 2\n",
     ]
     assert len(snippets) == len(expected)
