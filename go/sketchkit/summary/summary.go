@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Code authors: Vijay Erramilli and Codex
+// Code authors: Vijay and Codex
 
 // Package summary exchanges window-scoped counters and existing sketch state.
 // Producer trust, disjoint input ownership, and secret distribution are external.

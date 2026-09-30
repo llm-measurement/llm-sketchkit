@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 """Combine exported files locally; no network access and no hashing secret needed."""
 
 import argparse

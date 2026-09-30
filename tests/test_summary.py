@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 import json
 from dataclasses import replace
 from pathlib import Path

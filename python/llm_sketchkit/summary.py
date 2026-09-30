@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Code authors: Vijay Erramilli and Codex
+# Code authors: Vijay and Codex
 """Window-scoped exchange of existing sketches; see spec/summary.md."""
 
 from __future__ import annotations
