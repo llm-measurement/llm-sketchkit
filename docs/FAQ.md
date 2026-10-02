@@ -13,9 +13,8 @@ membership, and set change.
 
 The library can be embedded in an agent observability pipeline when raw prompts or
 identifiers should not enter aggregate state, or when exporting and indexing every
-value would make operational cost or query latency unpredictable. It complements
-trace explorers, evaluation systems, anomaly detectors, and control planes rather
-than replacing them.
+value would make operational cost or query latency unpredictable. Use its summaries
+alongside trace explorers, evaluation systems, and controls.
 
 ## Can I Use This With Self-Hosted Models Or A Mix Of Providers?
 
@@ -27,26 +26,21 @@ identities and reported usage, applies keyed hashing, and updates the sketches.
 Separate teams can combine compatible measurements using the
 [summary exchange API](../examples/summary-exchange/README.md). Producers must agree
 on scope, keys, accounting rules, and windows, and observe disjoint request streams.
-The API checks compatibility; it does not translate provider-specific fields or
-deduplicate overlapping requests. Keyed identities remain pseudonymous, and linking
-them across systems requires the operators' agreement.
+Normalize source fields before creating summaries. The API checks compatibility;
+operators authorize identity linkage and assign each request to one producer.
 
-Keep model and usage definitions explicit when comparing deployments. Reported
-tokens describe volume, not a common unit of cost or compute across models. The
-same library semantics apply to compatible inputs; that is not a claim of tested
-integration with every model SDK or serving engine.
+Keep model and usage definitions explicit when comparing deployments. Combine
+token volume with provider pricing or serving metrics when studying costs.
 
-## When Is This Not For You?
+## When Should I Use Sketches Or Exact Records?
 
-If telemetry volume is moderate, the underlying values are safe to retain, and exact
-warehouse queries are operationally fast and affordable, use exact data. A database
-table or bounded exact map is simpler and returns exact answers. Sketches return
-approximate answers but keep resource use predictable and state mergeable.
+Use sketches for continuous aggregate answers with predictable resource use and
+mergeable state. Use exact tables or maps when values are safe to retain and exact
+queries remain fast and affordable.
 
 Sketches are therefore best understood as an **always-on bounded evidence plane**,
-not a cheaper archive. Keep selected raw traces or events when they are needed for
-diagnosis, audit, or replay; use sketches when continuous aggregate visibility must
-remain bounded.
+alongside the selected raw traces or events you retain for diagnosis, audit, or
+replay.
 
 Memory savings are only one property. Depending on the selected sketch and the system
 embedding it, sketches can provide:
@@ -72,12 +66,10 @@ With the current release, an embedding pipeline can directly investigate:
 - Did a population change materially between observations? MinHash compares set
   similarity using fixed-size signatures.
 
-"What changed between these windows?" can currently be answered at the aggregate
-set-similarity level, or by application code comparing bounded frequent-item outputs.
-The current release does not provide a high-level heavy-mover comparison that discovers
-which unknown keys increased or decreased most. "Did a policy change improve the
-measured outcome?" requires window, policy, and outcome context from the system
-embedding the library; sketchkit does not provide that context.
+For "What changed between these windows?", use MinHash for set similarity or
+[fleetdiff](https://github.com/llm-measurement/fleetdiff) for tracked contributors
+and token-volume changes. To evaluate a policy change, pair those measurements
+with the application's policy and outcome records.
 
 ## How Can I Count Distinct LLM Prompts Without Storing Prompt Text?
 
@@ -109,8 +101,7 @@ defines the guarantees and merge behavior.
 
 Results sort by estimate descending, then unsigned hash ascending for ties.
 `user:v1` covers both end users and API/virtual keys for now, but one sketch must
-use one agreed identity meaning. Dedicated `api-key:v1` and `tenant:v1` domains
-are not yet registered. See the [domain contract](../spec/hash.md#domains).
+use one agreed identity meaning. See the [registered domains](../spec/hash.md#domains).
 
 ## Can This Help Investigate "Tokenmaxxing" Or "Token-Maxing"?
 
@@ -123,13 +114,10 @@ upper bounds.
 This supports token-accounting investigations for both API spending and self-hosted
 workloads. Without a per-token invoice, long responses and repeated calls can still
 occupy shared serving capacity. Compare token concentration with queueing and
-latency measurements from your serving system; the sketch does not measure GPU
-utilization or convert tokens into infrastructure cost.
+latency measurements from your serving system.
 
-It does not receive telemetry, infer missing token counts, determine whether token
-use was productive, enforce a budget, stop an agent loop, or prevent a model
-context-window error. Count missing usage separately, and place alerts or controls in
-the application or telemetry system that embeds the library.
+Count missing usage separately. Applications can use the measurements to trigger
+alerts, investigate high-share sessions, or inform their own budget controls.
 
 For GenAI spans already flowing through OpenTelemetry, the
 [`otelcol-genai-sketches`](https://github.com/llm-measurement/otelcol-genai-sketches)
@@ -205,19 +193,17 @@ part of that contract rather than the complete integration.
 
 Use it when producers and analysis systems must produce compatible, pseudonymous
 summaries without defining those rules independently in every service. Apache
-DataSketches is a better fit when its broader general-purpose algorithm surface,
-APIs, and binary formats already satisfy the application and this additional
-telemetry contract is unnecessary.
+DataSketches offers a broader general-purpose algorithm catalog. Choose based on
+the algorithms and interoperability contract your pipeline needs.
 
 The [general-purpose library comparison](DATASKETCHES.md) explains the boundary and
 records the independent frequent-items oracle results.
 
 ## Is This A Trace Collector Or Sampling System?
 
-No. `llm-sketchkit` does not receive telemetry, choose which attributes to
-measure, sample traces, export metrics, store results, or provide a dashboard.
-It supplies bounded data structures and compatibility rules that another
-component can embed in its own processing path.
+`llm-sketchkit` is an embeddable measurement library. For trace collection and
+ready-made metrics, use the
+[OpenTelemetry connector](https://github.com/llm-measurement/otelcol-genai-sketches).
 
 This separation is intentional: applications retain control over input limits,
 attribute selection, secret management, windowing, export policy, and access to
