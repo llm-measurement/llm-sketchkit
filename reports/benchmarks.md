@@ -1,8 +1,9 @@
 # Benchmark Results
 
-These results characterize the v0.1 alpha implementation. Commands use
-`GOMAXPROCS=1` and `-benchmem` so per-core update cost and steady-state
-allocation behavior are visible.
+These dated measurements record per-core update cost and steady-state allocation
+behavior during the v0.1 implementation period. Each section identifies its
+machine, toolchain, and command; preserve those when comparing a later release.
+Commands use `GOMAXPROCS=1` and `-benchmem`.
 
 ## Performance Targets
 
@@ -13,8 +14,8 @@ allocation behavior are visible.
 | HLL++ `AddHash(uint64)` | `<=500 ns/op`, `0 allocs/op` steady state |
 | Weighted frequent-items `AddHash(uint64, weight)` | `<=500 ns/op`, `0 allocs/op` steady state |
 
-Bloom and MinHash are characterized for accuracy and wire compatibility in
-v0.1 alpha. No hot-path update target is included for them.
+Bloom and MinHash have accuracy and wire-compatibility characterization;
+the performance targets cover hashing, HLL++, and frequent-items.
 
 ## Local Apple Silicon Results
 
@@ -69,7 +70,9 @@ Weighted frequent-items `AddHash(uint64, weight)`:
 | Tracked steady-state | 29.15 | 29.20 | 29.13 | 29.16 | 28.88 | 0 | 0 |
 | Drop steady-state | 73.36 | 72.94 | 73.15 | 73.83 | 74.23 | 0 | 0 |
 
-## Current Linux Runner Results
+<a id="current-linux-runner-results"></a>
+
+## August 2026 Linux Runner Results
 
 Recorded 2026-08-02 on GitHub Actions `ubuntu-24.04`, image
 `20260720.247.2`, Intel Xeon Platinum 8573C, 2 online vCPUs, Go
@@ -170,7 +173,7 @@ Weighted frequent-items `AddHash(uint64, weight)`:
 
 ## Summary
 
-On the current Linux run, the slowest hash result was `1,652,619 ops/s/core`
+On the August 2026 Linux run, the slowest hash result was `1,652,619 ops/s/core`
 for 64-byte inputs and `850,340 ops/s/core` for 1 KiB inputs. The slowest
 sketch update result was `10.58 ns/op` for HLL++ and `145.6 ns/op` for
 weighted frequent-items, both with `0 B/op` and `0 allocs/op`. All four paths

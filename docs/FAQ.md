@@ -59,8 +59,8 @@ With the current release, an embedding pipeline can directly investigate:
 - Which keyed agents, prompts, tools, or other identities account for most of a
   reported capacity unit? Weighted frequent-items reports estimates with deterministic
   lower and upper bounds.
-- How many distinct identities or workflows were active? HLL++ provides a bounded
-  distinct-count estimate.
+- How many distinct identities or workflows were active? HLL++ provides a statistical
+  distinct-count estimate with bounded state.
 - Is reported usage concentrated in a small set of keyed values? Weighted
   frequent-items exposes the heavy portion without retaining every key.
 - Did a population change materially between observations? MinHash compares set
@@ -79,11 +79,9 @@ The sketch retains registers rather than the prompt text or a per-prompt map.
 Its dense memory shape is fixed by the selected profile rather than growing
 linearly with the number of distinct prompts.
 
-The keyed hash is pseudonymous, not anonymous. Someone with the secret can test
-candidate prompts, and repeated prompts remain linkable while the same secret
-and domain are in use. Secret handling and rotation requirements are described
-in the [security guidance](../README.md#security-and-privacy) and
-[hash specification](../spec/hash.md).
+See the [security guidance](../README.md#security-and-privacy) for secret handling,
+linkability, and rotation, and the [hash specification](../spec/hash.md) for the
+wire contract.
 
 ## How Can I Find The Largest Token Consumers Without Indexing Every Key?
 
@@ -171,23 +169,21 @@ The [characterization report](../reports/characterization.md) records workloads,
 seeds, observed errors, theoretical bounds, and important limitations. The
 [scorecard](../reports/scorecard.md) provides a shorter visual summary.
 
-## Does Keyed Hashing Make Sketch Output Anonymous?
+<a id="does-keyed-hashing-make-sketch-output-anonymous"></a>
 
-No. It keeps raw values out of sketch state and prevents testing candidates
-without the secret, but it does not provide anonymity or differential privacy.
-Anyone with the secret can recompute candidate hashes. Repeated values are also
-linkable while the same secret and domain remain in use, and frequent-items
-intentionally exposes the keyed hashes of tracked heavy items.
+## What Privacy Does Keyed Hashing Provide?
 
-Protect the secret, separate domains, rotate when the trust boundary changes,
-and control access to serialized sketches. Rotation intentionally breaks
-comparison with older state.
+Keyed hashing keeps raw values out of sketch state and requires the secret to
+recompute candidate hashes. Domain separation keeps different entity classes
+separate. Use access controls and rotate keys when the trust boundary changes;
+the [security guidance](../README.md#security-and-privacy) explains pseudonymity,
+linkability, and the absence of differential privacy.
 
 ## How Does This Differ From A General-Purpose Sketch Library?
 
 `llm-sketchkit` packages the decisions a high-cardinality LLM telemetry pipeline
 otherwise has to make around each sketch: text canonicalization, domain-separated
-keyed hashing, bounded profiles, strict merge authorization, deterministic wire
+keyed hashing, bounded profiles, strict merge compatibility, deterministic wire
 semantics, and matching Go and pure-Python behavior. The sketch algorithm is one
 part of that contract rather than the complete integration.
 

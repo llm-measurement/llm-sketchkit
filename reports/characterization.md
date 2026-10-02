@@ -1,8 +1,10 @@
 # Characterization Results
 
-This file records characterization results for the v0.1 alpha
-implementation. The compatibility surface is defined in `spec/`; executable
-conformance vectors live in `vectors/`.
+This record measures distinct-count error, membership false positives, similarity
+error, and weighted frequency bounds on deterministic workloads. Results were
+collected during the v0.1 implementation period; they retain their original scope
+rather than representing a new run for each release. The compatibility contract
+is in `spec/`, with executable conformance vectors in `vectors/`.
 
 ## HLL++
 

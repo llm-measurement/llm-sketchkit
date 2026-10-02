@@ -7,14 +7,14 @@ This reference collects those contracts for integrators. The
 ## What Unchanged Means
 
 An unchanged receiver has the same counters, registers, representation, and
-serialized bytes as before the call. This is failure atomicity, not thread safety:
-all access to one instance still needs external synchronization.
+serialized bytes as before the call. These failure-atomicity guarantees assume
+[exclusive access](OPERATIONS.md#concurrency-and-ownership) to the instance.
 
 The guarantees below cover the named Go error returns and Python exceptions, using
-documented argument types and sketch state. They do not cover Go panics, Python
-runtime failures such as `MemoryError`, direct changes to private fields, or
-concurrent access. Error-message text is not a stable way to determine whether
-rollback occurred.
+documented argument types and valid sketch state. Go panics, Python runtime
+failures such as `MemoryError`, private-field edits, and concurrent access fall
+outside this contract. Use the documented error types and conditions below to
+determine receiver state.
 
 ## Hash Domain Errors
 
@@ -85,5 +85,4 @@ state. Combination returns independent counters and sketch bytes. Any reported
 error returns no partial aggregate. Concurrent mutation of inputs is unsupported.
 
 See the [exchange example](../examples/summary-exchange/README.md) and
-[format contract](../spec/summary.md). This API is available in the source checkout;
-it is not part of the `0.1.0` package release.
+[format contract](../spec/summary.md). Available from `0.2.0`.

@@ -1,15 +1,14 @@
 # Evidence Scorecard
 
-This page summarizes the checked-in performance and accuracy evidence. It is a
-navigation layer, not a substitute for the complete methods and raw samples in
-[Benchmark Results](benchmarks.md), [Characterization
-Results](characterization.md), and the [DataSketches Oracle
-Comparison](datasketches_oracle.md).
+The measured hash and update paths met their performance targets. HLL++ error
+stayed inside the characterization threshold, and both weighted frequent-items
+workloads retained the true top 20. The charts below summarize the results;
+[benchmarks](benchmarks.md), [characterization](characterization.md), and the
+[oracle comparison](datasketches_oracle.md) contain methods and raw samples.
 
-The current Linux benchmark measured commit
-`cf9de450fc96a8fa6b2204be2875d9b2a79c085a`. Alpha.3 changes documentation,
-packaging, and automation only; sketch code and semantics are unchanged from
-that commit.
+The August 2026 Linux benchmark measured commit
+`cf9de450fc96a8fa6b2204be2875d9b2a79c085a`. These are historical measurements;
+the linked records identify the code and environment tested.
 
 ## Performance Headroom
 
@@ -18,9 +17,7 @@ that commit.
 Values use the least favorable of five serial Linux runs. For throughput paths,
 the ratio is worst observed throughput divided by the minimum target. For
 latency paths, it is maximum permitted latency divided by worst observed
-latency. Values above 1x meet the target. Microbenchmarks are useful for
-regression detection and relative capacity planning; they are not end-to-end
-application throughput claims.
+latency. Values above 1x meet the target.
 
 ## HLL++ Error
 
@@ -28,7 +25,7 @@ application throughput claims.
 
 The maximum is taken across the documented `small` profile cardinality grid and
 10 deterministic seeds per cell. It is below the conservative three-sigma
-relative-error bound. It is not a universal maximum over every possible input.
+relative-error threshold used by the characterization checks.
 
 ## Bloom False Positives
 
@@ -43,8 +40,7 @@ Observed rates vary statistically between trials.
 ![MinHash mean and p95 absolute error](assets/minhash-error.svg)
 
 Each row summarizes 1,000 deterministic set pairs. Increasing the signature
-from 128 to 256 entries reduced mean and p95 absolute error as expected; these
-values describe this workload rather than every possible set distribution.
+from 128 to 256 entries reduced mean and p95 absolute error on these pairs.
 
 ## Independent Frequent-Items Oracle
 
@@ -53,9 +49,16 @@ values describe this workload rather than every possible set distribution.
 | Zipf(1.1), weighted | 100% | 100% | yes |
 | Tail churn, weighted | 100% | 100% | yes |
 
-The comparison checks query guarantees, not byte identity or equal error
-magnitudes. See [why DataSketches is an oracle rather than a runtime
-backend](../docs/DATASKETCHES.md).
+See [the independent comparison](../docs/DATASKETCHES.md) for query guarantees,
+implementation differences, and scope.
+
+## Measurement Scope
+
+Each benchmark series describes one machine and workload. Microbenchmarks measure
+isolated paths, not application throughput. HLL++, Bloom, and MinHash error varies
+statistically; observed errors are not universal bounds on future inputs. The
+frequent-items intervals are deterministic. The linked reports preserve the exact
+versions, seeds, and methods so you can rerun them for your deployment.
 
 ## Reproduce
 

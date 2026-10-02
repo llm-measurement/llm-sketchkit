@@ -5,11 +5,10 @@ algorithms. `llm-sketchkit` addresses a narrower integration problem: producing
 bounded, pseudonymous summaries of high-cardinality LLM and agent telemetry that
 behave consistently across services, languages, and merge boundaries.
 
-The contribution is the complete measurement contract around the sketch method,
-not a claim that the underlying algorithms were invented here. Without that
-contract, every telemetry pipeline must independently decide how values are
-canonicalized and keyed, what state may be merged, which memory and error profiles
-are compatible, and how summaries move between runtimes.
+The contribution is a complete measurement contract around established sketch
+methods: how values are canonicalized and keyed, what state may be merged,
+which memory and error profiles are compatible, and how summaries move between
+runtimes. Pipelines can use these shared rules directly.
 
 ## The Additional Contract
 
@@ -37,8 +36,8 @@ contract. Use DataSketches when its algorithms, APIs, binary formats, and packag
 already fit and the additional LLM-telemetry integration rules are unnecessary.
 
 `llm-sketchkit` uses the DataSketches Python frequent-items implementation as an
-independent behavioral oracle. This tests shared frequent-items guarantees without
-making DataSketches a runtime dependency or claiming binary compatibility.
+independent behavioral oracle for shared frequent-items guarantees. The oracle is
+an optional test dependency; applications run the Go or pure-Python implementation.
 
 ## Where The Implementations Differ
 

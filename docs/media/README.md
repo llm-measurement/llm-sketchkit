@@ -1,32 +1,32 @@
 # Go-To-Python Walkthrough
 
-[Download the 90-second MP4](https://raw.githubusercontent.com/llm-measurement/llm-sketchkit/main/docs/media/walkthrough.mp4).
-No account is needed. Open the downloaded file in a video player; GitHub does not
-provide an embedded player for this file.
+Watch Go summaries become distinct-user estimates and token-volume intervals in
+Python, with synthetic reference counts checking the results.
 
-This silent, captioned video uses actual plots from the executed
-[Go-to-Python notebook](../../examples/go-to-python/README.md), captured on 2026-09-04.
-It is an edited walkthrough of synthetic results, not a real-time screen recording
-or a performance benchmark.
+[Watch the 90-second MP4](https://raw.githubusercontent.com/llm-measurement/llm-sketchkit/main/docs/media/walkthrough.mp4)
+in your video player, without an account. This silent, captioned walkthrough uses
+plots from the executed [notebook](../../examples/go-to-python/README.md), captured
+on 2026-09-04. Edited scene timing is for presentation.
 
 ## Transcript
 
 - **0:00-0:30:** Go produces service-local summaries. Python checks byte-for-byte
   round trips, rejects incompatible profiles, and merges two shards in each of two
   windows. The first plot compares distinct estimates with known synthetic counts.
-- **0:30-0:45:** HLL++ returns an estimate, not a list of identities. Its measured
-  characterization envelope is not a per-estimate confidence interval.
+- **0:30-0:45:** HLL++ estimates distinct users with fixed-size state. This plot
+  checks estimates against known synthetic counts; error is statistical.
 - **0:45-1:15:** Weighted frequent-items returns deterministic token intervals.
   Green crosses are exact synthetic validation values. Each interval is normalized
-  to its own upper estimate; the axis is not a share of total token volume.
-- **1:15-1:30:** Hashes remain linkable under one secret. The notebook cannot name a
-  user without a separately authorized mapping. Start with
+  to its own upper estimate to show uncertainty width. See
+  [how to read the axis](../../examples/go-to-python/README.md#see-the-result).
+- **1:15-1:30:** Known keys can be named through an authorized local mapping.
+  Protect the secret and control access to summaries. Start with
   `python -m pip install llm-sketchkit` and the notebook's setup instructions.
 
 The collector dashboard is a separate workflow. The connector exports metrics,
 bounded structured logs, and optional summary envelopes containing sketch state.
-This notebook reads its own producer's manifest and individual sketch files,
-not collector envelopes; see [summary exchange](../../examples/summary-exchange/README.md).
+This notebook reads its own producer's manifest and individual sketch files;
+use [summary exchange](../../examples/summary-exchange/README.md) for collector envelopes.
 
 ## Reproduce It
 
