@@ -18,9 +18,8 @@ summarize locally and merge compatible sketches across processes or languages.
 Actual output from the [Go-to-Python notebook](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/README.md).
 Go produces the summaries; Python reads the same wire bytes, merges service shards,
 and plots the results. The green marks are known synthetic counts used to check the
-bounds, not information that a production sketch recovers. The horizontal axis
-normalizes each interval to its own upper estimate; it does not show share of total
-token volume. [Watch the 90-second walkthrough](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/media/README.md).
+bounds. Each row is normalized to its own upper estimate.
+[Watch the 90-second walkthrough](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/media/README.md).
 
 ## When This Fits
 
@@ -62,23 +61,18 @@ Questions it can help answer include:
 
 For investigations described as "tokenmaxxing" (also written "token-maxing"),
 reported token counts can be used as weights in the frequent-items sketch to identify
-which keyed values account for the most token volume. The library measures
-concentration; it does not infer task value, enforce budgets, or stop agent loops.
+which keyed values account for the most token volume. Use these concentration
+measurements to focus an investigation or inform a separate budget policy.
 See [Token-Volume Heavy Hitters](https://github.com/llm-measurement/llm-sketchkit#token-volume-heavy-hitters) for a runnable example.
 
 Token accounting matters with self-hosted models too: there may be no per-token
 invoice, but long responses and repeated calls can occupy shared serving capacity.
-Use reported token volume alongside serving metrics; tokens alone do not measure
-GPU time, cost, or useful work.
+Pair reported token volume with serving metrics to understand capacity use.
 
-Inputs can be canonicalized and keyed before entering sketch state. This keeps
-raw values out of the sketch, but the resulting hashes remain pseudonymous and
-linkable while the same secret is in use.
-
-This is a sketch library, not a trace collector, sampling processor, storage
-backend, dashboard, or differential-privacy system. The [FAQ](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md)
-answers common questions about fit, operational bounds, accuracy, and
-interoperability.
+The library embeds in your processing code. The integrations below connect it to
+collectors, investigations, and existing backends; the
+[FAQ](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md)
+covers accuracy, privacy, and interoperability.
 
 ## Choosing An Integration
 
@@ -88,7 +82,7 @@ interoperability.
 | You have compatible summary exports and want to compare two windows across operators | [fleetdiff](https://github.com/llm-measurement/fleetdiff) | A local, read-only command reports usage changes, distinct activity, tracked-item bounds, and missing coverage. |
 | A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Update sketches inside each bounded window, then serialize or merge compatible summaries. |
 | A batch or warehouse job reads stored events | `llm-sketchkit` directly | Build bounded summaries per partition or window and merge them before publishing results. |
-| You only need to store or visualize finished metrics | Your existing backend integration | The library is not an exporter; ClickHouse, Datadog, Prometheus, and similar systems normally receive the aggregated results. |
+| You need to store or visualize finished metrics | Your existing backend integration | Send aggregated results to ClickHouse, Datadog, Prometheus, or a similar system. |
 
 Use the collector path when the source spans already flow through OpenTelemetry. Use
 the library when you own the event-processing code or need matching Go and Python
@@ -98,8 +92,8 @@ must agree on profile, hash domain, hash algorithm, secret, and window boundarie
 For measurements spanning independently operated systems, the
 [summary envelope](https://github.com/llm-measurement/llm-sketchkit/blob/main/spec/summary.md) also carries scope, accounting rules, producer
 identity, and key version. No hashing secret is needed to combine compatible state.
-Operators must authorize identity linkage and assign disjoint observation streams;
-the envelope does not authenticate producers or deduplicate overlapping events.
+Use authenticated exchange, authorize identity linkage, and assign each event to
+one producer.
 
 For a complete comparison example, try [fleetdiff's two-operator demo](https://github.com/llm-measurement/fleetdiff#try-it-in-a-minute).
 It shows how one team's reported token usage can fall while the combined fleet
@@ -138,7 +132,7 @@ Linux benchmark runs where applicable.
 See the [visual scorecard](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/scorecard.md),
 [raw measurement records](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/README.md),
 and [general-purpose library comparison](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/DATASKETCHES.md)
-for methods, limitations, and reproduction commands.
+for methods, measured workloads, and reproduction commands.
 
 ## Requirements
 
@@ -193,8 +187,8 @@ first. This is a library, so use `go get`, not `go install`:
 go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/...@latest
 ```
 
-Sketches are not thread-safe: use one instance per worker or protect every read
-and write with the same mutex. See
+For concurrent use, give each worker its own sketch or protect every read and
+write with the same mutex. See
 [concurrency and ownership](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership).
 
 Use the same `LLM_SKETCHKIT_SECRET`. Put this program in `main.go`, then run
@@ -256,8 +250,8 @@ return the same bytes,
 explicit merge rejection for incompatible profiles, distinct-count estimates,
 and deterministic bounds around token-heavy pseudonymous keys.
 
-The tutorial uses an exact synthetic side channel only to check its estimates.
-Raw synthetic identifiers do not enter the emitted files. See the
+The tutorial checks estimates against known synthetic counts and emits keyed
+summaries. See the
 [example guide](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/README.md)
 for setup and security details.
 
@@ -307,17 +301,14 @@ support/refund estimate=2220 bounds=[2220, 2220]
 
 `FrequentItems` in Go and `frequent_items` in Python sort by estimate descending,
 then unsigned hash ascending for ties. Taking the first ten limits the returned
-list; it does not make approximate ranks exact or preserve the full-list
-no-false-negative guarantee. The small synthetic example does not trigger pruning,
-so its bounds coincide.
+list. Ranks remain approximate; the no-false-negative guarantee applies to the
+full query result. This small example retains every key, so its bounds coincide.
 
 The sketch retains at most the selected profile's bounded map size. Returned hashes
 are pseudonymous and remain linkable while the same secret and domain are in use.
-The estimate is not a billing total; use the lower and upper bounds when deciding
-whether an item is meaningfully heavy.
+Use the lower and upper bounds to decide whether an item is meaningfully heavy.
 
-Do not substitute guessed weights when token usage is missing. Count missing usage
-separately so operators know how complete the reported totals are. For an OTLP
+Count missing usage separately and weight sketches with reported counts. For an OTLP
 pipeline with ready-made metrics, bounded slices, missing-usage accounting, and
 token-weighted top-k snapshots, use
 [`otelcol-genai-sketches`](https://github.com/llm-measurement/otelcol-genai-sketches).
@@ -364,8 +355,8 @@ observe := func(e event) error {
 This excerpt uses the imports, `event`, and canonicalizing `hashKey` helper in the
 linked program. It waits for workers, queries the top ten, then re-hashes keys
 from an existing authorized catalog to name matching hashes. Only those ten
-matches are retained; unknown keys stay hashes. Do not build a growing raw-key
-lookup from traffic or emit API credential material in reports.
+matches are retained; unknown keys stay hashes. Use non-secret key IDs from that
+catalog, keeping both memory use and access to names controlled.
 
 After taking the locked snapshot and limiting `items` to ten, the lookup is:
 
@@ -394,17 +385,15 @@ support tokens=2220 bounds=[2220,2220]
 ```
 
 `user:v1` currently covers end users and API or virtual key identities. Choose one
-identity meaning per sketch; distinct keys are not necessarily distinct people.
+identity meaning per sketch so the distinct count has a consistent definition.
 Use stable, non-secret key IDs, and agree on the same mapping across producers.
-Dedicated `api-key:v1` and `tenant:v1` domains are not registered yet. See the
-[hash contract](https://github.com/llm-measurement/llm-sketchkit/blob/main/spec/hash.md#domains).
+See the [registered hash domains](https://github.com/llm-measurement/llm-sketchkit/blob/main/spec/hash.md#domains).
 
 Create fresh sketches at each window boundary, bound the number of live windows
-and workers, and discard a window if an update fails. The example's zero-token
-requests count toward distinct keys but not token volume; missing usage needs a
-separate counter, not a guessed weight. Expose the distinct estimate as a gauge
-and top-k through an access-controlled log or JSON endpoint, never per-key metric
-labels. See the [Go-to-Python producer](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/producer/main.go)
+and workers, and discard a window if an update fails. Zero-token requests count
+toward distinct keys; missing usage gets a separate counter. Expose distinct
+estimates as gauges and top-k through an access-controlled log or JSON endpoint,
+keeping identities out of metric labels. See the [Go-to-Python producer](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/producer/main.go)
 for serialization and the [ownership contract](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership)
 for worker-local sketches and merging.
 
