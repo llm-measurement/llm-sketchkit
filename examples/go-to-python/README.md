@@ -6,7 +6,7 @@ Go, then loads, validates, merges, and plots them in a Python notebook.
 The producer generates two service shards in each of two windows. Raw synthetic
 user IDs are canonicalized and keyed-hashed inside the Go process. The emitted
 files contain sketch state, a manifest, and bounded synthetic validation
-aggregates; they do not contain the raw IDs.
+aggregates, with identities represented by keyed hashes.
 
 ## See The Result
 
@@ -74,18 +74,11 @@ and bound checks, then exports only the two PNG plots under `docs/images/`.
 - Weighted frequent-items returns deterministic lower and upper bounds for
   token-heavy pseudonymous keys.
 
-The exact counts and token weights in `synthetic-validation.json` exist only to
-check the tutorial's synthetic workload. Production consumers generally do not
-have an exact side channel.
+The exact counts and token weights in `synthetic-validation.json` check this
+synthetic workload. Use independent reference counts when validating your own data.
 
 ## Security Boundary
 
-Keyed hashes are pseudonymous, not anonymous. Repeated values remain linkable
-while the same secret and domain are in use, and anyone with the secret can test
-a candidate value. Protect both the secret and serialized summaries. Secret
-rotation intentionally breaks comparability and mergeability with older state.
-
-The OpenTelemetry connector exports Prometheus metrics, bounded structured
-top-item records, and optional summary envelopes. Those envelopes are not this
-notebook's manifest format; use the [summary API](../summary-exchange/README.md)
-to parse and combine them. This example is the library-to-notebook workflow.
+Protect the secret and serialized summaries using the
+[security guidance](../../README.md#security-and-privacy). Key rotation changes
+comparability, so keep a consistent key for windows you intend to compare.

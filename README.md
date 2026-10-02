@@ -10,8 +10,9 @@ locally and merge compatible summaries across workers or services.
 Both implementations share text canonicalization, keyed pseudonymous hashing,
 mergeable sketches, and a deterministic protobuf wire format.
 
-Raw prompts and identifiers do not need to enter sketch state. Producers can
-summarize locally and merge compatible sketches across processes or languages.
+Canonicalize and keyed-hash inputs in your process before adding them to a sketch.
+Only the hashes enter sketch state; compatible producers can merge that state
+across processes or languages.
 
 ![Python notebook showing synthetic truth inside token-volume bounds from Go summaries](https://raw.githubusercontent.com/llm-measurement/llm-sketchkit/main/docs/images/token-bounds.png)
 
@@ -41,7 +42,8 @@ for input and comparison requirements.
 Questions it can help answer include:
 
 - **How many distinct prompts, users, sessions, tools, or documents are active
-  without keeping one counter per value?** HLL++ provides a bounded estimate.
+  without keeping one counter per value?** HLL++ provides a statistical estimate
+  with bounded state.
 - **Your token budget is climbing and FinOps wants to know which configured
   identities account for the reported volume. How certain is the answer?** Weighted
   frequent-items identifies token-heavy or request-heavy keys with deterministic
@@ -187,10 +189,6 @@ first. This is a library, so use `go get`, not `go install`:
 go get github.com/llm-measurement/llm-sketchkit/go/sketchkit/...@latest
 ```
 
-For concurrent use, give each worker its own sketch or protect every read and
-write with the same mutex. See
-[concurrency and ownership](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership).
-
 Use the same `LLM_SKETCHKIT_SECRET`. Put this program in `main.go`, then run
 `go run .`:
 
@@ -240,6 +238,10 @@ Expected output:
 ```text
 estimated distinct prompts: 1
 ```
+
+For concurrent use, give each worker its own sketch or protect every read and
+write with the same mutex. See
+[concurrency and ownership](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership).
 
 ## Go To Python Notebook
 
@@ -493,6 +495,14 @@ python scripts/datasketches_oracle.py --check
 - [`docs/OPERATIONS.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md) defines runtime, concurrency, resource, upgrade, and support contracts.
 - [`docs/SUPPLY_CHAIN.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/SUPPLY_CHAIN.md) documents dependency controls, SBOMs, checksums, and PyPI attestation verification.
 - [`CHANGELOG.md`](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) records release-level changes.
+
+## Limits
+
+Reported tokens are not an invoice. HLL++ and MinHash error is statistical;
+frequent-items supplies deterministic count bounds. Sketch instances are not
+thread-safe: follow the [ownership rules](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership).
+Each benchmark series describes one recorded machine and workload, with dates
+and hardware in [the report](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/benchmarks.md).
 
 ## Status
 

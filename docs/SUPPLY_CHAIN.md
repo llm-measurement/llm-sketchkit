@@ -1,8 +1,8 @@
 # Supply-Chain Controls
 
-This repository uses separate controls for source changes, dependencies, builds,
-and published artifacts. They reduce risk but do not make dependencies or releases
-automatically safe.
+Source review, dependency scanning, and signed publication records let you inspect
+how an artifact was built and what it contains. This guide lists the controls and
+shows how to verify a Python release.
 
 ## Source And Dependency Checks
 
@@ -29,8 +29,7 @@ the wheel and source distribution.
 The release workflow also generates an SPDX JSON software bill of materials with a
 pinned Syft version and writes SHA-256 checksums. These files and the Python
 distributions are attached to GitHub releases built after this control was added.
-The SBOM is an inventory for review and scanning; it is not a vulnerability-free
-claim.
+Use the SBOM for dependency review and vulnerability scanning.
 
 ## Verify The Published Python Artifact
 
@@ -46,6 +45,6 @@ pypi-attestations verify pypi \
 ```
 
 Compare a downloaded artifact with the checksum published on PyPI or, for later
-releases, the `SHA256SUMS` file attached to the GitHub release. Verification proves
-the artifact and publisher identity represented by the attestation; it does not
-replace dependency review or local policy.
+releases, the `SHA256SUMS` file attached to the GitHub release. Verification checks
+the artifact and publisher identity represented by the attestation. Review the
+dependencies and apply local software policy separately.

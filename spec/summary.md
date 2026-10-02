@@ -1,8 +1,9 @@
 # Summary Exchange v1
 
 This optional JSON envelope carries existing sketch bytes and exact counters
-between independently operated producers. It does not change `sketches.proto`.
-It is a measurement contract, not an authentication or authorization protocol.
+between independently operated producers, preserving `sketches.proto`. It defines
+measurement compatibility; [Trust and Privacy](#trust-and-privacy) defines the
+requirements for exchange.
 
 ## Fields
 
@@ -51,8 +52,7 @@ states contain additive update counters despite idempotent bitsets/signatures.
 Combination requires identical scope, accounting, key identifier, window,
 counter names, sketch names, and compatible sketch metadata. Comparison across
 windows permits different window starts, but requires equal durations and the
-same remaining measurement contract. These checks cannot prove that declared
-keys, accounting rules, or producer identities are truthful.
+same remaining measurement contract. Authenticate declarations as described below.
 
 The caller supplies an explicit, unique list of expected producers whose
 underlying observation ownership is disjoint. Unlisted producers are rejected;

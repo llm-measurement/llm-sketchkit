@@ -26,8 +26,7 @@ The combiner runs without the secret. Expected counters are `requests: 4` and
 `tokens: 14720`, with `missing: []`, `partial: []`, and two source records. The
 distinct estimate rounds to 3; the token estimates are 8900, 3600, and 2220 with
 equal lower and upper bounds for this tiny input. Hashes and unrounded HLL++
-estimates depend on the generated secret. These are example outputs, not accuracy
-or throughput claims. Re-running the generator replaces only its two named files;
+estimates depend on the generated secret. Re-running the generator replaces only its two named files;
 do not mix generated files from runs with different secrets under one key ID.
 
 For real exports, replace the file paths and window start with your own values.
@@ -39,8 +38,8 @@ file paths. Large input sets are rejected rather than silently truncated.
 
 Before combining, operators must agree on scope, accounting rules, hashing key
 and version, and window duration. Each producer must own a disjoint stream of
-observations. Repeated *summary files* are handled; repeated *underlying spans*
-across collectors are not. Producer declarations are not authentication.
+observations. The [format contract](../../spec/summary.md) specifies replay handling
+and producer trust requirements.
 
 ## Go
 
@@ -93,15 +92,16 @@ fleetdiff compare --before ./before --after ./after --expected platform,data
 
 It reports counter changes, distinct estimates, tracked-item change bounds, and
 missing coverage. See the [two-operator trial](https://github.com/llm-measurement/fleetdiff/blob/main/docs/TWO_OPERATOR_TRIAL.md)
-for setup and sharing requirements. It does not recover every unknown heavy mover
-or prove why a change happened.
+for setup and sharing requirements and
+[report interpretation](https://github.com/llm-measurement/fleetdiff/blob/main/README.md#reading-the-results).
 
 To build a custom comparison with the library instead:
 `summary.Compatible` in Go or `summary.compatible` in Python checks whether two
 envelopes have the same measurement contract, allowing different window starts.
 Combine producers separately for each window, then compare the resulting counts
 and estimates. Keep sketch uncertainty and source coverage beside each result.
-Subtracting two truncated top-k lists does not discover every heavy mover.
+Use the candidate-union and untracked-key bounds when interpreting changes;
+subtracting truncated lists alone can miss movers.
 
 See the [format contract](../../spec/summary.md) for replay, restart, privacy,
 resource limits, and failure behavior. The shared vectors exercise all four
