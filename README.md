@@ -1,6 +1,7 @@
 # llm-sketchkit
 
 [![CI](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/llm-measurement/llm-sketchkit/badge)](https://scorecard.dev/viewer/?uri=github.com/llm-measurement/llm-sketchkit)
 
 `llm-sketchkit` finds top users or API keys by reported tokens and estimates
 distinct users with fixed memory bounds per sketch, instead of per-user metric

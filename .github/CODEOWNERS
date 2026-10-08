@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Code authors: Vijay and Codex
+# Review routing only; required approvals are configured separately.
+/.github/CODEOWNERS @kwisatzh
+/.github/workflows/ @kwisatzh
+/.github/tests/ @kwisatzh
+/scripts/ @kwisatzh
+/pyproject.toml @kwisatzh
+/go/sketchkit/hash/ @kwisatzh
+/go/sketchkit/internal/hashfamily/ @kwisatzh
+/go/sketchkit/canon/ @kwisatzh
+/python/llm_sketchkit/hash.py @kwisatzh
+/python/llm_sketchkit/hashfamily.py @kwisatzh
+/python/llm_sketchkit/canon.py @kwisatzh
+/spec/hash.md @kwisatzh
+/spec/canonicalization.md @kwisatzh
+/vectors/ @kwisatzh
