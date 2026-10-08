@@ -520,5 +520,6 @@ Apache-2.0.
 ## Feedback
 
 Questions, integration reports, or feedback: [open an issue](https://github.com/llm-measurement/llm-sketchkit/issues).
+See [Contributing](CONTRIBUTING.md) for checks and signed, signed-off commits.
 Use the private reporting instructions in [SECURITY.md](https://github.com/llm-measurement/llm-sketchkit/blob/main/SECURITY.md)
 for vulnerabilities; do not include secrets or raw customer identifiers.
