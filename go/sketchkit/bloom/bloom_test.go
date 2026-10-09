@@ -5,16 +5,15 @@ package bloom
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"math"
-	"os"
 	"path/filepath"
 	"sort"
 	"testing"
 
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/sketchtest"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -62,10 +61,10 @@ func TestSketchVectors(t *testing.T) {
 		t.Run(filepath.Base(path), func(t *testing.T) {
 			t.Parallel()
 
-			vector := readSketchVector(t, path)
+			vector := sketchtest.ReadJSON[sketchVector](t, path)
 			got := buildVectorSketch(t, vector)
 			assertVectorExpected(t, got, vector)
-			assertStableReserialization(t, got)
+			sketchtest.AssertStable(t, got, Parse)
 		})
 	}
 }
@@ -168,22 +167,6 @@ func TestParseRejectsNonProfileShape(t *testing.T) {
 	}
 }
 
-func readSketchVector(t *testing.T, path string) sketchVector {
-	t.Helper()
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatalf("read vector %s: %v", path, err)
-	}
-
-	var vector sketchVector
-	if err := json.Unmarshal(data, &vector); err != nil {
-		t.Fatalf("decode vector %s: %v", path, err)
-	}
-
-	return vector
-}
-
 func buildVectorSketch(t *testing.T, vector sketchVector) *Sketch {
 	t.Helper()
 
@@ -214,7 +197,7 @@ func buildVectorSketch(t *testing.T, vector sketchVector) *Sketch {
 			bySource[source] = newTestSketch(t, profile)
 			sourceNames = append(sourceNames, source)
 		}
-		mustAdd(t, bySource[source], parseHashHex(t, operation.HashHex))
+		mustAdd(t, bySource[source], sketchtest.ParseHashHex(t, operation.HashHex))
 	}
 	if len(bySource) == 0 {
 		return newTestSketch(t, profile)
@@ -247,13 +230,13 @@ func assertVectorExpected(t *testing.T, got *Sketch, vector sketchVector) {
 		t.Fatalf("false positive estimate = %.18f, want %.18f", estimate, vector.Expected.Body.FalsePositiveEstimate)
 	}
 	for _, hashHex := range vector.Expected.Body.MayContain {
-		hash := parseHashHex(t, hashHex)
+		hash := sketchtest.ParseHashHex(t, hashHex)
 		if !got.MayContainHash(hash) {
 			t.Fatalf("MayContainHash(%s) = false, want true", hashHex)
 		}
 	}
 	for _, hashHex := range vector.Expected.Body.MayNotContain {
-		hash := parseHashHex(t, hashHex)
+		hash := sketchtest.ParseHashHex(t, hashHex)
 		if got.MayContainHash(hash) {
 			t.Fatalf("MayContainHash(%s) = true, want false", hashHex)
 		}
@@ -289,26 +272,6 @@ func assertSetBits(t *testing.T, got *Sketch, want []uint64) {
 	}
 }
 
-func assertStableReserialization(t *testing.T, sketch *Sketch) {
-	t.Helper()
-
-	first, err := sketch.MarshalBinary()
-	if err != nil {
-		t.Fatalf("MarshalBinary(): %v", err)
-	}
-	parsed, err := Parse(first)
-	if err != nil {
-		t.Fatalf("Parse(): %v", err)
-	}
-	second, err := parsed.MarshalBinary()
-	if err != nil {
-		t.Fatalf("MarshalBinary() after parse: %v", err)
-	}
-	if string(first) != string(second) {
-		t.Fatalf("reserialization changed bytes:\nfirst=%s\nsecond=%s", hex.EncodeToString(first), hex.EncodeToString(second))
-	}
-}
-
 func newTestSketch(t *testing.T, profile Profile) *Sketch {
 	t.Helper()
 
@@ -328,28 +291,6 @@ func mustAdd(t *testing.T, sketch *Sketch, hash uint64) {
 	}
 }
 
-func parseHashHex(t *testing.T, value string) uint64 {
-	t.Helper()
-
-	bytes, err := hex.DecodeString(value)
-	if err != nil {
-		t.Fatalf("decode hash %q: %v", value, err)
-	}
-	if len(bytes) != 8 {
-		t.Fatalf("hash %q decoded to %d bytes, want 8", value, len(bytes))
-	}
-
-	var out uint64
-	for _, b := range bytes {
-		out = (out << 8) | uint64(b)
-	}
-
-	return out
-}
-
 func splitmix64(x uint64) uint64 {
-	x += 0x9e3779b97f4a7c15
-	x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9
-	x = (x ^ (x >> 27)) * 0x94d049bb133111eb
-	return x ^ (x >> 31)
+	return sketchtest.SplitMix64(x)
 }

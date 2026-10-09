@@ -15,6 +15,7 @@ import (
 
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/sketchtest"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -68,11 +69,11 @@ func TestSketchVectors(t *testing.T) {
 		t.Run(filepath.Base(path), func(t *testing.T) {
 			t.Parallel()
 
-			vector := readSketchVector(t, path)
+			vector := sketchtest.ReadJSON[sketchVector](t, path)
 			got := buildVectorSketch(t, vector)
 			assertVectorExpected(t, got, vector)
-			assertStableReserialization(t, got)
-			assertSerializedHex(t, got, vector.Expected.SerializedHex)
+			sketchtest.AssertStable(t, got, Parse)
+			sketchtest.AssertSerializedHex(t, got, vector.Expected.SerializedHex, Parse)
 		})
 	}
 }
@@ -168,7 +169,7 @@ func TestTotalWeightValidationVectors(t *testing.T) {
 			body := message.GetFrequentItems()
 			body.TotalWeight, body.MaxError = tc.TotalWeight, tc.MaxError
 			for _, entry := range tc.Entries {
-				body.Entries = append(body.Entries, &sketchpb.FrequentItemsEntry{Hash: parseHashHex(t, entry.HashHex), Estimate: entry.Estimate, Error: entry.Error})
+				body.Entries = append(body.Entries, &sketchpb.FrequentItemsEntry{Hash: sketchtest.ParseHashHex(t, entry.HashHex), Estimate: entry.Estimate, Error: entry.Error})
 			}
 			encoded, err := proto.MarshalOptions{Deterministic: true}.Marshal(message)
 			if err != nil {
@@ -187,7 +188,7 @@ func TestTotalWeightValidationVectors(t *testing.T) {
 			if parsed.TotalWeight() != tc.TotalWeight || parsed.MaxError() != tc.MaxError {
 				t.Fatal("totals changed")
 			}
-			assertSerializedHex(t, parsed, hex.EncodeToString(encoded))
+			sketchtest.AssertSerializedHex(t, parsed, hex.EncodeToString(encoded), Parse)
 		})
 	}
 }
@@ -438,22 +439,6 @@ func TestZipfPartitionMergeOrderGuarantees(t *testing.T) {
 	t.Logf("zipf partition merge global_worst_error=%d max_sum_error_overrun=%d", globalWorstError, maxSumErrorOverrun)
 }
 
-func readSketchVector(t *testing.T, path string) sketchVector {
-	t.Helper()
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatalf("read vector %s: %v", path, err)
-	}
-
-	var vector sketchVector
-	if err := json.Unmarshal(data, &vector); err != nil {
-		t.Fatalf("decode vector %s: %v", path, err)
-	}
-
-	return vector
-}
-
 func buildVectorSketch(t *testing.T, vector sketchVector) *Sketch {
 	t.Helper()
 
@@ -482,7 +467,7 @@ func buildVectorSketch(t *testing.T, vector sketchVector) *Sketch {
 			bySource[source] = newTestSketch(t, profile)
 			sourceNames = append(sourceNames, source)
 		}
-		mustAdd(t, bySource[source], parseHashHex(t, operation.HashHex), operation.Weight)
+		mustAdd(t, bySource[source], sketchtest.ParseHashHex(t, operation.HashHex), operation.Weight)
 	}
 
 	if len(bySource) == 0 {
@@ -515,7 +500,7 @@ func assertVectorExpected(t *testing.T, got *Sketch, vector sketchVector) {
 		t.Fatalf("entries length = %d, want %d", len(items), len(vector.Expected.Body.Entries))
 	}
 	for i, want := range vector.Expected.Body.Entries {
-		wantHash := parseHashHex(t, want.HashHex)
+		wantHash := sketchtest.ParseHashHex(t, want.HashHex)
 		if items[i].Hash != wantHash ||
 			items[i].Estimate != want.Estimate ||
 			items[i].Error != want.Error ||
@@ -538,56 +523,6 @@ func assertVectorExpected(t *testing.T, got *Sketch, vector sketchVector) {
 			t.Fatalf("FrequentItems(NO_FP): %v", err)
 		}
 		assertHexHashes(t, noFalsePositives, vector.Expected.Body.NoFalsePositives)
-	}
-}
-
-func assertStableReserialization(t *testing.T, sketch *Sketch) {
-	t.Helper()
-
-	first, err := sketch.MarshalBinary()
-	if err != nil {
-		t.Fatalf("MarshalBinary(): %v", err)
-	}
-	parsed, err := Parse(first)
-	if err != nil {
-		t.Fatalf("Parse(): %v", err)
-	}
-	second, err := parsed.MarshalBinary()
-	if err != nil {
-		t.Fatalf("MarshalBinary() after parse: %v", err)
-	}
-	if string(first) != string(second) {
-		t.Fatalf("reserialization changed bytes:\nfirst=%s\nsecond=%s", hex.EncodeToString(first), hex.EncodeToString(second))
-	}
-}
-
-func assertSerializedHex(t *testing.T, sketch *Sketch, want string) {
-	t.Helper()
-
-	if want == "" {
-		return
-	}
-	encoded, err := sketch.MarshalBinary()
-	if err != nil {
-		t.Fatalf("MarshalBinary(): %v", err)
-	}
-	if got := hex.EncodeToString(encoded); got != want {
-		t.Fatalf("serialized hex = %s, want %s", got, want)
-	}
-	decoded, err := hex.DecodeString(want)
-	if err != nil {
-		t.Fatalf("decode serialized hex: %v", err)
-	}
-	parsed, err := Parse(decoded)
-	if err != nil {
-		t.Fatalf("Parse(serialized_hex): %v", err)
-	}
-	reencoded, err := parsed.MarshalBinary()
-	if err != nil {
-		t.Fatalf("MarshalBinary() after serialized_hex parse: %v", err)
-	}
-	if hex.EncodeToString(reencoded) != want {
-		t.Fatal("serialized_hex parse/reencode changed bytes")
 	}
 }
 
@@ -739,7 +674,7 @@ func assertHexHashes(t *testing.T, items []Item, hashes []string) {
 
 	parsed := make([]uint64, 0, len(hashes))
 	for _, hash := range hashes {
-		parsed = append(parsed, parseHashHex(t, hash))
+		parsed = append(parsed, sketchtest.ParseHashHex(t, hash))
 	}
 	assertHashes(t, items, parsed)
 }
@@ -797,25 +732,6 @@ func newTestSketch(t *testing.T, profile Profile) *Sketch {
 	return sketch
 }
 
-func parseHashHex(t *testing.T, value string) uint64 {
-	t.Helper()
-
-	bytes, err := hex.DecodeString(value)
-	if err != nil {
-		t.Fatalf("decode hash %q: %v", value, err)
-	}
-	if len(bytes) != 8 {
-		t.Fatalf("hash %q decoded to %d bytes, want 8", value, len(bytes))
-	}
-
-	var out uint64
-	for _, b := range bytes {
-		out = (out << 8) | uint64(b)
-	}
-
-	return out
-}
-
 func mustAdd(t *testing.T, sketch *Sketch, hash uint64, weight int64) {
 	t.Helper()
 
@@ -862,8 +778,5 @@ func permutations(count int) [][]int {
 }
 
 func splitmix64(x uint64) uint64 {
-	x += 0x9e3779b97f4a7c15
-	x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9
-	x = (x ^ (x >> 27)) * 0x94d049bb133111eb
-	return x ^ (x >> 31)
+	return sketchtest.SplitMix64(x)
 }
