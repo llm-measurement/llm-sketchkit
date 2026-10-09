@@ -1,3 +1,4 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 # Security Policy
 
 ## Supported Versions
@@ -15,9 +16,9 @@ runtime and deprecation policy.
 
 ## Reporting A Vulnerability
 
-Please use GitHub's private vulnerability reporting for this repository. Do not
-open a public issue for a suspected vulnerability or include secrets, exploit
-details, or sensitive data in public discussions.
+Please [report a vulnerability privately](https://github.com/llm-measurement/llm-sketchkit/security/advisories/new).
+Do not open a public issue for a suspected vulnerability or include secrets,
+exploit details, or sensitive data in public discussions.
 
 Include the affected version or commit, a minimal reproducer, expected and
 observed behavior, and your assessment of impact. Reports involving malformed
