@@ -75,6 +75,13 @@ func (e Envelope) validate(parsed map[string]*parsedPayload) error {
 			return errors.New("invalid summary counter")
 		}
 	}
+	if e.ObservedStart == e.ObservedEnd {
+		for _, count := range e.Counters {
+			if count != 0 {
+				return errors.New("nonempty zero-length summary observation")
+			}
+		}
+	}
 	size := 0
 	for name, payload := range e.Sketches {
 		size += len(payload.Data)
@@ -84,6 +91,9 @@ func (e Envelope) validate(parsed map[string]*parsedPayload) error {
 		state, canonical, err := parsePayload(payload)
 		if err != nil || !bytes.Equal(canonical, payload.Data) {
 			return errors.New("invalid summary sketch state")
+		}
+		if e.ObservedStart == e.ObservedEnd && !state.empty() {
+			return errors.New("nonempty zero-length summary observation")
 		}
 		if parsed != nil {
 			parsed[name] = state
@@ -315,7 +325,16 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 			continue
 		}
 		parts := intervals[id]
-		sort.Slice(parts, func(i, j int) bool { return parts[i].ObservedStart < parts[j].ObservedStart })
+		sort.SliceStable(parts, func(i, j int) bool {
+			a, b := parts[i], parts[j]
+			if a.ObservedStart != b.ObservedStart {
+				return a.ObservedStart < b.ObservedStart
+			}
+			if a.ObservedEnd != b.ObservedEnd {
+				return a.ObservedEnd < b.ObservedEnd
+			}
+			return a.Epoch < b.Epoch
+		})
 		end := parts[0].WindowStart
 		partial := false
 		for _, part := range parts {

@@ -59,6 +59,8 @@ def bounded_wire(data: bytes, limit: int) -> bool:
     """Bound discarded oneof bodies before protobuf allocates their entries."""
     if len(data) > min(limit, MAX_WIRE_BYTES):
         return False
+    if not _no_groups(memoryview(data), 0):
+        return False
     sizes = [0, 0, 0, 0]
     messages = 0
     entries = 0
@@ -69,8 +71,6 @@ def bounded_wire(data: bytes, limit: int) -> bool:
     def varint(offset: int) -> tuple[int, int]:
         return _varint(data, offset)
 
-    # Unknown groups retain the protobuf decoder's policy until the versioned
-    # acceptance change. Track them here without allocating a tree.
     groups: list[int] = []
     try:
         while pos < len(data):
@@ -111,6 +111,59 @@ def bounded_wire(data: bytes, limit: int) -> bool:
     except ValueError:
         return False
     return not groups
+
+
+def _no_groups(data: memoryview, message: int) -> bool:
+    """Follow only schema-defined submessages, never opaque byte fields."""
+    pos = 0
+
+    def varint() -> int:
+        nonlocal pos
+        value = 0
+        for shift in range(0, 70, 7):
+            if pos == len(data):
+                raise ValueError
+            byte = data[pos]
+            pos += 1
+            value |= (byte & 127) << shift
+            if byte < 128:
+                if shift == 63 and byte > 1:
+                    raise ValueError
+                return value
+        raise ValueError
+
+    try:
+        while pos < len(data):
+            tag = varint()
+            field, wire_type = tag >> 3, tag & 7
+            if not 0 < field < 1 << 29:
+                return False
+            if wire_type == 0:
+                varint()
+            elif wire_type == 1:
+                pos += 8
+            elif wire_type == 2:
+                size = varint()
+                end = pos + size
+                if end > len(data):
+                    return False
+                child = -1
+                if message == 0 and (field == 1 or 10 <= field <= 13):
+                    child = field
+                elif message in (10, 11) and field == 1:
+                    child = 100
+                if child >= 0 and not _no_groups(data[pos:end], child):
+                    return False
+                pos = end
+            elif wire_type == 5:
+                pos += 4
+            else:
+                return False
+            if pos > len(data):
+                return False
+    except ValueError:
+        return False
+    return True
 
 
 def _entry_count(data: memoryview) -> int:

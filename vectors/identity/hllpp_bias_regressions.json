@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "generator": "splitmix64",
+  "cases": [
+    {
+      "name": "micro_left_to_right_bias",
+      "profile": "micro",
+      "count": 3263,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "40a8ab3d7d49719a",
+      "wire_sha256": "4b932503e0f342bbcb5ff0b097ecdab66e672877489ddd90e6095fe6d20af49d"
+    },
+    {
+      "name": "small_left_to_right_bias",
+      "profile": "small",
+      "count": 13481,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "40ca43f6a807075e",
+      "wire_sha256": "44ccf62aad246eaff1c1dfa979eca49e9e540b80150f4fa9ebabcd35f763c0a5"
+    },
+    {
+      "name": "default_left_to_right_bias",
+      "profile": "default",
+      "count": 20007,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "40d398fb34672a78",
+      "wire_sha256": "bb9876b64bd09f88de143ecebda1e97a1f7bef3877a91d9001f7ea413f52b8f1"
+    }
+  ]
+}

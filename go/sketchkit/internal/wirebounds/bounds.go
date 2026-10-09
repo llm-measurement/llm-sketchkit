@@ -19,6 +19,9 @@ func Valid(data []byte, limit int) bool {
 	if len(data) > Global || len(data) > limit {
 		return false
 	}
+	if !noGroups(data, 0) {
+		return false
+	}
 	var sizes [4]int
 	messages := 0
 	entries := 0
@@ -85,4 +88,37 @@ func entryCount(data []byte) (int, bool) {
 		data = data[n:]
 	}
 	return count, true
+}
+
+// The schema contains no groups. Examine known message fields only: arbitrary
+// bytes (including bitsets and strings) must remain opaque. Nesting is bounded
+// by the schema, not by attacker-controlled recursion.
+func noGroups(data []byte, message int) bool {
+	for len(data) > 0 {
+		num, typ, n := protowire.ConsumeTag(data)
+		if n < 0 || typ == protowire.StartGroupType || typ == protowire.EndGroupType {
+			return false
+		}
+		data = data[n:]
+		child := -1
+		if message == 0 {
+			if num == 1 || num >= 10 && num <= 13 {
+				child = int(num)
+			}
+		} else if (message == 10 || message == 11) && num == 1 {
+			child = 100
+		}
+		if child >= 0 && typ == protowire.BytesType {
+			body, used := protowire.ConsumeBytes(data)
+			if used < 0 || !noGroups(body, child) {
+				return false
+			}
+		}
+		n = protowire.ConsumeFieldValue(num, typ, data)
+		if n < 0 {
+			return false
+		}
+		data = data[n:]
+	}
+	return true
 }

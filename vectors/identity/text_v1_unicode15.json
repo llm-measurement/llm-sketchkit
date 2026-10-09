@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "unicode_version": "15.0.0",
+  "secret": "sketchkit-identity-vector-secret-v1",
+  "cases": [
+    {
+      "name": "control_001c",
+      "input": " \u001cvalue\u001c ",
+      "canonical_hex": "1c76616c75651c",
+      "digest_hex": "1db533fce468e1c0"
+    },
+    {
+      "name": "control_001d",
+      "input": " \u001dvalue\u001d ",
+      "canonical_hex": "1d76616c75651d",
+      "digest_hex": "18bdebdd233debf5"
+    },
+    {
+      "name": "control_001e",
+      "input": " \u001evalue\u001e ",
+      "canonical_hex": "1e76616c75651e",
+      "digest_hex": "8f7145d226f0dce9"
+    },
+    {
+      "name": "control_001f",
+      "input": " \u001fvalue\u001f ",
+      "canonical_hex": "1f76616c75651f",
+      "digest_hex": "089e3d3e9555e7c8"
+    },
+    {
+      "name": "all_white_space",
+      "input": "\t\n\u000b\f\r \u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000",
+      "canonical_hex": "",
+      "digest_hex": "69b17c6d13e1be76"
+    },
+    {
+      "name": "white_space_edges",
+      "input": "\t\n\u000b\f\r \u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000x\t\n\u000b\f\r \u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000",
+      "canonical_hex": "78",
+      "digest_hex": "8095d578d9595234"
+    },
+    {
+      "name": "white_space_interior",
+      "input": "a\t\n\u000b\f\r \u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000b",
+      "canonical_hex": "61090a0b0c0a20c285c2a0e19a80e28082e28083e28082e28083e28084e28085e28086e28087e28088e28089e2808ae280a8e280a9e280afe2819fe3808062",
+      "digest_hex": "f8b52806938dded5"
+    },
+    {
+      "name": "non_white_space_edges",
+      "input": "\u180e\u200b\u2060\ufeff",
+      "canonical_hex": "e1a08ee2808be281a0efbbbf",
+      "digest_hex": "2e176401f44894f2"
+    },
+    {
+      "name": "newlines",
+      "input": "\r\nx\r\ny\rz\n",
+      "canonical_hex": "780a790a7a",
+      "digest_hex": "a00c0177126422fc"
+    },
+    {
+      "name": "precomposed_tail",
+      "input": "\u00e0\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "3fb3d46e092adacf"
+    },
+    {
+      "name": "compatibility_tail",
+      "input": "\u00a8\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "e1bfadcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "a8d4b0e8df062806"
+    },
+    {
+      "name": "compatibility_nonstarter",
+      "input": "\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e\uff9e",
+      "canonical_hex": "efbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9eefbe9ecd8fefbe9e",
+      "digest_hex": "ea0493825f671d81"
+    },
+    {
+      "name": "double_decomposition",
+      "input": "\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344\u0344",
+      "canonical_hex": "cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cc88cc81cd8fcc88cc81",
+      "digest_hex": "43243cf35353a8bb"
+    },
+    {
+      "name": "tibetan_decomposition",
+      "input": "\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73\u0f73",
+      "canonical_hex": "e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb1e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2e0bdb2cd8fe0bdb1e0bdb2",
+      "digest_hex": "cf2e61b6bc13800c"
+    },
+    {
+      "name": "hangul_tail",
+      "input": "\uac01\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "eab081cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "0e0d40ce239faaef"
+    },
+    {
+      "name": "jamo_backward",
+      "input": "\u1100\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161\u1161",
+      "canonical_hex": "eab080e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1e185a1cd8fe185a1",
+      "digest_hex": "e13843368595c3e9"
+    },
+    {
+      "name": "bengali_backward",
+      "input": "\u09c7\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be\u09be",
+      "canonical_hex": "e0a78be0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6bee0a6becd8fe0a6be",
+      "digest_hex": "1098cbb015a3f73c"
+    },
+    {
+      "name": "existing_cgj",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u034f\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "3fb3d46e092adacf"
+    },
+    {
+      "name": "starter_resets",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "900266e9be752af1"
+    },
+    {
+      "name": "reorder_across_boundary",
+      "input": "a\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0315\u0300",
+      "canonical_hex": "61cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cc95cd8fcc80",
+      "digest_hex": "267766a42a454fa1"
+    },
+    {
+      "name": "supplementary_decomposition",
+      "input": "\ud834\udd60\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "f09d8598f09d85a5f09d85aecc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80",
+      "digest_hex": "f0d1b7adf3b55af5"
+    },
+    {
+      "name": "leading_29",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "be6904337236f8b8"
+    },
+    {
+      "name": "after_starter_29",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "65f699a59ab82e4f"
+    },
+    {
+      "name": "leading_30",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "6f8ae7fcba7a48c7"
+    },
+    {
+      "name": "after_starter_30",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "ef2bf97f41131367"
+    },
+    {
+      "name": "leading_31",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "3101054607600f3a"
+    },
+    {
+      "name": "after_starter_31",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "3fb3d46e092adacf"
+    },
+    {
+      "name": "leading_60",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "1173cea89b04e41e"
+    },
+    {
+      "name": "after_starter_60",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80",
+      "digest_hex": "e39be26dfef6b935"
+    },
+    {
+      "name": "leading_61",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "81036814962d4051"
+    },
+    {
+      "name": "after_starter_61",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "6303444f8a1c7a84"
+    },
+    {
+      "name": "leading_91",
+      "input": "\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "fec7e30e4f34af63"
+    },
+    {
+      "name": "after_starter_91",
+      "input": "a\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300\u0300",
+      "canonical_hex": "c3a0cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cc80cd8fcc80",
+      "digest_hex": "fbe51a9e210c53ef"
+    },
+    {
+      "name": "unicode15_reorder_10efd",
+      "input": "a\u0315\ud803\udefd\u0301",
+      "canonical_hex": "c3a1f090bbbdcc95",
+      "digest_hex": "bb4dd81cfe8323cc"
+    },
+    {
+      "name": "unicode15_stream_10efd",
+      "input": "a\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd\ud803\udefd",
+      "canonical_hex": "61f090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdf090bbbdcd8ff090bbbd",
+      "digest_hex": "4c6a8d2406dd39ee"
+    },
+    {
+      "name": "unicode15_reorder_10efe",
+      "input": "a\u0315\ud803\udefe\u0301",
+      "canonical_hex": "c3a1f090bbbecc95",
+      "digest_hex": "6bd5a970074ef03f"
+    },
+    {
+      "name": "unicode15_stream_10efe",
+      "input": "a\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe\ud803\udefe",
+      "canonical_hex": "61f090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbef090bbbecd8ff090bbbe",
+      "digest_hex": "ba3194717d7034f8"
+    },
+    {
+      "name": "unicode15_reorder_10eff",
+      "input": "a\u0315\ud803\udeff\u0301",
+      "canonical_hex": "c3a1f090bbbfcc95",
+      "digest_hex": "82e5a60ce73ec256"
+    },
+    {
+      "name": "unicode15_stream_10eff",
+      "input": "a\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff\ud803\udeff",
+      "canonical_hex": "61f090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbff090bbbfcd8ff090bbbf",
+      "digest_hex": "d4cad182c074c903"
+    },
+    {
+      "name": "unicode15_reorder_11f41",
+      "input": "a\u0315\ud807\udf41\u0301",
+      "canonical_hex": "c3a1f091bd81cc95",
+      "digest_hex": "c742cbce58d03a58"
+    },
+    {
+      "name": "unicode15_stream_11f41",
+      "input": "a\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41\ud807\udf41",
+      "canonical_hex": "61f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81f091bd81cd8ff091bd81",
+      "digest_hex": "75d2f65c9bb3240c"
+    },
+    {
+      "name": "unicode15_reorder_11f42",
+      "input": "a\u0315\ud807\udf42\u0301",
+      "canonical_hex": "c3a1f091bd82cc95",
+      "digest_hex": "7e4b589d290b036b"
+    },
+    {
+      "name": "unicode15_stream_11f42",
+      "input": "a\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42\ud807\udf42",
+      "canonical_hex": "61f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82f091bd82cd8ff091bd82",
+      "digest_hex": "8d5482fa742f0c9b"
+    },
+    {
+      "name": "unicode15_reorder_1e08f",
+      "input": "a\u0315\ud838\udc8f\u0301",
+      "canonical_hex": "61f09e828fcc81cc95",
+      "digest_hex": "9f7dc510ff3c402f"
+    },
+    {
+      "name": "unicode15_stream_1e08f",
+      "input": "a\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f\ud838\udc8f",
+      "canonical_hex": "61f09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828ff09e828fcd8ff09e828f",
+      "digest_hex": "da18161ad23f7d71"
+    },
+    {
+      "name": "unicode15_reorder_1e4ec",
+      "input": "a\u0315\ud839\udcec\u0301",
+      "canonical_hex": "c3a1cc95f09e93ac",
+      "digest_hex": "649590a039820044"
+    },
+    {
+      "name": "unicode15_stream_1e4ec",
+      "input": "a\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec\ud839\udcec",
+      "canonical_hex": "61f09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93acf09e93accd8ff09e93ac",
+      "digest_hex": "e231f1ce156d0e2b"
+    },
+    {
+      "name": "unicode15_reorder_1e4ed",
+      "input": "a\u0315\ud839\udced\u0301",
+      "canonical_hex": "c3a1cc95f09e93ad",
+      "digest_hex": "2ca1cd4194145ee5"
+    },
+    {
+      "name": "unicode15_stream_1e4ed",
+      "input": "a\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced\ud839\udced",
+      "canonical_hex": "61f09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adf09e93adcd8ff09e93ad",
+      "digest_hex": "da2ff612797232db"
+    },
+    {
+      "name": "unicode15_reorder_1e4ee",
+      "input": "a\u0315\ud839\udcee\u0301",
+      "canonical_hex": "c3a1f09e93aecc95",
+      "digest_hex": "2cbad90ffded8474"
+    },
+    {
+      "name": "unicode15_stream_1e4ee",
+      "input": "a\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee\ud839\udcee",
+      "canonical_hex": "61f09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aef09e93aecd8ff09e93ae",
+      "digest_hex": "df52fea251d5e276"
+    },
+    {
+      "name": "unicode15_reorder_1e4ef",
+      "input": "a\u0315\ud839\udcef\u0301",
+      "canonical_hex": "61f09e93afcc81cc95",
+      "digest_hex": "ef742a103e8da8e8"
+    },
+    {
+      "name": "unicode15_stream_1e4ef",
+      "input": "a\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef\ud839\udcef",
+      "canonical_hex": "61f09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93aff09e93afcd8ff09e93af",
+      "digest_hex": "d9bfa83e12a9658f"
+    }
+  ]
+}

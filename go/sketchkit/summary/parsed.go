@@ -81,6 +81,21 @@ func (s *parsedPayload) marshal() ([]byte, error) {
 	}
 }
 
+func (s *parsedPayload) empty() bool {
+	switch s.kind {
+	case "hllpp":
+		return s.h.SparseCount() == 0 && s.h.DenseNonZeroCount() == 0
+	case "frequent_items":
+		return s.f.TotalWeight() == 0
+	case "bloom":
+		return s.b.InsertedCount() == 0 && s.b.SetBitCount() == 0
+	case "minhash":
+		return s.m.PopulatedCount() == 0
+	default:
+		return false
+	}
+}
+
 func (s *parsedPayload) merge(other *parsedPayload) error {
 	switch s.kind {
 	case "hllpp":

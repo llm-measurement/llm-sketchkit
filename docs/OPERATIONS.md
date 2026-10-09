@@ -79,6 +79,10 @@ Additional limits and failure behavior:
 
 ## Upgrade And Compatibility
 
+The next minor release's [migration notes](IDENTITY_MIGRATION.md) cover Python
+text identity corrections, Go dependency-related identity changes since 0.2.2,
+tied observation intervals and protobuf group rejection.
+
 Wire version, sketch kind, profile, hash domain, hash algorithm, and shape metadata
 form the merge contract. Never merge state produced with different secrets, domains,
 profiles, or window definitions even when parsing succeeds.

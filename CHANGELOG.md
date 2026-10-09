@@ -7,9 +7,32 @@ public Go and Python APIs exercised by the conformance vectors.
 
 ## Unreleased (Next Minor)
 
+- Reject zero-length observation intervals containing nonzero counters or
+  nonempty sketch state; accept configured empty sketches, including empty dense
+  HLL++. Order epochs consistently by start, end and epoch identifier.
+  Reject protobuf groups before decoding in both languages; the wire schema
+  contains no group fields. See [migration notes](docs/IDENTITY_MIGRATION.md).
+
+- Align Python `text_v1` identities with the existing Go behavior: trim the
+  exact Unicode `White_Space` set, use stream-safe NFC with decomposition-aware
+  non-starter counting, and support Unicode 15 combining classes on Python
+  3.11. Python identities can change for U+001C through U+001F at trimmed edges,
+  long non-starter runs (including decomposing and backward-combining
+  characters), and normalization involving Unicode 15 combining marks on older
+  runtimes. This canonicalizer change leaves current-main Go output unchanged.
+  Retained affected Python summaries require an explicit migration; see
+  [identity migration](docs/IDENTITY_MIGRATION.md).
+- Evaluate Python HLL++ bias sums left-to-right to match Go and Python 3.11.
+  Python 3.12+ estimates can change in their last bits; sketch bytes and
+  statistical error properties are unchanged. Add shared estimate vectors for
+  every profile and Unicode identity differential verification for Python 3.11
+  and 3.14.
 - Updated `golang.org/x/text` to `v0.42.0`, which raises the minimum Go version
   to 1.26. CI and source-build documentation now reflect that requirement.
-  Published `0.2.x` artifacts are unchanged and continue to support Go 1.25.
+  Its normalization corrections can change Go identities relative to 0.2.2,
+  including U+11F41 followed by combining accents. Affected Go producers also
+  need the [identity migration](docs/IDENTITY_MIGRATION.md). Published `0.2.x`
+  artifacts are unchanged and continue to support Go 1.25.
 
 ## Unreleased (0.2.3 Hardening)
 
