@@ -6,10 +6,12 @@ import hashlib
 import json
 import math
 import os
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar, cast
 
 import llm_sketchkit
+import pytest
 from llm_sketchkit import (
     _proto,
     bloom,
@@ -23,7 +25,7 @@ from llm_sketchkit import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-T = TypeVar("T")
+T = TypeVar("T", hllpp.Sketch, frequentitems.Sketch, bloom.Sketch, minhash.Sketch)
 
 
 def test_package_exports_first_class_modules() -> None:
@@ -63,12 +65,8 @@ def test_reserved_canonicalization_profiles_rejected() -> None:
         "text_v1_fold_ws",
         "text_v1_casefold_fold_ws",
     ]:
-        try:
+        with pytest.raises(canon.UnsupportedProfileError):
             canon.canonicalize(profile, "hello")
-        except canon.UnsupportedProfileError:
-            pass
-        else:
-            raise AssertionError(f"reserved profile {profile!r} was accepted")
 
 
 def test_secret_from_env_redacts_and_rejects_missing() -> None:
@@ -79,21 +77,13 @@ def test_secret_from_env_redacts_and_rejects_missing() -> None:
     assert not hasattr(secret, "value")
 
     os.environ.pop("LLM_SKETCHKIT_PY_MISSING", None)
-    try:
+    with pytest.raises(hash.EmptySecretError):
         hash.secret_from_env("LLM_SKETCHKIT_PY_MISSING")
-    except hash.EmptySecretError:
-        pass
-    else:
-        raise AssertionError("missing secret env was accepted")
 
     for value in ["short", "demo-secret-change-me", "dev-secret-change-me"]:
         os.environ["LLM_SKETCHKIT_PY_WEAK_SECRET"] = value
-        try:
+        with pytest.raises(hash.WeakSecretError):
             hash.secret_from_env("LLM_SKETCHKIT_PY_WEAK_SECRET")
-        except hash.WeakSecretError:
-            pass
-        else:
-            raise AssertionError(f"weak secret {value!r} was accepted")
 
 
 def test_hashfamily_seeds_and_python_u64_masking() -> None:
@@ -109,7 +99,11 @@ def test_hashfamily_seeds_and_python_u64_masking() -> None:
 def test_hllpp_sketch_vectors() -> None:
     for path in sorted((ROOT / "vectors" / "sketches").glob("hllpp_*.json")):
         vector = load_json(path)
-        sketch = build_hllpp(vector)
+        sketch, _ = build_sketch(
+            vector,
+            hllpp.new,
+            lambda sketch, op: sketch.add_hash(int(as_str(op["hash_hex"]), 16)),
+        )
         body = expected_body(vector)
 
         assert sketch.representation_mode() == as_str(body["representation_mode"])
@@ -122,7 +116,7 @@ def test_hllpp_sketch_vectors() -> None:
                 (as_int(register["index"]), as_int(register["value"]))
                 for register in as_list(body["sparse_registers"])
             ]
-        assert_stable_hllpp_reserialization(sketch)
+        assert_stable_reserialization(sketch, hllpp.parse)
         assert_serialized_hex(vector, sketch.marshal_binary(), hllpp.parse)
 
 
@@ -143,13 +137,9 @@ def test_hllpp_rejects_malformed_wire_state() -> None:
         "too_large": bytes(_proto.MAX_WIRE_BYTES + 1),
     }
 
-    for name, data in malformed.items():
-        try:
+    for data in malformed.values():
+        with pytest.raises(hllpp.HLLPPError):
             hllpp.parse(data)
-        except hllpp.HLLPPError:
-            pass
-        else:
-            raise AssertionError(f"malformed HLL++ wire case {name!r} was accepted")
 
 
 def test_frequent_items_sketch_vectors() -> None:
@@ -157,7 +147,14 @@ def test_frequent_items_sketch_vectors() -> None:
         (ROOT / "vectors" / "sketches").glob("frequent_items_*.json")
     ):
         vector = load_json(path)
-        sketch = build_frequent_items(vector)
+        sketch, _ = build_sketch(
+            vector,
+            frequentitems.new,
+            lambda sketch, op: sketch.add_hash(
+                int(as_str(op["hash_hex"]), 16), as_int(op["weight"])
+            ),
+            operation_name="add_hash_weight",
+        )
         body = expected_body(vector)
 
         assert sketch.total_weight() == as_int(body["total_weight"])
@@ -181,7 +178,7 @@ def test_frequent_items_sketch_vectors() -> None:
             assert item_hexes(
                 sketch.frequent_items(frequentitems.NO_FALSE_POSITIVES)
             ) == as_str_list(body["no_false_positives"])
-        assert_stable_frequent_items_reserialization(sketch)
+        assert_stable_reserialization(sketch, frequentitems.parse)
         assert_serialized_hex(vector, sketch.marshal_binary(), frequentitems.parse)
 
 
@@ -214,7 +211,11 @@ def test_frequent_items_total_validation_vectors() -> None:
 def test_bloom_sketch_vectors() -> None:
     for path in sorted((ROOT / "vectors" / "sketches").glob("bloom_*.json")):
         vector = load_json(path)
-        sketch = build_bloom(vector)
+        sketch, _ = build_sketch(
+            vector,
+            bloom.new,
+            lambda sketch, op: sketch.add_hash(int(as_str(op["hash_hex"]), 16)),
+        )
         body = expected_body(vector)
 
         assert sketch.inserted_count() == as_int(body["inserted_count"])
@@ -233,14 +234,18 @@ def test_bloom_sketch_vectors() -> None:
             assert sketch.may_contain_hash(int(hash_hex, 16))
         for hash_hex in as_str_list(body["may_not_contain"]):
             assert not sketch.may_contain_hash(int(hash_hex, 16))
-        assert_stable_bloom_reserialization(sketch)
+        assert_stable_reserialization(sketch, bloom.parse)
         assert_serialized_hex(vector, sketch.marshal_binary(), bloom.parse)
 
 
 def test_minhash_sketch_vectors() -> None:
     for path in sorted((ROOT / "vectors" / "sketches").glob("minhash_*.json")):
         vector = load_json(path)
-        sketch, by_source = build_minhash(vector)
+        sketch, by_source = build_sketch(
+            vector,
+            minhash.new,
+            lambda sketch, op: sketch.add_hash(int(as_str(op["hash_hex"]), 16)),
+        )
         body = expected_body(vector)
 
         assert sketch.populated_count() == as_int(body["populated_count"])
@@ -253,7 +258,7 @@ def test_minhash_sketch_vectors() -> None:
                 as_float(body["jaccard"]),
                 abs_tol=1e-15,
             )
-        assert_stable_minhash_reserialization(sketch)
+        assert_stable_reserialization(sketch, minhash.parse)
         assert_serialized_hex(vector, sketch.marshal_binary(), minhash.parse)
 
 
@@ -461,110 +466,43 @@ def assert_frequent_items_cross_language_merge(vector: dict[str, Any]) -> None:
     assert expected.marshal_binary().hex() == as_str(body["merged_serialized_hex"])
 
 
-def build_hllpp(vector: dict[str, Any]) -> hllpp.Sketch:
-    metadata = as_dict(vector["metadata"])
-    by_source: dict[str, hllpp.Sketch] = {}
-    for operation in as_list(vector["operations"]):
-        op = as_dict(operation)
-        assert op["op"] == "add_hash"
-        source = as_str(op.get("source", "default"))
-        by_source.setdefault(
-            source,
-            hllpp.new(as_str(metadata["profile"]), as_str(metadata["hash_domain"])),
-        ).add_hash(int(as_str(op["hash_hex"]), 16))
-    if not by_source:
-        return hllpp.new(as_str(metadata["profile"]), as_str(metadata["hash_domain"]))
-    return merge_sources(by_source)
-
-
-def build_frequent_items(vector: dict[str, Any]) -> frequentitems.Sketch:
-    metadata = as_dict(vector["metadata"])
-    by_source: dict[str, frequentitems.Sketch] = {}
-    for operation in as_list(vector["operations"]):
-        op = as_dict(operation)
-        assert op["op"] == "add_hash_weight"
-        source = as_str(op.get("source", "default"))
-        by_source.setdefault(
-            source,
-            frequentitems.new(
-                as_str(metadata["profile"]),
-                as_str(metadata["hash_domain"]),
-            ),
-        ).add_hash(int(as_str(op["hash_hex"]), 16), as_int(op["weight"]))
-    if not by_source:
-        return frequentitems.new(
-            as_str(metadata["profile"]),
-            as_str(metadata["hash_domain"]),
-        )
-    return merge_sources(by_source)
-
-
-def build_bloom(vector: dict[str, Any]) -> bloom.Sketch:
-    metadata = as_dict(vector["metadata"])
-    by_source: dict[str, bloom.Sketch] = {}
-    for operation in as_list(vector["operations"]):
-        op = as_dict(operation)
-        assert op["op"] == "add_hash"
-        source = as_str(op.get("source", "default"))
-        by_source.setdefault(
-            source,
-            bloom.new(as_str(metadata["profile"]), as_str(metadata["hash_domain"])),
-        ).add_hash(int(as_str(op["hash_hex"]), 16))
-    if not by_source:
-        return bloom.new(as_str(metadata["profile"]), as_str(metadata["hash_domain"]))
-    return merge_sources(by_source)
-
-
-def build_minhash(
+def build_sketch(
     vector: dict[str, Any],
-) -> tuple[minhash.Sketch, dict[str, minhash.Sketch]]:
+    new: Callable[[str, str], T],
+    update: Callable[[T, dict[str, Any]], None],
+    *,
+    operation_name: str = "add_hash",
+) -> tuple[T, dict[str, T]]:
     metadata = as_dict(vector["metadata"])
-    by_source: dict[str, minhash.Sketch] = {}
+    profile = as_str(metadata["profile"])
+    domain = as_str(metadata["hash_domain"])
+    by_source: dict[str, T] = {}
     for operation in as_list(vector["operations"]):
         op = as_dict(operation)
-        assert op["op"] == "add_hash"
+        assert op["op"] == operation_name
         source = as_str(op.get("source", "default"))
-        by_source.setdefault(
-            source,
-            minhash.new(as_str(metadata["profile"]), as_str(metadata["hash_domain"])),
-        ).add_hash(int(as_str(op["hash_hex"]), 16))
+        if source not in by_source:
+            by_source[source] = new(profile, domain)
+        update(by_source[source], op)
     if not by_source:
-        sketch = minhash.new(
-            as_str(metadata["profile"]),
-            as_str(metadata["hash_domain"]),
-        )
-        return sketch, by_source
+        return new(profile, domain), by_source
     return merge_sources(by_source), by_source
 
 
 def merge_sources(by_source: dict[str, T]) -> T:
     names = sorted(by_source)
-    merged = cast(Any, by_source[names[0]]).clone()
+    merged = by_source[names[0]].clone()
     for name in names[1:]:
         merged.merge(by_source[name])
-    return cast(T, merged)
+    return merged
 
 
-def assert_stable_hllpp_reserialization(sketch: hllpp.Sketch) -> None:
-    first = sketch.marshal_binary()
-    assert hllpp.parse(first).marshal_binary() == first
-
-
-def assert_stable_frequent_items_reserialization(
-    sketch: frequentitems.Sketch,
+def assert_stable_reserialization(
+    sketch: T,
+    parse: Callable[[bytes], T],
 ) -> None:
     first = sketch.marshal_binary()
-    assert frequentitems.parse(first).marshal_binary() == first
-
-
-def assert_stable_bloom_reserialization(sketch: bloom.Sketch) -> None:
-    first = sketch.marshal_binary()
-    assert bloom.parse(first).marshal_binary() == first
-
-
-def assert_stable_minhash_reserialization(sketch: minhash.Sketch) -> None:
-    first = sketch.marshal_binary()
-    assert minhash.parse(first).marshal_binary() == first
+    assert parse(first).marshal_binary() == first
 
 
 def item_hexes(items: list[frequentitems.Item]) -> list[str]:
