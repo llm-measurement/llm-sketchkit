@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-sketchkit"
-version = "0.2.2"
+version = "0.2.3"
 description = "Deterministic Go and Python sketches for high-cardinality LLM data."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -34,6 +34,7 @@ Source = "https://github.com/llm-measurement/llm-sketchkit"
 [project.optional-dependencies]
 dev = [
   "mypy>=1.10",
+  "PyYAML>=6.0",
   "pytest>=8.0",
   "ruff>=0.5",
 ]

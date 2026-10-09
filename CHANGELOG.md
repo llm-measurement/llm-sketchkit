@@ -5,6 +5,26 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
+## [0.2.3] - Unreleased
+
+- Bound protobuf allocations and summary JSON entry counts before decoding
+  peer-supplied data, including repeated or discarded protobuf bodies.
+- Validate each summary once during combination and bound retained decoded
+  state. Preserve merge order and deterministic frequent-items tie handling.
+- Reduce Python frequent-items minimum-selection work without changing results.
+- Redact hash secrets in Go formatting and remove untrusted values from parser
+  errors and Python exception chains. Preserve environment key bytes in Python.
+- Resolve release tags to exact commits, build SBOMs separately from package
+  contents, and refuse to overwrite existing release assets.
+
+This maintenance release backports these fixes onto `v0.2.2`, retaining Go 1.25
+support and `golang.org/x/text v0.41.0`. Text identities, HLL++ results, existing
+conformance vectors, public APIs and wire formats are unchanged. Parser resource
+limits now reject oversized encodings before allocation; see
+[Operations](docs/OPERATIONS.md). Applications that select a newer `x/text`
+version through another dependency should check their resolved dependency graph.
+The identity and acceptance changes in the next minor release are not included.
+
 ## [0.2.2] - 2026-09-29
 
 - Use Vijay consistently in author metadata and source headers.

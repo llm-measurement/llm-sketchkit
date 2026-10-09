@@ -11,12 +11,13 @@ import (
 
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/wirebounds"
 	"google.golang.org/protobuf/proto"
 )
 
 const (
 	wireVersion  = 1
-	maxWireBytes = 4 << 20
+	maxWireBytes = wirebounds.Small
 
 	// Wire bytes use one byte per dense register. HLL++ ranks fit in 6 bits for
 	// the supported 64-bit hash path, so this stays simple and deterministic.
@@ -83,13 +84,13 @@ type sparseRegisters struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, config.p, config.sp, domain, algorithm, config.promotionThreshold)
@@ -105,10 +106,10 @@ func newSketch(
 ) (*Sketch, error) {
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if p != config.p || sp != config.sp {
-		return nil, fmt.Errorf("%w: profile %s carries p/sp %d/%d", ErrPrecisionMismatch, profile, p, sp)
+		return nil, fmt.Errorf("%w: p/sp %d/%d, want %d/%d", ErrPrecisionMismatch, p, sp, config.p, config.sp)
 	}
 	if err := validatePrecision(p, sp); err != nil {
 		return nil, err
@@ -278,13 +279,16 @@ func (s *Sketch) MarshalBinary() ([]byte, error) {
 
 // Parse decodes a HLL++ sketch from deterministic protobuf bytes.
 func Parse(data []byte) (*Sketch, error) {
-	if len(data) > maxWireBytes {
+	if len(data) > wirebounds.Global || len(data) > maxWireBytes {
 		return nil, fmt.Errorf("%w: input length %d exceeds %d", ErrInvalidWireEncoding, len(data), maxWireBytes)
 	}
 
+	if !wirebounds.Valid(data, maxWireBytes) {
+		return nil, fmt.Errorf("%w: malformed or oversized body", ErrInvalidWireEncoding)
+	}
 	var message sketchpb.Sketch
 	if err := proto.Unmarshal(data, &message); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: malformed protobuf", ErrInvalidWireEncoding)
 	}
 
 	return fromProto(&message)
@@ -342,16 +346,16 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	profile := Profile(metadata.GetProfile())
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	domain := sketchhash.Domain(metadata.GetHashDomain())
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	normalPrecisionRaw := metadata.GetHllppNormalPrecision()
 	sparsePrecisionRaw := metadata.GetHllppSparsePrecision()
 	if normalPrecisionRaw != uint32(config.p) || sparsePrecisionRaw != uint32(config.sp) {
-		return nil, fmt.Errorf("%w: profile %s carries p/sp %d/%d", ErrPrecisionMismatch, profile, normalPrecisionRaw, sparsePrecisionRaw)
+		return nil, fmt.Errorf("%w: p/sp %d/%d, want %d/%d", ErrPrecisionMismatch, normalPrecisionRaw, sparsePrecisionRaw, config.p, config.sp)
 	}
 	normalPrecision := config.p
 	sparsePrecision := config.sp

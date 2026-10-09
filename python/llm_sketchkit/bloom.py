@@ -7,6 +7,8 @@ from __future__ import annotations
 import math
 from typing import Any, cast
 
+from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
+
 from . import _proto, hashfamily, profiles
 
 MAX_UINT64 = (1 << 64) - 1
@@ -47,11 +49,11 @@ class Sketch:
     ) -> None:
         config = profiles.BLOOM_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown bloom profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(domain)
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._config = config
@@ -64,9 +66,14 @@ class Sketch:
     def parse(cls, data: bytes) -> Sketch:
         """Decode a Bloom sketch from deterministic protobuf bytes."""
 
-        if len(data) > _proto.MAX_WIRE_BYTES:
+        if len(data) > _proto.MAX_WIRE_BYTES or len(data) > _proto.BLOOM_WIRE_BYTES:
             raise InvalidWireEncodingError("wire input too large")
-        message = _proto.parse_sketch(data)
+        if not _proto.bounded_wire(data, _proto.BLOOM_WIRE_BYTES):
+            raise InvalidWireEncodingError("malformed or oversized body")
+        try:
+            message = _proto.parse_sketch(data)
+        except DecodeError:
+            raise InvalidWireEncodingError("malformed protobuf") from None
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("bloom"):
             raise InvalidWireEncodingError("missing Bloom metadata or body")
@@ -82,12 +89,12 @@ class Sketch:
         profile = cast(str, metadata.profile)
         config = profiles.BLOOM_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown bloom profile")
         if (
             cast(int, metadata.bloom_bit_count) != config.bit_count
             or cast(int, metadata.bloom_hash_count) != config.hash_count
         ):
-            raise InvalidShapeError(profile)
+            raise InvalidShapeError("invalid bloom shape")
         if cast(str, metadata.hash_domain) not in profiles.REGISTERED_DOMAINS:
             raise IncompatibleMergeError("unregistered domain")
 

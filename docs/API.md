@@ -68,6 +68,15 @@ an existing receiver. A failed parse does not replace an application-owned sketc
 the receiver, including when a query or serialization reports an error. They still
 must not run concurrently with a mutation on the same instance.
 
+Malformed or oversized protobuf input is reported through the sketch's public
+invalid-wire error: Go callers can use `errors.Is(err, ErrInvalidWireEncoding)`;
+Python callers can catch `InvalidWireEncodingError`, a subclass of the sketch's
+public error and `ValueError`. Protobuf implementation exceptions are not the
+public parsing contract. Summary parse failures use `SummaryError` in Python.
+Match error categories, not diagnostic text. Diagnostics avoid including supplied
+profiles, domains, environment names, or input bytes, and invalid UTF-8 errors
+suppress the underlying Python codec exception chain.
+
 ## Summary Exchange
 
 The optional `summary` package wraps existing sketch bytes without changing them.
