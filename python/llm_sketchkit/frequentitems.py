@@ -10,7 +10,7 @@ from typing import Any, cast
 
 from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
 
-from . import _proto, profiles
+from . import _proto, _sketchcheck, profiles
 from .hashfamily import MASK64
 
 NO_FALSE_POSITIVES = "NO_FALSE_POSITIVES"
@@ -73,10 +73,7 @@ class Sketch:
         map_size = profiles.FREQUENT_ITEMS_MAP_SIZES.get(profile)
         if map_size is None:
             raise UnknownProfileError("unknown frequent-items profile")
-        if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError("unregistered hash domain")
-        if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError("unsupported hash algorithm")
+        _sketchcheck.keying(domain, algorithm, IncompatibleMergeError)
 
         self._profile = profile
         self._map_size = map_size
@@ -102,12 +99,9 @@ class Sketch:
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("frequent_items"):
             raise InvalidWireEncodingError("missing frequent-items metadata or body")
-        if metadata.kind != _proto.SKETCH_KIND_FREQUENT_ITEMS:
-            raise InvalidWireEncodingError("wrong sketch kind")
-        if metadata.wire_version != _proto.WIRE_VERSION:
-            raise InvalidWireEncodingError("wrong wire version")
-        if metadata.hash_algo != _proto.HASH_ALGORITHM_HMAC_SHA256_64:
-            raise InvalidWireEncodingError("wrong hash algorithm")
+        _sketchcheck.header(
+            metadata, _proto.SKETCH_KIND_FREQUENT_ITEMS, InvalidWireEncodingError
+        )
         if (
             metadata.representation_mode
             != _proto.REPRESENTATION_FREQUENT_ITEMS_BOUNDED_MAP
