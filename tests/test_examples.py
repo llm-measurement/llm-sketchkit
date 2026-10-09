@@ -87,11 +87,11 @@ def test_unregistered_hash_domain_message() -> None:
     for domain in ("unknown:v1", "model:v1", "api-key:v1", "tenant:v1"):
         with pytest.raises(hash.UnregisteredDomainError) as caught:
             hash.hash64(secret, domain, b"value")
-        assert str(caught.value) == f"unregistered hash domain: {domain}"
+        assert str(caught.value) == "unregistered hash domain"
         for module in (bloom, frequentitems, hllpp, minhash):
             with pytest.raises(module.IncompatibleMergeError) as constructor_error:
                 module.Sketch("small", domain)
-            assert str(constructor_error.value) == f"unregistered hash domain: {domain}"
+            assert str(constructor_error.value) == "unregistered hash domain"
 
 
 def test_frequent_items_order() -> None:

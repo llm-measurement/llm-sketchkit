@@ -48,11 +48,11 @@ class Sketch:
     ) -> None:
         length = profiles.MINHASH_SIGNATURE_LENGTHS.get(profile)
         if length is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown minhash profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(f"unregistered hash domain: {domain}")
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._length = length
@@ -88,9 +88,9 @@ class Sketch:
         profile = cast(str, metadata.profile)
         length = profiles.MINHASH_SIGNATURE_LENGTHS.get(profile)
         if length is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown minhash profile")
         if cast(int, metadata.minhash_signature_length) != length:
-            raise InvalidSignatureLengthError(profile)
+            raise InvalidSignatureLengthError("invalid minhash signature length")
         if cast(str, metadata.hash_domain) not in profiles.REGISTERED_DOMAINS:
             raise IncompatibleMergeError("unregistered domain")
 

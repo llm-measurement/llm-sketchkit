@@ -14,6 +14,10 @@ This table describes `main`. The published `0.2.x` releases support Go 1.25 and
 1.26. The Go 1.26 minimum on `main` is for the next minor release, not a `0.2.x`
 patch release.
 
+The 0.2.3 hardening release is backported to the 0.2.x line with Go 1.25
+support and `golang.org/x/text v0.41.0`. Main retains its Go 1.26 minimum and
+`golang.org/x/text v0.42.0` for the next minor release.
+
 A runtime line is removed only in a minor release and is called out in the
 changelog. Security patches to a supported runtime should be applied promptly by
 the embedding application.

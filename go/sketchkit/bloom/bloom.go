@@ -75,13 +75,13 @@ type Sketch struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, config, domain, algorithm), nil
@@ -288,14 +288,14 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	profile := Profile(metadata.GetProfile())
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if metadata.GetBloomBitCount() != config.bitCount || metadata.GetBloomHashCount() != config.hashCount {
-		return nil, fmt.Errorf("%w: profile %s bit_count=%d hash_count=%d",
-			ErrInvalidShape, profile, metadata.GetBloomBitCount(), metadata.GetBloomHashCount())
+		return nil, fmt.Errorf("%w: bit_count=%d hash_count=%d, want %d/%d",
+			ErrInvalidShape, metadata.GetBloomBitCount(), metadata.GetBloomHashCount(), config.bitCount, config.hashCount)
 	}
 	if !sketchhash.IsRegisteredDomain(sketchhash.Domain(metadata.GetHashDomain())) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, metadata.GetHashDomain())
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if len(body.GetBitset()) != int(byteLen(config.bitCount)) {
 		return nil, fmt.Errorf("%w: bitset length", ErrInvalidWireEncoding)

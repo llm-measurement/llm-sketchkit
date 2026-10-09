@@ -97,10 +97,10 @@ class Envelope:
                 raise SummaryError("invalid summary sketch state")
             try:
                 state, canonical = _summary_state.parse(payload.kind, payload.data)
-            except (ValueError, binascii.Error, DecodeError) as exc:
+            except (ValueError, binascii.Error, DecodeError):
                 raise SummaryError(
                     "invalid or incompatible summary sketch state"
-                ) from exc
+                ) from None
             if canonical != payload.data:
                 raise SummaryError("invalid summary sketch state")
             parsed[name] = state
@@ -146,8 +146,8 @@ class Envelope:
             if envelope.marshal_binary() != data:
                 raise SummaryError("noncanonical summary JSON")
             return envelope
-        except (ValueError, TypeError, KeyError, AttributeError, RecursionError) as exc:
-            raise SummaryError("invalid summary JSON or state") from exc
+        except (ValueError, TypeError, KeyError, AttributeError, RecursionError):
+            raise SummaryError("invalid summary JSON or state") from None
 
 
 def compatible(a: Envelope, b: Envelope) -> None:
@@ -291,10 +291,10 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
                     accumulated[name] = state
                 else:
                     accumulated[name].merge(state)
-            except (ValueError, binascii.Error, DecodeError) as exc:
+            except (ValueError, binascii.Error, DecodeError):
                 raise SummaryError(
                     "invalid or incompatible summary sketch state"
-                ) from exc
+                ) from None
     result.sketches = {
         name: Payload(parsed.state.marshal_binary(), kinds[name])
         for name, parsed in accumulated.items()
@@ -350,5 +350,5 @@ def _merge_payload(a: Payload, b: Payload | None = None) -> Payload:
         else:
             raise SummaryError("unknown summary sketch kind")
         return Payload(data, a.kind)
-    except (ValueError, binascii.Error, DecodeError) as exc:
-        raise SummaryError("invalid or incompatible summary sketch state") from exc
+    except (ValueError, binascii.Error, DecodeError):
+        raise SummaryError("invalid or incompatible summary sketch state") from None

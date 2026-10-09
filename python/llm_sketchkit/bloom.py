@@ -49,11 +49,11 @@ class Sketch:
     ) -> None:
         config = profiles.BLOOM_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown bloom profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(f"unregistered hash domain: {domain}")
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._config = config
@@ -89,12 +89,12 @@ class Sketch:
         profile = cast(str, metadata.profile)
         config = profiles.BLOOM_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown bloom profile")
         if (
             cast(int, metadata.bloom_bit_count) != config.bit_count
             or cast(int, metadata.bloom_hash_count) != config.hash_count
         ):
-            raise InvalidShapeError(profile)
+            raise InvalidShapeError("invalid bloom shape")
         if cast(str, metadata.hash_domain) not in profiles.REGISTERED_DOMAINS:
             raise IncompatibleMergeError("unregistered domain")
 

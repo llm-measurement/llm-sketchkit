@@ -6,7 +6,6 @@ package canon
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -33,7 +32,7 @@ var (
 // Canonicalize applies profile to UTF-8 bytes and returns canonical UTF-8 bytes.
 func Canonicalize(profile Profile, input []byte) ([]byte, error) {
 	if profile != TextV1 {
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedProfile, profile)
+		return nil, ErrUnsupportedProfile
 	}
 	if !utf8.Valid(input) {
 		return nil, ErrInvalidUTF8
@@ -45,7 +44,7 @@ func Canonicalize(profile Profile, input []byte) ([]byte, error) {
 // CanonicalizeString applies profile to a Go string and returns canonical UTF-8 bytes.
 func CanonicalizeString(profile Profile, input string) ([]byte, error) {
 	if profile != TextV1 {
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedProfile, profile)
+		return nil, ErrUnsupportedProfile
 	}
 	if !utf8.ValidString(input) {
 		return nil, ErrInvalidUTF8

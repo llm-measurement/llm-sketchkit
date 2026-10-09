@@ -69,13 +69,13 @@ type Sketch struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	length, ok := profileLengths[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, length, domain, algorithm), nil
@@ -270,14 +270,14 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	profile := Profile(metadata.GetProfile())
 	length, ok := profileLengths[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if metadata.GetMinhashSignatureLength() != uint32(length) {
-		return nil, fmt.Errorf("%w: profile %s length=%d",
-			ErrInvalidSignatureLength, profile, metadata.GetMinhashSignatureLength())
+		return nil, fmt.Errorf("%w: length=%d, want %d",
+			ErrInvalidSignatureLength, metadata.GetMinhashSignatureLength(), length)
 	}
 	if !sketchhash.IsRegisteredDomain(sketchhash.Domain(metadata.GetHashDomain())) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, metadata.GetHashDomain())
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if len(body.GetSignature()) != length {
 		return nil, fmt.Errorf("%w: signature length", ErrInvalidWireEncoding)
