@@ -31,14 +31,7 @@ var (
 
 // Canonicalize applies profile to UTF-8 bytes and returns canonical UTF-8 bytes.
 func Canonicalize(profile Profile, input []byte) ([]byte, error) {
-	if profile != TextV1 {
-		return nil, ErrUnsupportedProfile
-	}
-	if !utf8.Valid(input) {
-		return nil, ErrInvalidUTF8
-	}
-
-	return canonicalizeTextV1(string(input)), nil
+	return CanonicalizeString(profile, string(input))
 }
 
 // CanonicalizeString applies profile to a Go string and returns canonical UTF-8 bytes.
