@@ -432,7 +432,11 @@ def _estimate_bias(estimate: float, precision: int) -> float:
         range(len(estimates)), key=lambda index: (estimate - estimates[index]) ** 2
     )
     neighbors = min(6, len(indexes))
-    return sum(biases[index] for index in indexes[:neighbors]) / float(neighbors)
+    # Match Go's left-to-right binary64 additions, including on Python 3.12+.
+    total = 0.0
+    for index in indexes[:neighbors]:
+        total += biases[index]
+    return total / float(neighbors)
 
 
 def _add_all(sketch: Sketch, values: Iterable[int]) -> Sketch:

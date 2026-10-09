@@ -1,0 +1,726 @@
+{
+  "schema_version": 1,
+  "generator": "splitmix64",
+  "cases": [
+    {
+      "name": "micro_empty_sparse_1",
+      "profile": "micro",
+      "count": 0,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "ad404c9909ee9807dd701136f85dcb4c766de516fa00720437c7344a390e1f1a"
+    },
+    {
+      "name": "micro_empty_sparse_20261009",
+      "profile": "micro",
+      "count": 0,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "ad404c9909ee9807dd701136f85dcb4c766de516fa00720437c7344a390e1f1a"
+    },
+    {
+      "name": "micro_empty_dense_1",
+      "profile": "micro",
+      "count": 0,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "92c45fb0018ce70947537065c0e3b1ab6add80e514d02e7369903eb8e9f8cce7"
+    },
+    {
+      "name": "micro_empty_dense_20261009",
+      "profile": "micro",
+      "count": 0,
+      "seed": 20261009,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "92c45fb0018ce70947537065c0e3b1ab6add80e514d02e7369903eb8e9f8cce7"
+    },
+    {
+      "name": "micro_singleton_1",
+      "profile": "micro",
+      "count": 1,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "3ff0000800055549",
+      "wire_sha256": "32b51ffdcace83a6bcf38f64301b7890ce0025e6bab7aacbc9ce5a0c0326c342"
+    },
+    {
+      "name": "micro_singleton_20261009",
+      "profile": "micro",
+      "count": 1,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "3ff0000800055549",
+      "wire_sha256": "adc4f5b6ea759bab42d4626d896d5afe77ea555150f5d847b99b9c16b70d92fa"
+    },
+    {
+      "name": "micro_sparse_1",
+      "profile": "micro",
+      "count": 100,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "405904e345e4cfc0",
+      "wire_sha256": "103123188e7e62953bdda3a1d6aafc3b633a52e365a26b08572de82e483f45b1"
+    },
+    {
+      "name": "micro_sparse_20261009",
+      "profile": "micro",
+      "count": 100,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "405904e345e4cfc0",
+      "wire_sha256": "24f3ce6f89d87500caab152759a7115aaa4a3469c50fb82d9abf25e2a54326e4"
+    },
+    {
+      "name": "micro_promotion_before_1",
+      "profile": "micro",
+      "count": 256,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "4070080559588b25",
+      "wire_sha256": "09dfc5370b01e45ab6adfee9ec314c5b1a9e0487141a352cd865bcd440a944ce"
+    },
+    {
+      "name": "micro_promotion_before_20261009",
+      "profile": "micro",
+      "count": 256,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "4070080559588b25",
+      "wire_sha256": "65bb776c9e1cba572b3c738d954ab8b03bd826db4dc2e85b6880af9a5e08815a"
+    },
+    {
+      "name": "micro_promotion_after_1",
+      "profile": "micro",
+      "count": 320,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "407425bce84749b6",
+      "wire_sha256": "e68e52b7415dbdf5b5d735b87a6ec6c02e7a56b08aa576e4dd06624d85e96e45"
+    },
+    {
+      "name": "micro_promotion_after_20261009",
+      "profile": "micro",
+      "count": 320,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "4073f1d405ce86d3",
+      "wire_sha256": "9fd7346f869b95f346b231dba59991dcf90113987a06da3994bbe6a1345c9931"
+    },
+    {
+      "name": "micro_forced_dense_1",
+      "profile": "micro",
+      "count": 100,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 2,
+      "estimate_bits": "40594f6b99a24473",
+      "wire_sha256": "00af564fa2d28b066d642b6b5e3c5f54efc6e481d42b1f27125d964c154cee2d"
+    },
+    {
+      "name": "micro_forced_dense_20261009",
+      "profile": "micro",
+      "count": 100,
+      "seed": 20261009,
+      "force_dense": true,
+      "max_ulps": 2,
+      "estimate_bits": "40594f6b99a24473",
+      "wire_sha256": "93fca7dd43bb25ff79e11b6870daeeb376150f0c659bc34ce750c19ce57bbe5e"
+    },
+    {
+      "name": "micro_linear_counting_1",
+      "profile": "micro",
+      "count": 2048,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "409f991c6cb3b37a",
+      "wire_sha256": "8423a5545f1dab65c66dbb1a178551215f0ae23ef65f567d168c53e402b8022d"
+    },
+    {
+      "name": "micro_linear_counting_20261009",
+      "profile": "micro",
+      "count": 2048,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "409fc07ada69a910",
+      "wire_sha256": "d081bfbc44259300c0d8320f0a9ea9b5dcffc5ea2389d08d949582b16f1665cc"
+    },
+    {
+      "name": "micro_bias_m_1",
+      "profile": "micro",
+      "count": 4096,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40af5d7763cfc196",
+      "wire_sha256": "ce570bf18cc23acfcfc0f3c3838635bb867049fbc038ab72a1f400fbd660ae87"
+    },
+    {
+      "name": "micro_bias_m_20261009",
+      "profile": "micro",
+      "count": 4096,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40b0426521aff532",
+      "wire_sha256": "e0b4b6f4bad483e8b090bd9c4975514053c0a3170a99fa6b013e4f9a5a7b1441"
+    },
+    {
+      "name": "micro_bias_2m_1",
+      "profile": "micro",
+      "count": 8192,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40c00e996f9736f4",
+      "wire_sha256": "3c00b719746d60823640896ae725833c9348140522e3da04365d4194008d70e3"
+    },
+    {
+      "name": "micro_bias_2m_20261009",
+      "profile": "micro",
+      "count": 8192,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40c005fea71d44b2",
+      "wire_sha256": "fac10355d2c1823a96ed74354471783dbbb591fab0539b4baf730b79c7c00b8b"
+    },
+    {
+      "name": "micro_bias_4m_1",
+      "profile": "micro",
+      "count": 16384,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40d007a18d160aa2",
+      "wire_sha256": "2beedc661e711bcae5ebf8d24988ae99fa4925808b63d6cea0e153e7470152c8"
+    },
+    {
+      "name": "micro_bias_4m_20261009",
+      "profile": "micro",
+      "count": 16384,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40d01df5cc24b877",
+      "wire_sha256": "49426a5519eed1733ad7f9faaa03b4323274949285371b21ef5ac9666aa82366"
+    },
+    {
+      "name": "micro_raw_1",
+      "profile": "micro",
+      "count": 40960,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40e4b7bba86a6478",
+      "wire_sha256": "d666b720cfb45652b321997f2b8474f7314c7a9179efd18cc5c1d3587045e72b"
+    },
+    {
+      "name": "micro_raw_20261009",
+      "profile": "micro",
+      "count": 40960,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40e43618b93bae40",
+      "wire_sha256": "34f3b6c8b9382585dd4aa6fca55bc5dde5080fd2f9ede2c61e7dca1daa46d648"
+    },
+    {
+      "name": "small_empty_sparse_1",
+      "profile": "small",
+      "count": 0,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "56a25677080dd1026afa1b94d9198a288590273fed131bba4eb80b330f112c0d"
+    },
+    {
+      "name": "small_empty_sparse_20261009",
+      "profile": "small",
+      "count": 0,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "56a25677080dd1026afa1b94d9198a288590273fed131bba4eb80b330f112c0d"
+    },
+    {
+      "name": "small_empty_dense_1",
+      "profile": "small",
+      "count": 0,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "c6042fb2a45c2db0c4668f258f851a57ddc5eebd80810e069949db8d42d348f5"
+    },
+    {
+      "name": "small_empty_dense_20261009",
+      "profile": "small",
+      "count": 0,
+      "seed": 20261009,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "c6042fb2a45c2db0c4668f258f851a57ddc5eebd80810e069949db8d42d348f5"
+    },
+    {
+      "name": "small_singleton_1",
+      "profile": "small",
+      "count": 1,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "3ff00001ffff5555",
+      "wire_sha256": "34e20ac91898e452877b56c87a4e5584f73a9c8fc2c8b4a9734eb31fb5098aef"
+    },
+    {
+      "name": "small_singleton_20261009",
+      "profile": "small",
+      "count": 1,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "3ff00001ffff5555",
+      "wire_sha256": "dfd2931f8dbe95c96a7eabeb080cae40e0ea81c3d229a413b8798efd28db6a6d"
+    },
+    {
+      "name": "small_sparse_1",
+      "profile": "small",
+      "count": 100,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "405901389459cc76",
+      "wire_sha256": "a6160aa0319f1a8864bdb34fe8f89801ab51645a1337c9beb1b8b3738d4766c9"
+    },
+    {
+      "name": "small_sparse_20261009",
+      "profile": "small",
+      "count": 100,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "405901389459cc76",
+      "wire_sha256": "f8da07ce8b4f90f739795664ec93f75ab59e966e52c01e9638e4fd8b07231547"
+    },
+    {
+      "name": "small_promotion_before_1",
+      "profile": "small",
+      "count": 1024,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "408ff7f2a3ab145c",
+      "wire_sha256": "c2be94be9b0cba195497ee763870a8535ec7d331e17a9a2ab5c48f3f63e45541"
+    },
+    {
+      "name": "small_promotion_before_20261009",
+      "profile": "small",
+      "count": 1024,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "408ffffaa6a91112",
+      "wire_sha256": "5fccbf2c6c8af4b74c73bb2ce49a580b2fa206309aa0192c648d0dc6e61dfd49"
+    },
+    {
+      "name": "small_promotion_after_1",
+      "profile": "small",
+      "count": 1088,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "4091017261f81837",
+      "wire_sha256": "dd0f9c75c3e3f905ada5d1c2fc2ee7422bb08c47f1427551d0c3629941ff40f9"
+    },
+    {
+      "name": "small_promotion_after_20261009",
+      "profile": "small",
+      "count": 1088,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40910e45b3cae829",
+      "wire_sha256": "79ef7b10492f3901a0a3db2870091d620c3a7f51d81bf1926fbf92b037be7753"
+    },
+    {
+      "name": "small_forced_dense_1",
+      "profile": "small",
+      "count": 100,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 2,
+      "estimate_bits": "4059139c704acd81",
+      "wire_sha256": "bfb43c955182871023a27f99f925014c51421dcb10d30deb62e4348194e73a60"
+    },
+    {
+      "name": "small_forced_dense_20261009",
+      "profile": "small",
+      "count": 100,
+      "seed": 20261009,
+      "force_dense": true,
+      "max_ulps": 2,
+      "estimate_bits": "4059139c704acd81",
+      "wire_sha256": "1fbd91ba93c8d64a2a7382709540fdc42482fb6d0677216b5feca77c919b05f6"
+    },
+    {
+      "name": "small_linear_counting_1",
+      "profile": "small",
+      "count": 8192,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40c00d87805f17e7",
+      "wire_sha256": "0d385ac3e3bfbded19fea608f0b17c6abe2f0667f971d31c88ab75d764a243d0"
+    },
+    {
+      "name": "small_linear_counting_20261009",
+      "profile": "small",
+      "count": 8192,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40c00546b6f36374",
+      "wire_sha256": "6c480501616db926e0b4366f51f320e219692cb76af2d588f843e28316b6d218"
+    },
+    {
+      "name": "small_bias_m_1",
+      "profile": "small",
+      "count": 16384,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40d014f4c3a8f369",
+      "wire_sha256": "53df97beb44101ad8eba44b1be6d670bd131f649b6293c101e7670a7ce157ec7"
+    },
+    {
+      "name": "small_bias_m_20261009",
+      "profile": "small",
+      "count": 16384,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40cfe42821465530",
+      "wire_sha256": "87359ccf715503dd8ce23806e8e984e342bcd6a265135dfe9fccbfe6588f1ee0"
+    },
+    {
+      "name": "small_bias_2m_1",
+      "profile": "small",
+      "count": 32768,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40e012b86c7def4e",
+      "wire_sha256": "faf6591a68e2404663e08422ba7cd89a734742d8f3fdbd5d825e2c9dd57218f8"
+    },
+    {
+      "name": "small_bias_2m_20261009",
+      "profile": "small",
+      "count": 32768,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40dff591f38c854d",
+      "wire_sha256": "7325cf5387dfc28c9eac09627cf1a0635ee5e0625cde82b68c0274d5d8cbccad"
+    },
+    {
+      "name": "small_bias_4m_1",
+      "profile": "small",
+      "count": 65536,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40f02d8ef0561317",
+      "wire_sha256": "37387210cd282517d1f7914f193012b04c79b125a4c3e38d8030af695ff444f7"
+    },
+    {
+      "name": "small_bias_4m_20261009",
+      "profile": "small",
+      "count": 65536,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40eff2b65815bea4",
+      "wire_sha256": "a1ad83931b97a59309c75e84777d6a1771d01ef37391e5b5d4178c15b242e166"
+    },
+    {
+      "name": "small_raw_1",
+      "profile": "small",
+      "count": 163840,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "4103c667ec3da9cb",
+      "wire_sha256": "b890b331cdc601fcc86c3d21920e809c18bdd402a029dd31ec3792492e5ed459"
+    },
+    {
+      "name": "small_raw_20261009",
+      "profile": "small",
+      "count": 163840,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "410406567c4e1130",
+      "wire_sha256": "2ecea05bdd268254d6f4f49f6f27d726a5c63743112d4f8b670d4dc8aaac6996"
+    },
+    {
+      "name": "default_empty_sparse_1",
+      "profile": "default",
+      "count": 0,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "5b58574fb7e8a829bca7f02efbabd512f4386da6b6788bd3cb870a8e8264728e"
+    },
+    {
+      "name": "default_empty_sparse_20261009",
+      "profile": "default",
+      "count": 0,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "5b58574fb7e8a829bca7f02efbabd512f4386da6b6788bd3cb870a8e8264728e"
+    },
+    {
+      "name": "default_empty_dense_1",
+      "profile": "default",
+      "count": 0,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "5133cd15fe79c895e2c25aad2231b0908aa121aeab33142e93002ec2dc495ac3"
+    },
+    {
+      "name": "default_empty_dense_20261009",
+      "profile": "default",
+      "count": 0,
+      "seed": 20261009,
+      "force_dense": true,
+      "max_ulps": 0,
+      "estimate_bits": "0000000000000000",
+      "wire_sha256": "5133cd15fe79c895e2c25aad2231b0908aa121aeab33142e93002ec2dc495ac3"
+    },
+    {
+      "name": "default_singleton_1",
+      "profile": "default",
+      "count": 1,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "3ff000007ffff555",
+      "wire_sha256": "b956dbbd08cbfe1f9e5851979a85a3fb7cc6e154415639ec7b7dafec34bce10c"
+    },
+    {
+      "name": "default_singleton_20261009",
+      "profile": "default",
+      "count": 1,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "3ff000007ffff555",
+      "wire_sha256": "8a0e7aada5cecef158af5cfa5d4b119f576796d4385b85e70fe84a60f4fd45be"
+    },
+    {
+      "name": "default_sparse_1",
+      "profile": "default",
+      "count": 100,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "4059004e2145a373",
+      "wire_sha256": "c23daa48ee7a471b8a813ac74180c6bf3039a4dcd03f2be49ee7579d8570a76f"
+    },
+    {
+      "name": "default_sparse_20261009",
+      "profile": "default",
+      "count": 100,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "4059004e2145a373",
+      "wire_sha256": "af409259038436eaf81ca67b41c0e5a824335e5bdea1fb6ea1f981ca3ddb5d7d"
+    },
+    {
+      "name": "default_promotion_before_1",
+      "profile": "default",
+      "count": 2048,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40a002005565587b",
+      "wire_sha256": "8dbe1c7ab8211f74ec5ee8f0f693aeb235b314ab80c2d713e70a39056435729e"
+    },
+    {
+      "name": "default_promotion_before_20261009",
+      "profile": "default",
+      "count": 2048,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "409ffffeaa2a9131",
+      "wire_sha256": "2a48f14a6d1e87effd3e124a2d4081bf5c2495dc2078ad14e7899cc2f87c31b6"
+    },
+    {
+      "name": "default_promotion_after_1",
+      "profile": "default",
+      "count": 2112,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40a0837695c29f7e",
+      "wire_sha256": "802cc52625ea6e0482c7a360e764a21caeb7128107c8fb338b4e34051291b4e5"
+    },
+    {
+      "name": "default_promotion_after_20261009",
+      "profile": "default",
+      "count": 2112,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40a08bff307fd913",
+      "wire_sha256": "dc3ce4b267f0210d99c7df2ebab565d5de7fb445fe68ad52c12f6c78d25098ff"
+    },
+    {
+      "name": "default_forced_dense_1",
+      "profile": "default",
+      "count": 100,
+      "seed": 1,
+      "force_dense": true,
+      "max_ulps": 2,
+      "estimate_bits": "405909c919122467",
+      "wire_sha256": "43ff89f0ee8b38a692736c0853cb3d32362ee543e93f45147c395590c0f26d54"
+    },
+    {
+      "name": "default_forced_dense_20261009",
+      "profile": "default",
+      "count": 100,
+      "seed": 20261009,
+      "force_dense": true,
+      "max_ulps": 2,
+      "estimate_bits": "405909c919122467",
+      "wire_sha256": "88c04eff1381c653dfb20e9ebfe6ef0884878dff31e11c82694cdb6c73c88d9a"
+    },
+    {
+      "name": "default_linear_counting_1",
+      "profile": "default",
+      "count": 16384,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40d0113ef34cbf60",
+      "wire_sha256": "25a7800b1c714ad6b7d0559c42b656fbe9ebf387bf94b532e82aa6ebc60a2e9f"
+    },
+    {
+      "name": "default_linear_counting_20261009",
+      "profile": "default",
+      "count": 16384,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 2,
+      "estimate_bits": "40cfe4a6bc3d496a",
+      "wire_sha256": "fc5322dd8a800a475c2f9c8db735896841c2ba552e31b6a3a2eb445b0224f178"
+    },
+    {
+      "name": "default_bias_m_1",
+      "profile": "default",
+      "count": 32768,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40dfe33c1ff3d84a",
+      "wire_sha256": "5b384c38807256bccb87049fe71c985721ffb8e32e417c804d022b315d3619a9"
+    },
+    {
+      "name": "default_bias_m_20261009",
+      "profile": "default",
+      "count": 32768,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40e01e6e96b250a4",
+      "wire_sha256": "256f63ba53fb20b795957229c8cd2a20e7624c4ebedabf06ebb45c819659623c"
+    },
+    {
+      "name": "default_bias_2m_1",
+      "profile": "default",
+      "count": 65536,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40f00ff2f5e10ac3",
+      "wire_sha256": "d6a51fe6695ef320954c6337f04d01a9dac9c24323cfd39171c30b15243d9f37"
+    },
+    {
+      "name": "default_bias_2m_20261009",
+      "profile": "default",
+      "count": 65536,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "40f014464e75258c",
+      "wire_sha256": "dc688dd7bde81549bac29993c95ea31e2508ba44d9d6c0af2cf6bfa166a5d921"
+    },
+    {
+      "name": "default_bias_4m_1",
+      "profile": "default",
+      "count": 131072,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "41000aa6656d8a3c",
+      "wire_sha256": "7de2ebac8483294e82ccf261691c6637d4420d599bfe6195455ebd98a13a586d"
+    },
+    {
+      "name": "default_bias_4m_20261009",
+      "profile": "default",
+      "count": 131072,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "410010157b567e41",
+      "wire_sha256": "573b9c485daf9334476cf1b467e045e3d895254bc39a8ea598ac37ac4c15ced8"
+    },
+    {
+      "name": "default_raw_1",
+      "profile": "default",
+      "count": 327680,
+      "seed": 1,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "4113db8b2c74a023",
+      "wire_sha256": "9df14673884d71c1a9871e9ce25508a643d107cbbf378236a5ef3ffaf7c307f9"
+    },
+    {
+      "name": "default_raw_20261009",
+      "profile": "default",
+      "count": 327680,
+      "seed": 20261009,
+      "force_dense": false,
+      "max_ulps": 0,
+      "estimate_bits": "41140706da889953",
+      "wire_sha256": "14172a9352dbcfe0f7eac08bdddb6df251879b86a2e116e1235b72fae7c89276"
+    }
+  ]
+}

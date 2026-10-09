@@ -34,6 +34,10 @@ at most 128 counters and 16 sketches per envelope. Supported kinds are `hllpp`,
 8 MiB. JSON uses sorted object keys, no whitespace or trailing newline, and
 standard padded base64. Sketch bytes must themselves round-trip canonically.
 
+A zero-length observation interval may contain only zero counters and an empty
+sketch map. Combining epochs orders them by observed start, observed end and
+epoch identifier, so equal start times have the same meaning in both languages.
+
 ## Replacement, Restarts, and Combination
 
 Only cumulative, per-window snapshots are supported. For each

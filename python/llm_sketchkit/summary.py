@@ -87,6 +87,9 @@ class Envelope:
             if type(count) is not int or not 0 <= count <= _MAX_INT:
                 raise SummaryError("invalid summary counter")
         size = 0
+        if self.observed_start_unix_nano == self.observed_end_unix_nano:
+            if any(self.counters.values()) or self.sketches:
+                raise SummaryError("nonempty zero-length summary observation")
         parsed: dict[str, _summary_state.Parsed] = {}
         for name, payload in self.sketches.items():
             _check_identifier(name)
@@ -303,7 +306,9 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
         if name not in intervals:
             result.missing.append(name)
             continue
-        parts = sorted(intervals[name], key=lambda doc: doc.observed_start_unix_nano)
+        parts = sorted(intervals[name], key=lambda doc: (
+            doc.observed_start_unix_nano, doc.observed_end_unix_nano, doc.epoch,
+        ))
         end = parts[0].window_start_unix_nano
         partial = False
         for part in parts:

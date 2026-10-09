@@ -43,6 +43,21 @@ v0.1 HLL++ implementations MUST reject normal/sparse precision pairs that do
 not exactly match one of the named HLL++ profiles above. Arbitrary HLL++
 precision construction is unsupported.
 
+### HLL++ Estimate Evaluation
+
+Dense-register reciprocal terms MUST be added in register-index order using
+binary64 left-to-right addition. The six selected bias values MUST likewise
+be added left-to-right in nearest-estimate order before division by six (or
+the available neighbor count). Python's compensated `sum()` is not equivalent
+to this evaluation order.
+
+The appended [estimate vectors](../vectors/identity/README.md) cover all three
+profiles, sparse and dense states, promotion, linear counting, bias correction
+and raw estimates. Bias and raw cases require exact binary64 results for those
+vectors. Linear-counting cases permit at most two ULPs for platform `log`
+differences. Serialized state is checked exactly in every case. This is a
+tested numerical contract, not a change to HLL++ statistical accuracy.
+
 ## Weighted Frequent-Items Metadata
 
 Weighted frequent-items uses non-negative signed 64-bit weights in version 1.

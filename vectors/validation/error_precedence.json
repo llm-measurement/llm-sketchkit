@@ -1,0 +1,19 @@
+{
+  "description": "These malformed HLL++ inputs violate both hash-domain and precision rules. Both implementations reject them; established per-language error precedence is preserved.",
+  "cases": [
+    {
+      "name": "invalid_domain_and_missing_sparse_precision",
+      "kind": "hllpp",
+      "serialized_hex": "0a20080110011a056d6963726f220970726f6d70743a5c3128013001a0010c6a011052260a0508d76210010a0508a16610010a060895ab0110010a060890ec0110010a0608e6dc031001",
+      "go_category": "keying",
+      "python_category": "shape"
+    },
+    {
+      "name": "invalid_domain_and_hidden_precision_fields",
+      "kind": "hllpp",
+      "serialized_hex": "0a1a080110011a056d6963726f220970666f6d70743a763128013001a0010ca8011052260a0508d76210010a0508a16610010a060895ab0110010a060890ec0110010a0608e6dc031001",
+      "go_category": "keying",
+      "python_category": "shape"
+    }
+  ]
+}
