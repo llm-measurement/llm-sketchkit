@@ -11,6 +11,7 @@ import (
 
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/sketchcheck"
 	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/wirebounds"
 	"google.golang.org/protobuf/proto"
 )
@@ -103,11 +104,8 @@ func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorit
 	if !ok {
 		return nil, ErrUnknownProfile
 	}
-	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, sketchhash.ErrUnregisteredDomain
-	}
-	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
+	if err := sketchcheck.Keying(domain, algorithm, ErrIncompatibleMerge); err != nil {
+		return nil, err
 	}
 
 	return newSketch(profile, mapSize, domain, algorithm)
@@ -126,11 +124,8 @@ func newSketch(
 	if mapSize <= 0 || mapSize != profileMapSize {
 		return nil, fmt.Errorf("%w: map size %d, want %d", ErrInvalidMapSize, mapSize, profileMapSize)
 	}
-	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, sketchhash.ErrUnregisteredDomain
-	}
-	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
+	if err := sketchcheck.Keying(domain, algorithm, ErrIncompatibleMerge); err != nil {
+		return nil, err
 	}
 
 	pool := make([]counter, mapSize)
@@ -391,14 +386,8 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	if metadata == nil || body == nil {
 		return nil, fmt.Errorf("%w: missing frequent-items metadata or body", ErrInvalidWireEncoding)
 	}
-	if metadata.GetKind() != sketchpb.SketchKind_SKETCH_KIND_FREQUENT_ITEMS {
-		return nil, fmt.Errorf("%w: kind %s", ErrInvalidWireEncoding, metadata.GetKind())
-	}
-	if metadata.GetWireVersion() != wireVersion {
-		return nil, fmt.Errorf("%w: wire version %d", ErrInvalidWireEncoding, metadata.GetWireVersion())
-	}
-	if metadata.GetHashAlgo() != sketchpb.HashAlgorithm_HASH_ALGORITHM_HMAC_SHA256_64 {
-		return nil, fmt.Errorf("%w: hash algorithm %s", ErrInvalidWireEncoding, metadata.GetHashAlgo())
+	if err := sketchcheck.Header(metadata, sketchpb.SketchKind_SKETCH_KIND_FREQUENT_ITEMS, wireVersion, ErrInvalidWireEncoding); err != nil {
+		return nil, err
 	}
 	if metadata.GetRepresentationMode() != sketchpb.RepresentationMode_REPRESENTATION_MODE_FREQUENT_ITEMS_BOUNDED_MAP {
 		return nil, fmt.Errorf("%w: representation %s", ErrInvalidWireEncoding, metadata.GetRepresentationMode())

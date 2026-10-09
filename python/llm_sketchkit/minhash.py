@@ -8,7 +8,7 @@ from typing import Any, cast
 
 from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
 
-from . import _proto, hashfamily, profiles
+from . import _proto, _sketchcheck, hashfamily, profiles
 
 MAX_UINT64 = (1 << 64) - 1
 
@@ -49,10 +49,7 @@ class Sketch:
         length = profiles.MINHASH_SIGNATURE_LENGTHS.get(profile)
         if length is None:
             raise UnknownProfileError("unknown minhash profile")
-        if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError("unregistered hash domain")
-        if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError("unsupported hash algorithm")
+        _sketchcheck.keying(domain, algorithm, IncompatibleMergeError)
 
         self._profile = profile
         self._length = length
@@ -76,12 +73,9 @@ class Sketch:
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("minhash"):
             raise InvalidWireEncodingError("missing MinHash metadata or body")
-        if metadata.kind != _proto.SKETCH_KIND_MINHASH:
-            raise InvalidWireEncodingError("wrong sketch kind")
-        if metadata.wire_version != _proto.WIRE_VERSION:
-            raise InvalidWireEncodingError("wrong wire version")
-        if metadata.hash_algo != _proto.HASH_ALGORITHM_HMAC_SHA256_64:
-            raise InvalidWireEncodingError("wrong hash algorithm")
+        _sketchcheck.header(
+            metadata, _proto.SKETCH_KIND_MINHASH, InvalidWireEncodingError
+        )
         if metadata.representation_mode != _proto.REPRESENTATION_MINHASH_SIGNATURE:
             raise InvalidWireEncodingError("wrong representation")
 
