@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable
 from typing import Any, cast
 
 from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
@@ -138,7 +137,7 @@ class Sketch:
 
         value &= MASK64
         if self._sparse is not None:
-            index, rank = _sparse_register(value, self._sp)
+            index, rank = _register(value, self._sp)
             current = self._sparse.get(index)
             if current is None or rank > current:
                 self._sparse[index] = rank
@@ -148,7 +147,7 @@ class Sketch:
 
         if self._dense is None:
             raise InvalidWireEncodingError("missing dense registers")
-        index, rank = _dense_register(value, self._p)
+        index, rank = _register(value, self._p)
         if rank > self._dense[index]:
             self._dense[index] = rank
 
@@ -346,15 +345,9 @@ def _merge_dense(dst: list[int], src: list[int]) -> None:
             dst[i] = rank
 
 
-def _dense_register(value: int, precision: int) -> tuple[int, int]:
+def _register(value: int, precision: int) -> tuple[int, int]:
     index = value >> (64 - precision)
     rank = _register_rank((value << precision) & MASK64, 64 - precision)
-    return index, rank
-
-
-def _sparse_register(value: int, sparse_precision: int) -> tuple[int, int]:
-    index = value >> (64 - sparse_precision)
-    rank = _register_rank((value << sparse_precision) & MASK64, 64 - sparse_precision)
     return index, rank
 
 
@@ -431,9 +424,3 @@ def _estimate_bias(estimate: float, precision: int) -> float:
     for index in indexes[:neighbors]:
         total += biases[index]
     return total / float(neighbors)
-
-
-def _add_all(sketch: Sketch, values: Iterable[int]) -> Sketch:
-    for value in values:
-        sketch.add_hash(value)
-    return sketch

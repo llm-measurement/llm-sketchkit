@@ -119,7 +119,7 @@ func newSketch(
 // It has no recoverable error return; runtime panics have no rollback guarantee.
 func (s *Sketch) AddHash(hash uint64) {
 	if s.sparse != nil {
-		index, rank := sparseRegister(hash, s.sp)
+		index, rank := register(hash, s.sp)
 		s.sparse.Update(index, rank)
 		if s.sparse.Len() > s.promotionThreshold {
 			s.promote()
@@ -127,7 +127,7 @@ func (s *Sketch) AddHash(hash uint64) {
 		return
 	}
 
-	index, rank := denseRegister(hash, s.p)
+	index, rank := register(hash, s.p)
 	if rank > s.dense[index] {
 		s.dense[index] = rank
 	}
@@ -510,16 +510,9 @@ func mergeDense(dst []uint8, src []uint8) {
 	}
 }
 
-func denseRegister(hash uint64, p uint8) (uint32, uint8) {
+func register(hash uint64, p uint8) (uint32, uint8) {
 	index := uint32(hash >> (64 - p))
 	rank := registerRank(hash<<p, 64-int(p))
-
-	return index, rank
-}
-
-func sparseRegister(hash uint64, sp uint8) (uint32, uint8) {
-	index := uint32(hash >> (64 - sp))
-	rank := registerRank(hash<<sp, 64-int(sp))
 
 	return index, rank
 }
