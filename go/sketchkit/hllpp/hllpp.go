@@ -39,6 +39,9 @@ var (
 	ErrUnknownProfile = errors.New("unknown hllpp profile")
 
 	// ErrInvalidPrecision reports an invalid HLL++ precision pair.
+	//
+	// Deprecated: named profiles supply valid precision pairs. Parse reports
+	// ErrPrecisionMismatch when external metadata does not match a profile.
 	ErrInvalidPrecision = errors.New("invalid hllpp precision")
 
 	// ErrIncompatibleMerge reports non-precision metadata mismatches on merge.
@@ -94,40 +97,24 @@ func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorit
 		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
-	return newSketch(profile, config.p, config.sp, domain, algorithm, config.promotionThreshold)
+	return newSketch(profile, config, domain, algorithm), nil
 }
 
 func newSketch(
 	profile Profile,
-	p uint8,
-	sp uint8,
+	config profileConfig,
 	domain sketchhash.Domain,
 	algorithm sketchhash.Algorithm,
-	promotionThreshold int,
-) (*Sketch, error) {
-	config, ok := profileConfigs[profile]
-	if !ok {
-		return nil, ErrUnknownProfile
-	}
-	if p != config.p || sp != config.sp {
-		return nil, fmt.Errorf("%w: p/sp %d/%d, want %d/%d", ErrPrecisionMismatch, p, sp, config.p, config.sp)
-	}
-	if err := validatePrecision(p, sp); err != nil {
-		return nil, err
-	}
-	if promotionThreshold <= 0 {
-		return nil, fmt.Errorf("%w: promotion threshold must be positive", ErrInvalidPrecision)
-	}
-
+) *Sketch {
 	return &Sketch{
 		profile:            profile,
-		p:                  p,
-		sp:                 sp,
+		p:                  config.p,
+		sp:                 config.sp,
 		domain:             domain,
 		algorithm:          algorithm,
-		promotionThreshold: promotionThreshold,
+		promotionThreshold: config.promotionThreshold,
 		sparse:             newSparseRegisters(0),
-	}, nil
+	}
 }
 
 // AddHash updates the sketch with a pre-hashed uint64.
@@ -360,17 +347,12 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	}
 	normalPrecision := config.p
 	sparsePrecision := config.sp
-	sketch, err := newSketch(
+	sketch := newSketch(
 		profile,
-		normalPrecision,
-		sparsePrecision,
+		config,
 		domain,
 		sketchhash.HMACSHA25664,
-		config.promotionThreshold,
 	)
-	if err != nil {
-		return nil, err
-	}
 
 	switch metadata.GetRepresentationMode() {
 	case sketchpb.RepresentationMode_REPRESENTATION_MODE_HLLPP_SPARSE:
@@ -534,16 +516,6 @@ func mergeDense(dst []uint8, src []uint8) {
 			dst[i] = rank
 		}
 	}
-}
-
-func validatePrecision(p uint8, sp uint8) error {
-	if p < 4 || p > 25 {
-		return fmt.Errorf("%w: normal precision %d", ErrInvalidPrecision, p)
-	}
-	if sp < p || sp > 32 {
-		return fmt.Errorf("%w: sparse precision %d for p %d", ErrInvalidPrecision, sp, p)
-	}
-	return nil
 }
 
 func denseRegister(hash uint64, p uint8) (uint32, uint8) {
