@@ -415,9 +415,6 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !sketchhash.IsRegisteredDomain(sketch.domain) {
-		return nil, sketchhash.ErrUnregisteredDomain
-	}
 	if body.GetTotalWeight() < 0 || body.GetMaxError() < 0 || body.GetMaxError() > body.GetTotalWeight() {
 		return nil, fmt.Errorf("%w: invalid total/error", ErrInvalidWireEncoding)
 	}
