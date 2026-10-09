@@ -88,7 +88,7 @@ class Envelope:
                 raise SummaryError("invalid summary counter")
         size = 0
         if self.observed_start_unix_nano == self.observed_end_unix_nano:
-            if any(self.counters.values()) or self.sketches:
+            if any(self.counters.values()):
                 raise SummaryError("nonempty zero-length summary observation")
         parsed: dict[str, _summary_state.Parsed] = {}
         for name, payload in self.sketches.items():
@@ -106,6 +106,11 @@ class Envelope:
                 ) from None
             if canonical != payload.data:
                 raise SummaryError("invalid summary sketch state")
+            if (
+                self.observed_start_unix_nano == self.observed_end_unix_nano
+                and not state.empty()
+            ):
+                raise SummaryError("nonempty zero-length summary observation")
             parsed[name] = state
         return parsed
 

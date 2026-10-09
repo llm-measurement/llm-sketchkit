@@ -1,7 +1,8 @@
 {
   "cases": [
     {"name": "ten_nonempty_instant_epochs", "repeat": 10, "start": 90, "end": 90, "count": 5, "sketches": false, "error": true},
-    {"name": "instant_with_sketch", "repeat": 1, "start": 90, "end": 90, "count": 0, "sketches": true, "error": true},
+    {"name": "instant_with_empty_sketch", "repeat": 1, "start": 90, "end": 90, "count": 0, "sketches": true, "sketch_count": 0, "error": false},
+    {"name": "instant_with_nonempty_sketch", "repeat": 1, "start": 90, "end": 90, "count": 0, "sketches": true, "sketch_count": 1, "error": true},
     {"name": "ten_empty_instant_epochs", "repeat": 10, "start": 90, "end": 90, "count": 0, "sketches": false, "error": false},
     {"name": "label_swap_a", "repeat": 1, "start": 90, "end": 90, "count": 0, "sketches": false, "error": false, "suffix": "a"},
     {"name": "label_swap_z", "repeat": 1, "start": 90, "end": 90, "count": 0, "sketches": false, "error": false, "suffix": "z"}

@@ -17,6 +17,16 @@ class Parsed:
     state: State
     metadata: Any
 
+    def empty(self) -> bool:
+        state = self.state
+        if isinstance(state, hllpp.Sketch):
+            return state.sparse_count() == 0 and state.dense_nonzero_count() == 0
+        if isinstance(state, frequentitems.Sketch):
+            return state.total_weight() == 0
+        if isinstance(state, bloom.Sketch):
+            return state.inserted_count() == 0 and state.set_bit_count() == 0
+        return state.populated_count() == 0
+
     def merge(self, other: Parsed) -> None:
         left, right = self.state, other.state
         if isinstance(left, hllpp.Sketch) and isinstance(right, hllpp.Sketch):

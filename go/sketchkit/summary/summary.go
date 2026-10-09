@@ -81,9 +81,6 @@ func (e Envelope) validate(parsed map[string]*parsedPayload) error {
 				return errors.New("nonempty zero-length summary observation")
 			}
 		}
-		if len(e.Sketches) != 0 {
-			return errors.New("nonempty zero-length summary observation")
-		}
 	}
 	size := 0
 	for name, payload := range e.Sketches {
@@ -94,6 +91,9 @@ func (e Envelope) validate(parsed map[string]*parsedPayload) error {
 		state, canonical, err := parsePayload(payload)
 		if err != nil || !bytes.Equal(canonical, payload.Data) {
 			return errors.New("invalid summary sketch state")
+		}
+		if e.ObservedStart == e.ObservedEnd && !state.empty() {
+			return errors.New("nonempty zero-length summary observation")
 		}
 		if parsed != nil {
 			parsed[name] = state

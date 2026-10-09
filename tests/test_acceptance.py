@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from llm_sketchkit import bloom, frequentitems, hllpp, minhash, summary
+from test_summary import fixture
 
 
 def test_interval_vectors() -> None:
@@ -15,21 +16,16 @@ def test_interval_vectors() -> None:
     for case in vectors["cases"]:
         docs = []
         for i in range(case["repeat"]):
-            doc = summary.Envelope.parse(
-                (root / "vectors/summaries/envelope.json").read_bytes()
-            )
-            doc.epoch = f'e{i}{case.get("suffix", "")}'
-            doc.counters = {"requests": case["count"]}
+            doc = fixture("a", f'e{i}{case.get("suffix", "")}', 1, case["count"])
             doc.observed_start_unix_nano = case["start"]
             doc.observed_end_unix_nano = case["end"]
             if not case["sketches"]:
                 doc.sketches = {}
+            else:
+                doc.sketches = fixture("a", "sketch", 1, case["sketch_count"]).sketches
             docs.append(doc)
         if case.get("suffix"):
-            other = summary.Envelope.parse(
-                (root / "vectors/summaries/envelope.json").read_bytes()
-            )
-            other.epoch = "e0m"
+            other = fixture("a", "e0m", 1, 2)
             other.observed_start_unix_nano = 90
             other.sketches = {}
             docs.append(other)

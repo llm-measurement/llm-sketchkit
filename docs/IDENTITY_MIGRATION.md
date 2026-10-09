@@ -42,10 +42,12 @@ sketchkit version alone does not identify the normalization behavior.
 ## Retained Summaries
 
 The same minor release rejects zero-length observation intervals carrying
-nonzero counters or any sketch payload. Empty intervals may carry zero counters
-and an empty sketch map. Epochs with tied start times sort by end time and then
-epoch identifier. Producers should record a positive observed interval whenever
-they include measurements.
+nonzero counters or nonempty sketch state. Empty intervals may carry zero
+counters and configured empty sketches, including all-zero dense HLL++ state.
+Emptiness uses retained totals, counts and register/bit content, not the presence
+of serialized payloads; see the [summary specification](../spec/summary.md).
+Epochs with tied start times sort by end time and then epoch identifier. Producers
+should record a positive observed interval whenever they include measurements.
 
 Protobuf groups are rejected at every known message level before decoding. The
 schema defines no group fields, and existing canonical encodings contain none.

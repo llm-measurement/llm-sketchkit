@@ -43,6 +43,11 @@ backward composition, Hangul, explicit joiners and new Unicode 15 marks.
 Both languages load it in their normal unit suites. Invalid UTF-8 still uses
 the existing error types.
 
+`vectors/validation/summary_intervals.json` distinguishes accepted zero-length
+observations with configured empty sketches from rejected nonempty state. Both
+languages also test every sketch kind, empty dense HLL++, and retained totals or
+bits that can be hidden by an empty-looking entry list or signature.
+
 `hllpp_estimates.json` covers both seeds for each of three profiles across
 empty, sparse, promotion, forced-dense, linear-counting, bias and raw states.
 `hllpp_bias_regressions.json` adds cases that fail with compensated Python

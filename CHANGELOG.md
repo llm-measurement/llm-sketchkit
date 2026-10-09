@@ -7,8 +7,9 @@ public Go and Python APIs exercised by the conformance vectors.
 
 ## Unreleased (Next Minor)
 
-- Reject zero-length observation intervals containing nonzero counters or sketch
-  payloads, and order epochs consistently by start, end and epoch identifier.
+- Reject zero-length observation intervals containing nonzero counters or
+  nonempty sketch state; accept configured empty sketches, including empty dense
+  HLL++. Order epochs consistently by start, end and epoch identifier.
   Reject protobuf groups before decoding in both languages; the wire schema
   contains no group fields. See [migration notes](docs/IDENTITY_MIGRATION.md).
 

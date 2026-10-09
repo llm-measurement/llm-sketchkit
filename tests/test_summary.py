@@ -64,6 +64,77 @@ def test_shared_vectors() -> None:
             assert combined.marshal_binary() == (VECTORS / "combined.json").read_bytes()
 
 
+def assert_zero_length_state(payload: summary.Payload, empty: bool) -> None:
+    doc = fixture("a", "e", 1, 0)
+    doc.sketches = {payload.kind: payload}
+    doc.validate()  # The same retained state is valid over a positive interval.
+    doc.observed_start_unix_nano = doc.observed_end_unix_nano = 90
+    if empty:
+        doc.validate()
+        assert summary.Envelope.parse(doc.marshal_binary()) == doc
+        summary.compatible(doc, doc)
+        result = summary.combine([doc], ["a"])
+        assert result.sketches[payload.kind].data == payload.data
+    else:
+        with pytest.raises(summary.SummaryError):
+            doc.validate()
+        with pytest.raises(summary.SummaryError):
+            doc.marshal_binary()
+        with pytest.raises(summary.SummaryError):
+            summary.Envelope.parse(doc._marshal_validated())
+        with pytest.raises(summary.SummaryError):
+            summary.compatible(doc, doc)
+        with pytest.raises(summary.SummaryError):
+            summary.combine([doc], ["a"])
+
+
+@pytest.mark.parametrize("kind", ["hllpp", "frequent_items", "bloom", "minhash"])
+@pytest.mark.parametrize("count", [0, 1])
+def test_zero_length_sketch_state(kind: str, count: int) -> None:
+    payload = fixture("a", "e", 1, count).sketches[kind]
+    assert_zero_length_state(payload, empty=count == 0)
+
+
+@pytest.mark.parametrize("populated", [False, True])
+def test_zero_length_dense_hll(populated: bool) -> None:
+    sketch = hllpp.Sketch("micro")
+    if populated:
+        sketch.add_hash(1)
+    sketch.force_dense()
+    assert_zero_length_state(
+        summary.Payload(sketch.marshal_binary(), "hllpp"), empty=not populated
+    )
+
+
+@pytest.mark.parametrize("case", [
+    "fi_weight_without_entries", "bloom_count_without_bits",
+    "bloom_bits_without_count", "minhash_count_without_signature",
+])
+def test_zero_length_hidden_retained_state(case: str) -> None:
+    kind = {
+        "fi_weight_without_entries": "frequent_items",
+        "bloom_count_without_bits": "bloom",
+        "bloom_bits_without_count": "bloom",
+        "minhash_count_without_signature": "minhash",
+    }[case]
+    payload = fixture("a", "e", 1, 0).sketches[kind]
+    message = _proto.parse_sketch(payload.data)
+    if case == "fi_weight_without_entries":
+        message.frequent_items.total_weight = 1
+        message.frequent_items.max_error = 1
+    elif case == "bloom_count_without_bits":
+        message.bloom.inserted_count = 1
+    elif case == "bloom_bits_without_count":
+        bits = bytearray(message.bloom.bitset)
+        bits[0] = 1
+        message.bloom.bitset = bytes(bits)
+    else:
+        message.minhash.populated_count = 1
+    assert_zero_length_state(
+        summary.Payload(_proto.serialize(message), kind), empty=False
+    )
+
+
 def test_canonical_and_untrusted_inputs() -> None:
     doc = fixture("a", "one", 1, 2)
     data = doc.marshal_binary()
