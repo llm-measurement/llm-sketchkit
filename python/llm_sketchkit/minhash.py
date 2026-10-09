@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
+
 from . import _proto, hashfamily, profiles
 
 MAX_UINT64 = (1 << 64) - 1
@@ -63,9 +65,14 @@ class Sketch:
     def parse(cls, data: bytes) -> Sketch:
         """Decode a MinHash sketch from deterministic protobuf bytes."""
 
-        if len(data) > _proto.MAX_WIRE_BYTES:
+        if len(data) > _proto.MAX_WIRE_BYTES or len(data) > _proto.MINHASH_WIRE_BYTES:
             raise InvalidWireEncodingError("wire input too large")
-        message = _proto.parse_sketch(data)
+        if not _proto.bounded_wire(data, _proto.MINHASH_WIRE_BYTES):
+            raise InvalidWireEncodingError("malformed or oversized body")
+        try:
+            message = _proto.parse_sketch(data)
+        except DecodeError:
+            raise InvalidWireEncodingError("malformed protobuf") from None
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("minhash"):
             raise InvalidWireEncodingError("missing MinHash metadata or body")
@@ -88,6 +95,8 @@ class Sketch:
             raise IncompatibleMergeError("unregistered domain")
 
         body = message.minhash
+        if len(body.signature) != length:
+            raise InvalidWireEncodingError("wrong signature length")
         signature = [cast(int, value) for value in body.signature]
         populated_count = cast(int, body.populated_count)
         if len(signature) != length:

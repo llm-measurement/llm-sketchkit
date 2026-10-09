@@ -111,6 +111,9 @@ func Parse(data []byte) (Envelope, error) {
 	if len(data) > MaxBytes {
 		return e, errors.New("summary exceeds size limit")
 	}
+	if err := checkJSONCounts(data); err != nil {
+		return e, err
+	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&e); err != nil {

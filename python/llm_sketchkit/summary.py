@@ -14,6 +14,7 @@ from typing import Any
 from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
 
 from . import _proto, bloom, frequentitems, hllpp, minhash
+from ._summary_json import check_counts
 
 MAX_BYTES = 8 << 20
 _MAX_INT = (1 << 63) - 1
@@ -110,6 +111,7 @@ class Envelope:
         if len(data) > MAX_BYTES:
             raise SummaryError("summary exceeds size limit")
         try:
+            check_counts(data)
             document: Any = json.loads(data)
             payloads = document["sketches"]
             if type(payloads) is not dict:
