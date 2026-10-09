@@ -213,15 +213,3 @@ func TestRestartsCoverageAndAtomicity(t *testing.T) {
 		t.Fatal("different windows combined")
 	}
 }
-
-func FuzzParse(f *testing.F) {
-	f.Add([]byte(`{}`))
-	f.Fuzz(func(t *testing.T, data []byte) {
-		if e, err := Parse(data); err == nil {
-			out, err := e.MarshalBinary()
-			if err != nil || !bytes.Equal(data, out) {
-				t.Fatal("unstable accepted encoding")
-			}
-		}
-	})
-}

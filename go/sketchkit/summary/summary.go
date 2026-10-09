@@ -14,11 +14,6 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/bloom"
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/frequentitems"
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp"
-	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/minhash"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -54,6 +49,10 @@ type Envelope struct {
 }
 
 func (e Envelope) Validate() error {
+	return e.validate(nil)
+}
+
+func (e Envelope) validate(parsed map[string]*parsedPayload) error {
 	if e.Version != 1 || e.Sequence == 0 || e.Sequence > math.MaxInt64 {
 		return errors.New("invalid summary version or sequence")
 	}
@@ -82,9 +81,12 @@ func (e Envelope) Validate() error {
 		if !identifier.MatchString(name) || size > MaxBytes {
 			return errors.New("invalid summary sketch")
 		}
-		canonical, err := mergePayload(payload, nil)
-		if err != nil || !bytes.Equal(canonical.Data, payload.Data) {
+		state, canonical, err := parsePayload(payload)
+		if err != nil || !bytes.Equal(canonical, payload.Data) {
 			return errors.New("invalid summary sketch state")
+		}
+		if parsed != nil {
+			parsed[name] = state
 		}
 	}
 	return nil
@@ -95,6 +97,10 @@ func (e Envelope) MarshalBinary() ([]byte, error) {
 	if err := e.Validate(); err != nil {
 		return nil, err
 	}
+	return e.marshalValidated()
+}
+
+func (e Envelope) marshalValidated() ([]byte, error) {
 	data, err := json.Marshal(e)
 	if err != nil {
 		return nil, err
@@ -132,12 +138,17 @@ func Parse(data []byte) (Envelope, error) {
 // Compatible checks measurement and sketch compatibility for comparison.
 // Window starts may differ; durations must match. It does not mutate either input.
 func Compatible(a, b Envelope) error {
-	if err := a.Validate(); err != nil {
+	left, right := map[string]*parsedPayload{}, map[string]*parsedPayload{}
+	if err := a.validate(left); err != nil {
 		return err
 	}
-	if err := b.Validate(); err != nil {
+	if err := b.validate(right); err != nil {
 		return err
 	}
+	return compatibleValidated(a, b, left, right)
+}
+
+func compatibleValidated(a, b Envelope, left, right map[string]*parsedPayload) error {
 	if a.ScopeID != b.ScopeID || a.AccountingID != b.AccountingID || a.KeyID != b.KeyID ||
 		a.WindowDuration != b.WindowDuration || !slices.Equal(names(a.Counters), names(b.Counters)) ||
 		!slices.Equal(names(a.Sketches), names(b.Sketches)) {
@@ -145,16 +156,7 @@ func Compatible(a, b Envelope) error {
 	}
 	for name, payload := range a.Sketches {
 		other := b.Sketches[name]
-		var left, right sketchpb.Sketch
-		if err := proto.Unmarshal(payload.Data, &left); err != nil {
-			return err
-		}
-		if err := proto.Unmarshal(other.Data, &right); err != nil {
-			return err
-		}
-		left.Metadata.RepresentationMode = 0
-		right.Metadata.RepresentationMode = 0
-		if payload.Kind != other.Kind || !proto.Equal(left.Metadata, right.Metadata) {
+		if payload.Kind != other.Kind || !proto.Equal(left[name].metadata, right[name].metadata) {
 			return errors.New("incompatible summary sketch metadata")
 		}
 	}
@@ -208,10 +210,38 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 		return a.Sequence < b.Sequence
 	})
 	selected := make([]Envelope, 0, len(docs))
+	var reference, pending map[string]*parsedPayload
+	result := Result{Counters: map[string]uint64{}, Sketches: map[string]Payload{}, Sources: []Source{}, Missing: []string{}, Partial: []string{}}
+	accumulated := map[string]*parsedPayload{}
+	accumulate := func(doc Envelope, parsed map[string]*parsedPayload) error {
+		for name, value := range doc.Counters {
+			if result.Counters[name] > math.MaxInt64-value {
+				return errors.New("combined counter overflow")
+			}
+			result.Counters[name] += value
+		}
+		for name, state := range parsed {
+			if previous, ok := accumulated[name]; ok {
+				if err := previous.merge(state); err != nil {
+					return err
+				}
+			} else {
+				accumulated[name] = state
+			}
+		}
+		return nil
+	}
+	// Accumulate finalized groups, but input validation and selection errors must
+	// still precede every counter or sketch merge error.
+	var accumulationErr error
 	encodedBytes := 0
 	var previousBytes []byte
 	for _, doc := range docs {
-		encoded, err := doc.MarshalBinary()
+		parsed := map[string]*parsedPayload{}
+		if err := doc.validate(parsed); err != nil {
+			return Result{}, err
+		}
+		encoded, err := doc.marshalValidated()
 		if err != nil {
 			return Result{}, err
 		}
@@ -226,7 +256,7 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 			if doc.WindowStart != selected[0].WindowStart {
 				return Result{}, errors.New("cannot combine different windows")
 			}
-			if err := Compatible(selected[0], doc); err != nil {
+			if err := compatibleValidated(selected[0], doc, reference, parsed); err != nil {
 				return Result{}, err
 			}
 			last := selected[len(selected)-1]
@@ -246,38 +276,38 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 					}
 				}
 				selected[len(selected)-1] = doc
+				pending = parsed
 				previousBytes = encoded
 				continue
 			}
+			if accumulationErr == nil {
+				accumulationErr = accumulate(last, pending)
+			}
+		} else {
+			reference = parsed
 		}
 		selected = append(selected, doc)
+		pending = parsed
 		previousBytes = encoded
 	}
-	result := Result{Counters: map[string]uint64{}, Sketches: map[string]Payload{}, Sources: []Source{}, Missing: []string{}, Partial: []string{}}
+	if len(selected) > 0 && accumulationErr == nil {
+		accumulationErr = accumulate(selected[len(selected)-1], pending)
+	}
+	if accumulationErr != nil {
+		return Result{}, accumulationErr
+	}
 	intervals := make(map[string][]Envelope)
 	for _, doc := range selected {
 		owners[doc.ProducerID] = true
 		intervals[doc.ProducerID] = append(intervals[doc.ProducerID], doc)
 		result.Sources = append(result.Sources, Source{doc.ProducerID, doc.Epoch, doc.Sequence, doc.ObservedStart, doc.ObservedEnd})
-		for name, value := range doc.Counters {
-			if result.Counters[name] > math.MaxInt64-value {
-				return Result{}, errors.New("combined counter overflow")
-			}
-			result.Counters[name] += value
+	}
+	for name, parsed := range accumulated {
+		data, err := parsed.marshal()
+		if err != nil {
+			return Result{}, err
 		}
-		for name, payload := range doc.Sketches {
-			var merged Payload
-			var err error
-			if previous, ok := result.Sketches[name]; ok {
-				merged, err = mergePayload(previous, &payload)
-			} else {
-				merged, err = mergePayload(payload, nil)
-			}
-			if err != nil {
-				return Result{}, err
-			}
-			result.Sketches[name] = merged
-		}
+		result.Sketches[name] = Payload{Kind: parsed.kind, Data: data}
 	}
 	for _, id := range names(owners) {
 		if !owners[id] {
@@ -309,77 +339,4 @@ func names[V any](values map[string]V) []string {
 	}
 	sort.Strings(keys)
 	return keys
-}
-
-func mergePayload(a Payload, b *Payload) (Payload, error) {
-	if b != nil && a.Kind != b.Kind {
-		return Payload{}, errors.New("sketch kinds differ")
-	}
-	var data []byte
-	var err error
-	switch a.Kind {
-	case "hllpp":
-		s, parseErr := hllpp.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := hllpp.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	case "frequent_items":
-		s, parseErr := frequentitems.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := frequentitems.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	case "bloom":
-		s, parseErr := bloom.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := bloom.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	case "minhash":
-		s, parseErr := minhash.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := minhash.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	default:
-		return Payload{}, errors.New("unknown summary sketch kind")
-	}
-	return Payload{Data: data, Kind: a.Kind}, err
 }

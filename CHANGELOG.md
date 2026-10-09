@@ -18,6 +18,10 @@ public Go and Python APIs exercised by the conformance vectors.
   metadata and body messages, and aggregate repeated entries are bounded.
   Summary JSON entry counts are checked before maps are built. Malformed
   protobuf uses documented error categories.
+- Validate and canonicalize each summary input once, with bounded live parsed
+  state, and serialize accumulated sketches once. Go accumulates finalized
+  groups; Python re-decodes selected payloads in merge order. Python
+  frequent-items uses a bounded heap for its minimum.
 
 ## [0.2.2] - 2026-09-29
 
