@@ -36,6 +36,7 @@ func classify(err error) string {
 		}
 	}
 	//lint:ignore SA1019 Keep the legacy exported sentinel classified for compatibility.
+	//nolint:staticcheck // SA1019: classify the legacy exported sentinel for compatibility.
 	for _, target := range []error{hllpp.ErrInvalidPrecision, hllpp.ErrPrecisionMismatch, frequentitems.ErrInvalidMapSize, bloom.ErrInvalidShape, minhash.ErrInvalidSignatureLength} {
 		if errors.Is(err, target) {
 			return "shape"
