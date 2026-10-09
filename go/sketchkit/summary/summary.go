@@ -14,10 +14,6 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/bloom"
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/frequentitems"
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/hllpp"
-	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/minhash"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -343,77 +339,4 @@ func names[V any](values map[string]V) []string {
 	}
 	sort.Strings(keys)
 	return keys
-}
-
-func mergePayload(a Payload, b *Payload) (Payload, error) {
-	if b != nil && a.Kind != b.Kind {
-		return Payload{}, errors.New("sketch kinds differ")
-	}
-	var data []byte
-	var err error
-	switch a.Kind {
-	case "hllpp":
-		s, parseErr := hllpp.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := hllpp.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	case "frequent_items":
-		s, parseErr := frequentitems.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := frequentitems.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	case "bloom":
-		s, parseErr := bloom.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := bloom.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	case "minhash":
-		s, parseErr := minhash.Parse(a.Data)
-		if parseErr != nil {
-			return Payload{}, parseErr
-		}
-		if b != nil {
-			other, parseErr := minhash.Parse(b.Data)
-			if parseErr != nil {
-				return Payload{}, parseErr
-			}
-			if err = s.Merge(other); err != nil {
-				return Payload{}, err
-			}
-		}
-		data, err = s.MarshalBinary()
-	default:
-		return Payload{}, errors.New("unknown summary sketch kind")
-	}
-	return Payload{Data: data, Kind: a.Kind}, err
 }
