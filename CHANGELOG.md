@@ -5,7 +5,11 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
-## Unreleased (Next Minor)
+## 0.3.0 (Unreleased)
+
+This minor release includes the hardening changes listed under 0.2.3 below,
+plus the identity and validation changes described here. See the
+[release notes](docs/releases/v0.3.0.md) before upgrading retained state.
 
 - Reject zero-length observation intervals containing nonzero counters or
   nonempty sketch state; accept configured empty sketches, including empty dense
@@ -53,7 +57,7 @@ public Go and Python APIs exercised by the conformance vectors.
 These fixes preserve existing conformance bytes and public APIs. The 0.2.3 release
 is a backport to the 0.2.x line, retaining Go 1.25 support and
 `golang.org/x/text v0.41.0`. Main retains its Go 1.26 minimum and
-`golang.org/x/text v0.42.0` for the next minor release. No release artifacts
+`golang.org/x/text v0.42.0` for 0.3.0. No release artifacts
 have been published for these entries yet.
 
 ## [0.2.2] - 2026-09-29
