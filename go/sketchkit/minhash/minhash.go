@@ -11,12 +11,13 @@ import (
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/hashfamily"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/wirebounds"
 	"google.golang.org/protobuf/proto"
 )
 
 const (
 	wireVersion  = 1
-	maxWireBytes = 4 << 20
+	maxWireBytes = wirebounds.MinHash
 )
 
 // Profile names a MinHash profile from spec/profiles.md.
@@ -211,13 +212,16 @@ func (s *Sketch) MarshalBinary() ([]byte, error) {
 
 // Parse decodes a MinHash sketch from deterministic protobuf bytes.
 func Parse(data []byte) (*Sketch, error) {
-	if len(data) > maxWireBytes {
+	if len(data) > wirebounds.Global || len(data) > maxWireBytes {
 		return nil, fmt.Errorf("%w: input length %d exceeds %d", ErrInvalidWireEncoding, len(data), maxWireBytes)
 	}
 
+	if !wirebounds.Valid(data, maxWireBytes) {
+		return nil, fmt.Errorf("%w: malformed or oversized body", ErrInvalidWireEncoding)
+	}
 	var message sketchpb.Sketch
 	if err := proto.Unmarshal(data, &message); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: malformed protobuf", ErrInvalidWireEncoding)
 	}
 
 	return fromProto(&message)

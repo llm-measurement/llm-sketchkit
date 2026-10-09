@@ -51,7 +51,13 @@ an unbounded tenant map is an unbounded system.
 
 Additional limits and failure behavior:
 
-- Every wire parser rejects input larger than 4 MiB before protobuf decoding.
+- Before protobuf decoding, HLL++ and frequent-items are limited to 64 KiB,
+  MinHash to 4 KiB, and Bloom to 2.5 MiB, within the global 4 MiB ceiling.
+  The same checks bound discarded bodies, 4,096 top-level metadata and body
+  messages, and 4,096 repeated HLL++ and frequent-items entries combined across
+  all bodies.
+- Summary JSON is limited to 8 MiB, 128 counters and 16 sketches; entry counts
+  are checked before materializing the maps.
 - Parsers validate the named profile and its exact shape before constructing state.
 - Canonicalization is in-memory and has no library-level input limit. Bound raw text
   before calling it.

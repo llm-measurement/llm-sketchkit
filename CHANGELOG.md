@@ -11,6 +11,14 @@ public Go and Python APIs exercised by the conformance vectors.
   to 1.26. CI and source-build documentation now reflect that requirement.
   Published `0.2.x` artifacts are unchanged and continue to support Go 1.25.
 
+## Unreleased (0.2.3 Hardening)
+
+- Bound protobuf allocation before decoding: HLL++ and frequent-items accept
+  up to 64 KiB, MinHash 4 KiB, and Bloom 2.5 MiB. Discarded bodies, repeated
+  metadata and body messages, and aggregate repeated entries are bounded.
+  Summary JSON entry counts are checked before maps are built. Malformed
+  protobuf uses documented error categories.
+
 ## [0.2.2] - 2026-09-29
 
 - Use Vijay consistently in author metadata and source headers.

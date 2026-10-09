@@ -8,6 +8,8 @@ import math
 from collections.abc import Iterable
 from typing import Any, cast
 
+from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
+
 from . import _proto, profiles
 from .hashfamily import MASK64
 from .hllpp_bias import BIAS_DATA, RAW_ESTIMATE_DATA
@@ -63,9 +65,14 @@ class Sketch:
     def parse(cls, data: bytes) -> Sketch:
         """Decode a HLL++ sketch from deterministic protobuf bytes."""
 
-        if len(data) > _proto.MAX_WIRE_BYTES:
+        if len(data) > _proto.MAX_WIRE_BYTES or len(data) > _proto.SMALL_WIRE_BYTES:
             raise InvalidWireEncodingError("wire input too large")
-        message = _proto.parse_sketch(data)
+        if not _proto.bounded_wire(data, _proto.SMALL_WIRE_BYTES):
+            raise InvalidWireEncodingError("malformed or oversized body")
+        try:
+            message = _proto.parse_sketch(data)
+        except DecodeError:
+            raise InvalidWireEncodingError("malformed protobuf") from None
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("hllpp"):
             raise InvalidWireEncodingError("missing HLL++ metadata or body")
