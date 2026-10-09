@@ -67,10 +67,14 @@ def secret_from_env(env_name: str) -> Secret:
 
     if not env_name:
         raise EmptySecretEnvError("empty hash secret environment variable")
-    value = os.environ.get(env_name)
-    if not value:
-        raise EmptySecretError(env_name)
-    return Secret(value.encode("utf-8"))
+    try:
+        value = os.environ.get(env_name)
+        raw = os.fsencode(value) if value is not None else b""
+    except (UnicodeError, ValueError):
+        raise HashError("invalid hash secret environment encoding") from None
+    if not raw:
+        raise EmptySecretError("empty hash secret")
+    return Secret(raw)
 
 
 def domains() -> list[Domain]:
@@ -99,7 +103,7 @@ def digest64(secret: Secret, domain: Domain, canonical_bytes: bytes) -> bytes:
 
     _validate_secret(secret._value)
     if not is_registered_domain(domain):
-        raise UnregisteredDomainError(f"unregistered hash domain: {domain}")
+        raise UnregisteredDomainError("unregistered hash domain")
     message = domain.encode("ascii") + b"\x00" + canonical_bytes
     return hmac.new(secret._value, message, hashlib.sha256).digest()[:8]
 

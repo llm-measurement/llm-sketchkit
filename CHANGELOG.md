@@ -22,6 +22,16 @@ public Go and Python APIs exercised by the conformance vectors.
   state, and serialize accumulated sketches once. Go accumulates finalized
   groups; Python re-decodes selected payloads in merge order. Python
   frequent-items uses a bounded heap for its minimum.
+- Redact untrusted metadata in errors, suppress raw Python summary exception
+  chains, and protect hash secrets across Go formatting and non-UTF-8 environments.
+- Resolve release sources to existing version tags, keep SBOM generation separate
+  from distributions, and preserve existing release assets on repeat uploads.
+
+These fixes preserve existing conformance bytes and public APIs. The 0.2.3 release
+is a backport to the 0.2.x line, retaining Go 1.25 support and
+`golang.org/x/text v0.41.0`. Main retains its Go 1.26 minimum and
+`golang.org/x/text v0.42.0` for the next minor release. No release artifacts
+have been published for these entries yet.
 
 ## [0.2.2] - 2026-09-29
 

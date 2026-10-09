@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	stdhash "hash"
 	"os"
 )
 
@@ -76,7 +77,7 @@ var (
 
 // Secret is opaque keyed-hash secret material.
 type Secret struct {
-	value []byte
+	newMAC func() stdhash.Hash
 }
 
 // SecretFromEnv loads opaque secret bytes from envName.
@@ -87,13 +88,20 @@ func SecretFromEnv(envName string) (Secret, error) {
 
 	value := os.Getenv(envName)
 	if value == "" {
-		return Secret{}, fmt.Errorf("%w: %s", ErrEmptySecret, envName)
+		return Secret{}, ErrEmptySecret
 	}
-	if err := validateSecretBytes([]byte(value)); err != nil {
+	key := []byte(value)
+	if err := validateSecretBytes(key); err != nil {
 		return Secret{}, err
 	}
 
-	return Secret{value: []byte(value)}, nil
+	// Keep bytes out of fields that fmt can inspect inside unexported holders.
+	return Secret{newMAC: func() stdhash.Hash { return hmac.New(sha256.New, key) }}, nil
+}
+
+// Format redacts secret material for all formatting verbs.
+func (Secret) Format(state fmt.State, verb rune) {
+	_, _ = state.Write([]byte("<redacted hash secret>"))
 }
 
 // String redacts secret material in ordinary formatting.
@@ -132,14 +140,14 @@ func Hash64(secret Secret, domain Domain, canonicalBytes []byte) (uint64, error)
 
 // Digest64 returns the first eight HMAC-SHA256 digest bytes.
 func Digest64(secret Secret, domain Domain, canonicalBytes []byte) ([8]byte, error) {
-	if err := validateSecretBytes(secret.value); err != nil {
-		return [8]byte{}, err
+	if secret.newMAC == nil {
+		return [8]byte{}, ErrEmptySecret
 	}
 	if !IsRegisteredDomain(domain) {
-		return [8]byte{}, fmt.Errorf("%w: %s", ErrUnregisteredDomain, domain)
+		return [8]byte{}, ErrUnregisteredDomain
 	}
 
-	mac := hmac.New(sha256.New, secret.value)
+	mac := secret.newMAC()
 	mac.Write([]byte(domain))
 	mac.Write([]byte{0x00})
 	mac.Write(canonicalBytes)

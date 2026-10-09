@@ -72,11 +72,11 @@ class Sketch:
     ) -> None:
         map_size = profiles.FREQUENT_ITEMS_MAP_SIZES.get(profile)
         if map_size is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown frequent-items profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(f"unregistered hash domain: {domain}")
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._map_size = map_size
@@ -117,9 +117,9 @@ class Sketch:
         profile = cast(str, metadata.profile)
         map_size = profiles.FREQUENT_ITEMS_MAP_SIZES.get(profile)
         if map_size is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown frequent-items profile")
         if cast(int, metadata.frequent_items_map_size) != map_size:
-            raise InvalidMapSizeError(profile)
+            raise InvalidMapSizeError("invalid frequent-items map size")
 
         sketch = cls(profile, cast(str, metadata.hash_domain), profiles.HMAC_SHA256_64)
         body = message.frequent_items

@@ -85,13 +85,13 @@ type sparseRegisters struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, config.p, config.sp, domain, algorithm, config.promotionThreshold)
@@ -107,10 +107,10 @@ func newSketch(
 ) (*Sketch, error) {
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if p != config.p || sp != config.sp {
-		return nil, fmt.Errorf("%w: profile %s carries p/sp %d/%d", ErrPrecisionMismatch, profile, p, sp)
+		return nil, fmt.Errorf("%w: p/sp %d/%d, want %d/%d", ErrPrecisionMismatch, p, sp, config.p, config.sp)
 	}
 	if err := validatePrecision(p, sp); err != nil {
 		return nil, err
@@ -347,16 +347,16 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	profile := Profile(metadata.GetProfile())
 	config, ok := profileConfigs[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	domain := sketchhash.Domain(metadata.GetHashDomain())
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	normalPrecisionRaw := metadata.GetHllppNormalPrecision()
 	sparsePrecisionRaw := metadata.GetHllppSparsePrecision()
 	if normalPrecisionRaw != uint32(config.p) || sparsePrecisionRaw != uint32(config.sp) {
-		return nil, fmt.Errorf("%w: profile %s carries p/sp %d/%d", ErrPrecisionMismatch, profile, normalPrecisionRaw, sparsePrecisionRaw)
+		return nil, fmt.Errorf("%w: p/sp %d/%d, want %d/%d", ErrPrecisionMismatch, normalPrecisionRaw, sparsePrecisionRaw, config.p, config.sp)
 	}
 	normalPrecision := config.p
 	sparsePrecision := config.sp

@@ -101,13 +101,13 @@ type Sketch struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	mapSize, ok := profileMapSizes[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, mapSize, domain, algorithm)
@@ -121,16 +121,16 @@ func newSketch(
 ) (*Sketch, error) {
 	profileMapSize, ok := profileMapSizes[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if mapSize <= 0 || mapSize != profileMapSize {
-		return nil, fmt.Errorf("%w: profile %s carries map size %d", ErrInvalidMapSize, profile, mapSize)
+		return nil, fmt.Errorf("%w: map size %d, want %d", ErrInvalidMapSize, mapSize, profileMapSize)
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	pool := make([]counter, mapSize)
@@ -416,7 +416,7 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 		return nil, err
 	}
 	if !sketchhash.IsRegisteredDomain(sketch.domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, sketch.domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if body.GetTotalWeight() < 0 || body.GetMaxError() < 0 || body.GetMaxError() > body.GetTotalWeight() {
 		return nil, fmt.Errorf("%w: invalid total/error", ErrInvalidWireEncoding)

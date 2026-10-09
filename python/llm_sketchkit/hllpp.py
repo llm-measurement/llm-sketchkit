@@ -46,11 +46,11 @@ class Sketch:
     ) -> None:
         config = profiles.HLLPP_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown hllpp profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(f"unregistered hash domain: {domain}")
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._p = config.normal_precision
@@ -86,14 +86,14 @@ class Sketch:
         profile = cast(str, metadata.profile)
         config = profiles.HLLPP_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown hllpp profile")
         normal_precision = cast(int, metadata.hllpp_normal_precision)
         sparse_precision = cast(int, metadata.hllpp_sparse_precision)
         if (
             normal_precision != config.normal_precision
             or sparse_precision != config.sparse_precision
         ):
-            raise PrecisionMismatchError(profile)
+            raise PrecisionMismatchError("hllpp precision mismatch")
 
         sketch = cls(profile, cast(str, metadata.hash_domain), profiles.HMAC_SHA256_64)
         body = message.hllpp

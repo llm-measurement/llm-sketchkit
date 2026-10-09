@@ -177,7 +177,7 @@ func TestHash64RejectsUnregisteredDomain(t *testing.T) {
 	if !errors.Is(err, sketchhash.ErrUnregisteredDomain) {
 		t.Fatalf("Hash64() error = %v, want %v", err, sketchhash.ErrUnregisteredDomain)
 	}
-	if err.Error() != "unregistered hash domain: unknown:v1" {
+	if err.Error() != "unregistered hash domain" {
 		t.Fatalf("Hash64() diagnostic = %q", err.Error())
 	}
 }
