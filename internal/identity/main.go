@@ -42,7 +42,7 @@ func main() {
 	flag.Parse()
 	if *properties {
 		if norm.Version != "15.0.0" || unicode.Version != "15.0.0" {
-			fail(fmt.Errorf("Unicode 15 oracle required: norm=%s unicode=%s", norm.Version, unicode.Version))
+			fail(fmt.Errorf("identity oracle requires Unicode 15: norm=%s unicode=%s", norm.Version, unicode.Version))
 		}
 		rows := make([][]int, 0)
 		for r := rune(0); r <= unicode.MaxRune; r++ {
