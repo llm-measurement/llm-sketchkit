@@ -58,6 +58,11 @@ Additional limits and failure behavior:
   all bodies.
 - Summary JSON is limited to 8 MiB, 128 counters and 16 sketches; entry counts
   are checked before materializing the maps.
+- Combine validates and canonicalizes each envelope once. Go accumulates
+  finalized groups while deferring merge failures until input validation and
+  selection complete. Python retains metadata and one decoded envelope, then
+  re-decodes selected payloads in merge order to bound live parsed state while
+  preserving input-validation order.
 - Parsers validate the named profile and its exact shape before constructing state.
 - Canonicalization is in-memory and has no library-level input limit. Bound raw text
   before calling it.
