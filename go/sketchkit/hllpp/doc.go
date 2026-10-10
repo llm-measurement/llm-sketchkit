@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
 
-// Package hllpp implements the Go HLL++ sketch for llm-sketchkit.
+// Package hllpp estimates how many distinct users, sessions or prompts appeared
+// in a window, using keyed hashes and fixed memory rather than a list of IDs.
+// Merge compatible sketches to count across workers without summing overlapping
+// distinct counts.
 //
 // The estimator follows "HyperLogLog in Practice: Algorithmic Engineering of
 // a State of The Art Cardinality Estimation Algorithm" by Heule, Nunkesser,
