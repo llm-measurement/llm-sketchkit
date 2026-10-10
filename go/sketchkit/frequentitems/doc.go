@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
 
-// Package frequentitems implements the Go weighted frequent-items sketch for
-// llm-sketchkit.
+// Package frequentitems ranks the keys responsible for the most reported tokens
+// or requests, with lower and upper bounds and fixed memory per sketch.
+// Add keyed hashes of users, sessions or prompts with their recorded weight.
 //
 // The implementation uses weighted Misra-Gries with a global error offset,
 // deterministic pruning, and a preallocated counter pool. Merge

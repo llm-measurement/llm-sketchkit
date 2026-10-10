@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "llm-sketchkit"
 version = "0.2.2"
-description = "Deterministic Go and Python sketches for high-cardinality LLM data."
+description = "Count distinct LLM users and rank token-heavy keys without per-user metric labels; merge measurements across Go and Python."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Code authors: Vijay and Codex
 
-// Package summary exchanges window-scoped counters and existing sketch state.
+// Package summary combines compatible measurements from several workers or
+// systems while keeping raw telemetry local. It exchanges window-scoped counters
+// and sketch state, handles repeated snapshots, and reports missing producers.
 // Producer trust, disjoint input ownership, and secret distribution are external.
 package summary
 

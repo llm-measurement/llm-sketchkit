@@ -3,16 +3,12 @@
 [![CI](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/llm-measurement/llm-sketchkit/badge)](https://scorecard.dev/viewer/?uri=github.com/llm-measurement/llm-sketchkit)
 
-A Go and Python library of mergeable sketches for LLM and agent telemetry:
-HyperLogLog++ for distinct counts, weighted frequent-items for the heaviest keys
-with deterministic error bounds, Bloom filters for membership, and MinHash for
-similarity. Inputs are canonicalized and keyed-hashed (HMAC-SHA256) before they
-enter a sketch, and both languages share one protobuf wire format, so summaries
-built in Go can be merged and read in Python, and the reverse.
+**Which users, sessions or prompts use the most LLM tokens, without a metric
+label for every identity?**
 
-Embed it in a gateway or pipeline to rank the heaviest users, sessions or prompts
-by tokens and count distinct users in fixed memory per window, without per-user
-metric labels. Then merge window summaries across workers, services and languages.
+`llm-sketchkit` is a Go and Python library for counting distinct identities,
+ranking the heaviest keys, and merging those measurements across workers and
+languages in fixed memory per window.
 
 | | |
 | --- | --- |
@@ -47,27 +43,13 @@ data locally without calling a model provider. See the
 [deployment FAQ](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/FAQ.md#can-i-use-this-with-self-hosted-models-or-a-mix-of-providers)
 for input and comparison requirements.
 
-Questions it can help answer include:
+### Questions It Answers
 
-- **How many distinct prompts, users, sessions, tools, or documents are active
-  without keeping one counter per value?** HLL++ provides a statistical estimate
-  with bounded state.
-- **Your token budget is climbing and FinOps wants to know which configured
-  identities account for the reported volume. How certain is the answer?** Weighted
-  frequent-items identifies token-heavy or request-heavy keys with deterministic
-  lower and upper bounds.
-- **Have we already observed this request or document without maintaining an exact
-  set of every value?** Bloom filters provide bounded approximate membership checks.
-- **Did the prompt, tool, or retrieval-document population change materially after
-  a deployment or model change?** MinHash compares large sets using bounded
-  similarity signatures.
-- **Can Go services summarize locally while Python analysis jobs read and merge the
-  same state?** Shared profiles, fixtures, and wire semantics keep the two
-  implementations compatible.
-- **Can separately operated agent systems combine measurements without pooling
-  their raw telemetry?** The [summary exchange API](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/summary-exchange/README.md)
-  combines compatible window snapshots, handles replay and restart epochs, and
-  reports missing producers. Available in Go and Python from `0.2.0`.
+- How many distinct users were active in this window?
+- Which users, sessions or prompts account for the most reported tokens?
+- How much do two sets of prompts, tools or documents overlap?
+- Can Python read and merge the measurements produced by my Go services?
+- Can several workers combine their measurements while keeping raw identities local?
 
 For investigations described as "tokenmaxxing" (also written "token-maxing"),
 reported token counts can be used as weights in the frequent-items sketch to identify
@@ -109,7 +91,20 @@ For a complete comparison example, try [fleetdiff's two-operator demo](https://g
 It shows how one team's reported token usage can fall while the combined fleet
 total rises, using synthetic data. No account, upload, or model API key is needed.
 
-## Included Sketches
+<a id="included-sketches"></a>
+
+## How It Works
+
+Canonicalize and keyed-hash inputs with the library's HMAC-SHA256 helpers before
+adding them to a sketch. HyperLogLog++ estimates distinct counts; weighted
+frequent-items ranks heavy keys with deterministic error bounds; Bloom filters
+test membership; MinHash estimates set similarity. Go and Python share one
+protobuf wire format and conformance vectors, so compatible summaries produced
+in either language can be read and merged in the other.
+
+The [summary exchange API](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/summary-exchange/README.md)
+combines compatible window snapshots, handles replay and restart epochs, and
+reports missing producers. It is available in both languages from `0.2.0`.
 
 | Component | Use it for | Important property |
 |---|---|---|
