@@ -3,17 +3,24 @@
 [![CI](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/llm-measurement/llm-sketchkit/badge)](https://scorecard.dev/viewer/?uri=github.com/llm-measurement/llm-sketchkit)
 
-`llm-sketchkit` finds top users or API keys by reported tokens and estimates
-distinct users with fixed memory bounds per sketch, instead of per-user metric
-labels. Embed the Go or Python library in your gateway to summarize each window
-locally and merge compatible summaries across workers or services.
+A Go and Python library of mergeable sketches for LLM and agent telemetry:
+HyperLogLog++ for distinct counts, weighted frequent-items for the heaviest keys
+with deterministic error bounds, Bloom filters for membership, and MinHash for
+similarity. Inputs are canonicalized and keyed-hashed (HMAC-SHA256) before they
+enter a sketch, and both languages share one protobuf wire format, so summaries
+built in Go can be merged and read in Python, and the reverse.
 
-Both implementations share text canonicalization, keyed pseudonymous hashing,
-mergeable sketches, and a deterministic protobuf wire format.
+Embed it in a gateway or pipeline to rank the heaviest users, sessions or prompts
+by tokens and count distinct users in fixed memory per window, without per-user
+metric labels. Then merge window summaries across workers, services and languages.
 
-Canonicalize and keyed-hash inputs in your process before adding them to a sketch.
-Only the hashes enter sketch state; compatible producers can merge that state
-across processes or languages.
+| | |
+| --- | --- |
+| Languages | Go and Python, one wire format, checked by shared conformance vectors |
+| Install | `pip install llm-sketchkit` (Python 3.11+) or `go get github.com/llm-measurement/llm-sketchkit` |
+| Used by | [otelcol-genai-sketches](https://github.com/llm-measurement/otelcol-genai-sketches) and [fleetdiff](https://github.com/llm-measurement/fleetdiff) |
+| Status | Pre-1.0; see the [changelog](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) |
+| License | Apache-2.0 |
 
 ![Python notebook showing synthetic truth inside token-volume bounds from Go summaries](https://raw.githubusercontent.com/llm-measurement/llm-sketchkit/main/docs/images/token-bounds.png)
 
