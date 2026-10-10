@@ -19,7 +19,7 @@ metric labels. Then merge window summaries across workers, services and language
 | Languages | Go and Python, one wire format, checked by shared conformance vectors |
 | Install | `pip install llm-sketchkit` (Python 3.11+) or `go get github.com/llm-measurement/llm-sketchkit` |
 | Used by | [otelcol-genai-sketches](https://github.com/llm-measurement/otelcol-genai-sketches) and [fleetdiff](https://github.com/llm-measurement/fleetdiff) |
-| Status | Pre-1.0; see the [changelog](CHANGELOG.md) |
+| Status | Pre-1.0; see the [changelog](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) |
 | License | Apache-2.0 |
 
 ![Python notebook showing synthetic truth inside token-volume bounds from Go summaries](https://raw.githubusercontent.com/llm-measurement/llm-sketchkit/main/docs/images/token-bounds.png)
