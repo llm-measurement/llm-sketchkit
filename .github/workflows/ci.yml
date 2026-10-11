@@ -227,6 +227,7 @@ jobs:
           assert importlib.metadata.version("llm-sketchkit") == os.environ["EXPECTED_VERSION"]
           assert importlib.resources.files(llm_sketchkit).joinpath("py.typed").is_file()
           PY
+          python scripts/check_quickstarts.py --python /tmp/llm-sketchkit-wheel/bin/python
       - name: Install and test source distribution
         run: |
           sdist="$(find dist -maxdepth 1 -name '*.tar.gz' -print -quit)"

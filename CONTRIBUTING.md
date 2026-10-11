@@ -15,6 +15,29 @@ python -m pytest -q
 ruff check .
 ```
 
+## Development
+
+```sh
+git clone https://github.com/llm-measurement/llm-sketchkit.git
+cd llm-sketchkit
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip==26.2.1 setuptools==84.0.0
+python -m pip install -e '.[dev]'
+```
+
+Run all local checks:
+
+```sh
+go test ./... -race
+python -m pytest -q
+ruff check .
+mypy --strict
+```
+
+See [Wire Compatibility](docs/WIRE.md) for shared fixtures and the optional
+independent oracle check.
+
 ## Signed and signed-off commits
 
 Every pull-request commit needs both:

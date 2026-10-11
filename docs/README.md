@@ -1,7 +1,15 @@
 # Documentation
 
-Start with the repository [README](../README.md) for installation, a working
-example, merge behavior, and security guidance.
+Start with the repository [README](../README.md) for installation and quick starts.
+
+Guides:
+
+- [How it works and measurement evidence](HOW_IT_WORKS.md)
+- [Usage guide: token-heavy keys and merging](GUIDE.md)
+- [Go canonicalization and the concurrent gateway example](GO.md)
+- [Security and privacy](SECURITY_PRIVACY.md)
+- [Wire compatibility](WIRE.md)
+- [Development](../CONTRIBUTING.md#development)
 
 Adoption guidance:
 

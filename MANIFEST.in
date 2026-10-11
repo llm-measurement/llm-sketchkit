@@ -2,5 +2,15 @@
 include scripts/__init__.py
 include scripts/release_metadata.py
 include scripts/differential_identity.py
+include scripts/check_quickstarts.py
+include CONTRIBUTING.md
+include docs/README.md
+include docs/HOW_IT_WORKS.md
+include docs/GO.md
+include docs/GUIDE.md
+include docs/SECURITY_PRIVACY.md
+include docs/WIRE.md
+include docs/API.md
+include docs/FAQ.md
 recursive-include vectors *.json
 recursive-include examples/summary-exchange *.py *.md

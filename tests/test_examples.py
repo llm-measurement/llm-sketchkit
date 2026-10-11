@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Code authors: Vijay and Codex
-"""Keep copyable README recipes and the summary-exchange walkthrough runnable."""
+"""Keep copyable documentation recipes and the exchange walkthrough runnable."""
 
 import json
 import os
@@ -16,11 +16,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SECRET = "test-only-not-a-deployment-secret-0123456789"
 
 
-def test_readme_python_recipes() -> None:
-    readme = (ROOT / "README.md").read_text()
-    distinct = re.search(r"python - <<'PY'\n(.*?)\nPY", readme, re.S)
+@pytest.mark.parametrize("document", ["README.md", "docs/GUIDE.md"])
+def test_python_recipes(document: str) -> None:
+    guide = (ROOT / document).read_text()
+    distinct = re.search(r"python - <<'PY'\n(.*?)\nPY", guide, re.S)
     assert distinct is not None
-    snippets = [distinct.group(1), *re.findall(r"```python\n(.*?)```", readme, re.S)]
+    snippets = [distinct.group(1), *re.findall(r"```python\n(.*?)```", guide, re.S)]
     expected = [
         "estimated distinct prompts: 1\n",
         (
@@ -30,6 +31,8 @@ def test_readme_python_recipes() -> None:
         ),
         "merged distinct prompts: 2\n",
     ]
+    if document == "README.md":
+        expected = ["distinct users: 3; heaviest user: 3,600 tokens\n"]
     assert len(snippets) == len(expected)
     for snippet, output in zip(snippets, expected, strict=True):
         result = subprocess.run(
@@ -37,7 +40,36 @@ def test_readme_python_recipes() -> None:
             text=True, env={**os.environ, "LLM_SKETCHKIT_SECRET": SECRET},
         )
         assert result.stdout == output
-        assert output.strip() in readme
+        assert output.strip() in guide
+
+
+def test_readme_shape_and_legacy_anchors() -> None:
+    readme = (ROOT / "README.md").read_text()
+    assert len(readme.splitlines()) < 150
+    headings = re.findall(r"^#{1,6} (.+)$", readme, re.M)
+    anchors = {re.sub(r"[^\w\s-]", "", h.lower()).replace(" ", "-")
+               for h in headings}
+    anchors.update(re.findall(r'<a id="([^"]+)">', readme))
+    assert {
+        "llm-sketchkit", "python", "go", "install", "requirements",
+        "when-this-fits", "questions-it-answers", "choosing-an-integration",
+        "included-sketches", "how-it-works", "evidence-at-a-glance",
+        "go-to-python-notebook", "token-volume-heavy-hitters",
+        "go-gateway-distinct-users-and-top-keys-by-tokens", "merge-sketches",
+        "security-and-privacy", "development", "wire-compatibility", "reference",
+        "limits", "status", "license", "feedback",
+    } <= anchors
+    use_it_to = readme.split("## Use It To\n", 1)[1].split("## Install", 1)[0]
+    assert len(re.findall(r"^- ", use_it_to, re.M)) == 4
+    integration = readme.split("## Choosing An Integration\n", 1)[1]
+    integration = integration.split("## Limits", 1)[0]
+    assert len(re.findall(r"^\|", integration, re.M)) == 7
+    assert "| Install |" not in readme
+    assert "| Status |" not in readme
+    assert readme.count("**Status:**") == 1
+    assert readme.count('>License |') == 1
+    assert "**License:**" not in readme
+    assert "rank the heaviest users and teams" not in readme
 
 
 def test_readme_links_are_absolute() -> None:
