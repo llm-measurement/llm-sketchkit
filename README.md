@@ -3,12 +3,17 @@
 [![CI](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/llm-measurement/llm-sketchkit/badge)](https://scorecard.dev/viewer/?uri=github.com/llm-measurement/llm-sketchkit)
 
-**Which users, sessions or prompts use the most LLM tokens, without a metric
-label for every identity?**
+**How many distinct users does your LLM app have, and who uses the most tokens,
+across services, days and tools?**
 
-`llm-sketchkit` is a Go and Python library for counting distinct identities,
-ranking the heaviest keys, and merging those measurements across workers and
-languages in fixed memory per window.
+`llm-sketchkit` is a Go and Python library that answers both from small summary
+files you can keep, combine and share.
+
+- **Fast:** [0.026 ms or less per range query](https://llm-measurement.github.io/summaries.html), measured as a batch average.
+- **Cheap to keep:** [305 days in 2.1 MB vs 1.25 GB of source records](https://llm-measurement.github.io/summaries.html).
+- **Right when combined:** [Two tools with 46 and 26 users add up to 72; combined correctly, it's 52.](https://llm-measurement.github.io/summaries.html)
+- **Portable:** [Go and Python, same bytes, shared conformance vectors](https://github.com/llm-measurement/llm-sketchkit/blob/main/vectors/sketches/README.md).
+- **Private by design:** [Keyed hashing before counting, no raw IDs in the files](https://llm-measurement.github.io/summaries.html); keyed and pseudonymous, not anonymous.
 
 | | |
 | --- | --- |
@@ -28,14 +33,10 @@ bounds. Each row is normalized to its own upper estimate.
 
 ## When This Fits
 
-Use `llm-sketchkit` inside telemetry producers and processing components when
-exporting and indexing every key would create uncontrolled cardinality, make
-operational queries slow or unpredictable, or retain values that should not enter
-aggregate state.
-
-Agent fleets and multi-agent systems can produce more identities and events than
-an observability backend should continuously index. The library provides bounded,
-mergeable summaries across workers and windows.
+Use `llm-sketchkit` when your application needs recurring usage answers from
+measurements it can keep, combine and share. Rank token consumers as events
+arrive, combine distinct-user counts across days and services, and pass summaries
+to another team for analysis while keeping raw identities at the source.
 
 Use it with hosted model APIs, self-hosted models, or a mixture of both. Your
 pipeline supplies the identities and reported usage; the library processes that
@@ -45,17 +46,16 @@ for input and comparison requirements.
 
 ### Questions It Answers
 
+- **Tracking tokenmaxxing?** Whether you run a usage leaderboard or set per-team
+  AI budgets, rank the heaviest users and teams by token volume, with guaranteed
+  bounds, from keyed IDs rather than a raw per-employee table. Then see how
+  concentrated the usage is. See [Token-Volume Heavy Hitters](https://github.com/llm-measurement/llm-sketchkit#token-volume-heavy-hitters)
+  for a runnable example.
 - How many distinct users were active in this window?
 - Which users, sessions or prompts account for the most reported tokens?
 - How much do two sets of prompts, tools or documents overlap?
 - Can Python read and merge the measurements produced by my Go services?
 - Can several workers combine their measurements while keeping raw identities local?
-
-For investigations described as "tokenmaxxing" (also written "token-maxing"),
-reported token counts can be used as weights in the frequent-items sketch to identify
-which keyed values account for the most token volume. Use these concentration
-measurements to focus an investigation or inform a separate budget policy.
-See [Token-Volume Heavy Hitters](https://github.com/llm-measurement/llm-sketchkit#token-volume-heavy-hitters) for a runnable example.
 
 Token accounting matters with self-hosted models too: there may be no per-token
 invoice, but long responses and repeated calls can occupy shared serving capacity.
@@ -70,10 +70,10 @@ covers accuracy, privacy, and interoperability.
 
 | Your pipeline | Use | Why |
 |---|---|---|
-| GenAI spans already flow through an OpenTelemetry Collector | [OpenTelemetry Collector connector](https://github.com/llm-measurement/otelcol-genai-sketches) | It applies keyed hashing, bounded windows, cardinality controls, and trace-to-metrics conversion at the collector boundary. |
+| GenAI spans already flow through an OpenTelemetry Collector | [OpenTelemetry Collector connector](https://github.com/llm-measurement/otelcol-genai-sketches) | It produces usage metrics, distinct counts and keyed rankings while keeping your existing trace backend. |
 | You have compatible summary exports and want to compare two windows across operators | [fleetdiff](https://github.com/llm-measurement/fleetdiff) | A local, read-only command reports usage changes, distinct activity, tracked-item bounds, and missing coverage. |
-| A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Update sketches inside each bounded window, then serialize or merge compatible summaries. |
-| A batch or warehouse job reads stored events | `llm-sketchkit` directly | Build bounded summaries per partition or window and merge them before publishing results. |
+| A custom Go or Python streaming service processes events | `llm-sketchkit` directly | Measure events locally, then serialize or merge compatible summaries for each window. |
+| A batch or warehouse job reads stored events | `llm-sketchkit` directly | Create summaries per partition or window and merge them before publishing results. |
 | You need to store or visualize finished metrics | Your existing backend integration | Send aggregated results to ClickHouse, Datadog, Prometheus, or a similar system. |
 
 Use the collector path when the source spans already flow through OpenTelemetry. Use
@@ -88,12 +88,14 @@ Use authenticated exchange, authorize identity linkage, and assign each event to
 one producer.
 
 For a complete comparison example, try [fleetdiff's two-operator demo](https://github.com/llm-measurement/fleetdiff#try-it-in-a-minute).
-It shows how one team's reported token usage can fall while the combined fleet
+It shows how one team's reported token usage can fall while the combined
 total rises, using synthetic data. No account, upload, or model API key is needed.
 
 <a id="included-sketches"></a>
 
 ## How It Works
+
+Keep per-user answers without putting user identities in metric labels.
 
 Canonicalize and keyed-hash inputs with the library's HMAC-SHA256 helpers before
 adding them to a sketch. HyperLogLog++ estimates distinct counts; weighted
@@ -501,11 +503,17 @@ python scripts/datasketches_oracle.py --check
 
 ## Limits
 
-Reported tokens are not an invoice. HLL++ and MinHash error is statistical;
-frequent-items supplies deterministic count bounds. Sketch instances are not
-thread-safe: follow the [ownership rules](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership).
-Each benchmark series describes one recorded machine and workload, with dates
-and hardware in [the report](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/benchmarks.md).
+Distinct counts and similarity estimates have statistical error; ranking bounds
+are deterministic. The opening measurements describe one machine and one lab's
+released Claude Code and Codex records. Query times are batch averages over
+daily states already in memory; the whole-period distinct estimate rounds to 52.
+The [summary measurements](https://llm-measurement.github.io/summaries.html)
+and [whole-period merge check](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/summary-union.md)
+record the inputs, methods and commands. Library microbenchmarks have their own
+machine and workload details in [the report](https://github.com/llm-measurement/llm-sketchkit/blob/main/reports/benchmarks.md).
+
+Reported tokens describe usage rather than billing. For concurrent access,
+follow the [ownership rules](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#concurrency-and-ownership).
 
 ## Status
 
