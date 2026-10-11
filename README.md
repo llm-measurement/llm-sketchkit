@@ -11,8 +11,8 @@ files you can keep, combine and share.
 
 - **Fast:** [0.026 ms or less per range query](https://llm-measurement.github.io/summaries.html), measured as a batch average.
 - **Cheap to keep:** [305 days in 2.1 MB vs 1.25 GB of source records](https://llm-measurement.github.io/summaries.html).
-- **Right when combined:** [46 + 26 = 72 added, 52 combined correctly](https://llm-measurement.github.io/summaries.html), across the two tools.
-- **Portable:** [Go and Python, same bytes, shared conformance vectors](https://llm-measurement.github.io/summaries.html).
+- **Right when combined:** [Two tools with 46 and 26 users add up to 72; combined correctly, it's 52.](https://llm-measurement.github.io/summaries.html)
+- **Portable:** [Go and Python, same bytes, shared conformance vectors](https://github.com/llm-measurement/llm-sketchkit/blob/main/vectors/sketches/README.md).
 - **Private by design:** [Keyed hashing before counting, no raw IDs in the files](https://llm-measurement.github.io/summaries.html); keyed and pseudonymous, not anonymous.
 
 | | |
@@ -46,17 +46,16 @@ for input and comparison requirements.
 
 ### Questions It Answers
 
+- **Tracking tokenmaxxing?** Whether you run a usage leaderboard or set per-team
+  AI budgets, rank the heaviest users and teams by token volume, with guaranteed
+  bounds, from keyed IDs rather than a raw per-employee table. Then see how
+  concentrated the usage is. See [Token-Volume Heavy Hitters](https://github.com/llm-measurement/llm-sketchkit#token-volume-heavy-hitters)
+  for a runnable example.
 - How many distinct users were active in this window?
 - Which users, sessions or prompts account for the most reported tokens?
 - How much do two sets of prompts, tools or documents overlap?
 - Can Python read and merge the measurements produced by my Go services?
 - Can several workers combine their measurements while keeping raw identities local?
-
-For investigations described as "tokenmaxxing" (also written "token-maxing"),
-reported token counts can be used as weights in the frequent-items sketch to identify
-which keyed values account for the most token volume. Use these concentration
-measurements to focus an investigation or inform a separate budget policy.
-See [Token-Volume Heavy Hitters](https://github.com/llm-measurement/llm-sketchkit#token-volume-heavy-hitters) for a runnable example.
 
 Token accounting matters with self-hosted models too: there may be no per-token
 invoice, but long responses and repeated calls can occupy shared serving capacity.
