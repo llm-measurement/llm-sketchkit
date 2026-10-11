@@ -3,11 +3,12 @@
 [![CI](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-measurement/llm-sketchkit/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/llm-measurement/llm-sketchkit/badge)](https://scorecard.dev/viewer/?uri=github.com/llm-measurement/llm-sketchkit)
 
-**How many distinct users does your LLM app have, and who uses the most tokens,
-across services, days and tools?**
+`llm-sketchkit` is a Go and Python library for measuring LLM usage. It counts
+distinct users and ranks the heaviest users, sessions or keys by tokens, and keeps
+the results in small summary files you can store, combine and share.
 
-`llm-sketchkit` is a Go and Python library that answers both from small summary
-files you can keep, combine and share.
+Use it to answer **how many distinct users your LLM app has, and who uses the most
+tokens, across services, days and tools:**
 
 - **Fast:** [0.026 ms or less per range query](https://llm-measurement.github.io/summaries.html), measured as a batch average.
 - **Cheap to keep:** [305 days in 2.1 MB vs 1.25 GB of source records](https://llm-measurement.github.io/summaries.html).
