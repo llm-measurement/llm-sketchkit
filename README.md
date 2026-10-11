@@ -48,7 +48,7 @@ for input and comparison requirements.
 ### Questions It Answers
 
 - **Tracking tokenmaxxing?** Whether you run a usage leaderboard or set per-team
-  AI budgets, rank the heaviest users and teams by token volume, with guaranteed
+  AI budgets, rank the heaviest users by token volume, with guaranteed
   bounds, from keyed IDs rather than a raw per-employee table. Then see how
   concentrated the usage is. See [Token-Volume Heavy Hitters](https://github.com/llm-measurement/llm-sketchkit#token-volume-heavy-hitters)
   for a runnable example.
