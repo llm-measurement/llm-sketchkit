@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-sketchkit"
-version = "0.2.2"
+version = "0.3.0"
 description = "Count distinct LLM users and find top token consumers across services, days and tools. Fast, small, portable summaries in Go and Python."
 readme = "README.md"
 requires-python = ">=3.11"

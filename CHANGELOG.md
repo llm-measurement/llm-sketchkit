@@ -5,7 +5,18 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
-## Unreleased (Next Minor)
+## Unreleased
+
+- Simplify internal sketch validation, profile lookup and test helpers while
+  preserving checked conformance outputs. These changes follow the frozen 0.3.0
+  release candidate and will ship in a later release.
+- Refresh the README, task-oriented guides and fresh-install quick-start checks.
+
+## [0.3.0] - 2026-10-11
+
+Text identity and validation corrections. Some identities change when upgrading
+from 0.2.x in Go as well as Python. Read the
+[release notes](docs/releases/v0.3.0.md) before upgrading retained state.
 
 - Reject zero-length observation intervals containing nonzero counters or
   nonempty sketch state; accept configured empty sketches, including empty dense
@@ -19,7 +30,8 @@ public Go and Python APIs exercised by the conformance vectors.
   3.11. Python identities can change for U+001C through U+001F at trimmed edges,
   long non-starter runs (including decomposing and backward-combining
   characters), and normalization involving Unicode 15 combining marks on older
-  runtimes. This canonicalizer change leaves current-main Go output unchanged.
+  runtimes. This canonicalizer change leaves Go output unchanged when built with
+  the same normalization dependency.
   Retained affected Python summaries require an explicit migration; see
   [identity migration](docs/IDENTITY_MIGRATION.md).
 - Evaluate Python HLL++ bias sums left-to-right to match Go and Python 3.11.
@@ -34,7 +46,7 @@ public Go and Python APIs exercised by the conformance vectors.
   need the [identity migration](docs/IDENTITY_MIGRATION.md). Published `0.2.x`
   artifacts are unchanged and continue to support Go 1.25.
 
-## Unreleased (0.2.3 Hardening)
+## [0.2.3] - 2026-10-11
 
 - Bound protobuf allocation before decoding: HLL++ and frequent-items accept
   up to 64 KiB, MinHash 4 KiB, and Bloom 2.5 MiB. Discarded bodies, repeated
@@ -52,9 +64,10 @@ public Go and Python APIs exercised by the conformance vectors.
 
 These fixes preserve existing conformance bytes and public APIs. The 0.2.3 release
 is a backport to the 0.2.x line, retaining Go 1.25 support and
-`golang.org/x/text v0.41.0`. Main retains its Go 1.26 minimum and
-`golang.org/x/text v0.42.0` for the next minor release. No release artifacts
-have been published for these entries yet.
+`golang.org/x/text v0.41.0`. Release 0.3.0 includes the same hardening with a
+Go 1.26 minimum and `golang.org/x/text v0.42.0`. Both versions are published;
+see the [0.2.3 release](https://github.com/llm-measurement/llm-sketchkit/releases/tag/v0.2.3)
+and [0.3.0 release](https://github.com/llm-measurement/llm-sketchkit/releases/tag/v0.3.0).
 
 ## [0.2.2] - 2026-09-29
 
