@@ -80,5 +80,5 @@ synthetic workload. Use independent reference counts when validating your own da
 ## Security Boundary
 
 Protect the secret and serialized summaries using the
-[security guidance](../../README.md#security-and-privacy). Key rotation changes
+[security guidance](../../docs/SECURITY_PRIVACY.md). Key rotation changes
 comparability, so keep a consistent key for windows you intend to compare.

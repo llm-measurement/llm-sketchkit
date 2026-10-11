@@ -79,7 +79,7 @@ The sketch retains registers rather than the prompt text or a per-prompt map.
 Its dense memory shape is fixed by the selected profile rather than growing
 linearly with the number of distinct prompts.
 
-See the [security guidance](../README.md#security-and-privacy) for secret handling,
+See the [security guidance](SECURITY_PRIVACY.md) for secret handling,
 linkability, and rotation, and the [hash specification](../spec/hash.md) for the
 wire contract.
 
@@ -120,7 +120,7 @@ alerts, investigate high-share sessions, or inform their own budget controls.
 For GenAI spans already flowing through OpenTelemetry, the
 [`otelcol-genai-sketches`](https://github.com/llm-measurement/otelcol-genai-sketches)
 distribution supplies collection, bounded metrics, and structured top-k surfaces.
-The [README example](../README.md#token-volume-heavy-hitters) shows direct library
+The [usage guide example](GUIDE.md#token-volume-heavy-hitters) shows direct library
 use in a custom pipeline.
 
 ## Can Sketches Produced In Go Be Read And Merged In Python?
@@ -176,7 +176,7 @@ seeds, observed errors, theoretical bounds, and important limitations. The
 Keyed hashing keeps raw values out of sketch state and requires the secret to
 recompute candidate hashes. Domain separation keeps different entity classes
 separate. Use access controls and rotate keys when the trust boundary changes;
-the [security guidance](../README.md#security-and-privacy) explains pseudonymity,
+the [security guidance](SECURITY_PRIVACY.md) explains pseudonymity,
 linkability, and the absence of differential privacy.
 
 ## How Does This Differ From A General-Purpose Sketch Library?

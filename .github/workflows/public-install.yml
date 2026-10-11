@@ -24,6 +24,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.release.tag_name || inputs.release_tag }}
+      - name: Read quick starts from the workflow revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+          path: quickstart-docs
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /README.md
+            /scripts/check_quickstarts.py
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
@@ -83,6 +93,7 @@ jobs:
           assert result.missing == ["absent"]
           assert result.sketches == doc.sketches
           PY
+          python quickstart-docs/scripts/check_quickstarts.py --python "${python_bin}"
       - name: Install the tagged Go module
         env:
           RELEASE_TAG: ${{ steps.release.outputs.go_version }}
@@ -107,3 +118,4 @@ jobs:
             -run '^$'
           GOWORK=off go test \
             github.com/llm-measurement/llm-sketchkit/go/sketchkit/summary
+          python "${GITHUB_WORKSPACE}/quickstart-docs/scripts/check_quickstarts.py" --go-dir "${smoke_dir}"

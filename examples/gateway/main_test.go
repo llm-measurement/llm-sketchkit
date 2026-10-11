@@ -88,37 +88,12 @@ func testSecret(t *testing.T) sketchhash.Secret {
 	return secret
 }
 
-func TestREADMEGatewayRecipe(t *testing.T) {
-	readme, err := os.ReadFile("../../README.md")
-	if err != nil {
-		t.Fatal(err)
-	}
+func TestGoDocumentationRecipes(t *testing.T) {
 	source, err := os.ReadFile("main.go")
 	if err != nil {
 		t.Fatal(err)
 	}
-	blocks := regexp.MustCompile("(?s)```go\\n(.*?)```").FindAllStringSubmatch(string(readme), -1)
-	if len(blocks) != 3 {
-		t.Fatalf("Go recipe count = %d, want 3", len(blocks))
-	}
-	program := filepath.Join(t.TempDir(), "main.go")
-	if err := os.WriteFile(program, []byte(blocks[0][1]), 0o600); err != nil {
-		t.Fatal(err)
-	}
 	secret := testSecret(t)
-	command := exec.Command("go", "run", program)
-	result, err := command.CombinedOutput()
-	if err != nil {
-		t.Fatalf("README Go program: %v\n%s", err, result)
-	}
-	if string(result) != "estimated distinct prompts: 1\n" {
-		t.Fatalf("README Go output: %s", result)
-	}
-	for _, block := range blocks[1:] {
-		if !strings.Contains(strings.Join(strings.Fields(string(source)), " "), strings.Join(strings.Fields(block[1]), " ")) {
-			t.Fatal("README gateway excerpt differs from tested source")
-		}
-	}
 	var out bytes.Buffer
 	if err := runWindow(secret, [][]event{
 		{{"support", 1240}, {"research", 8900}},
@@ -126,7 +101,43 @@ func TestREADMEGatewayRecipe(t *testing.T) {
 	}, []string{"support", "research", "coding"}, &out); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(readme), out.String()) {
-		t.Fatalf("gateway output not documented: %s", out.String())
+	for _, tc := range []struct {
+		path   string
+		blocks int
+		output string
+	}{
+		{"../../README.md", 1, "distinct users: 3\n"},
+		{"../../docs/GO.md", 3, "estimated distinct prompts: 1\n"},
+	} {
+		t.Run(tc.path, func(t *testing.T) {
+			document, err := os.ReadFile(tc.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			blocks := regexp.MustCompile("(?s)```go\\n(.*?)```").FindAllStringSubmatch(string(document), -1)
+			if len(blocks) != tc.blocks {
+				t.Fatalf("Go recipe count = %d, want %d", len(blocks), tc.blocks)
+			}
+			program := filepath.Join(t.TempDir(), "main.go")
+			if err := os.WriteFile(program, []byte(blocks[0][1]), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			command := exec.Command("go", "run", program)
+			result, err := command.CombinedOutput()
+			if err != nil {
+				t.Fatalf("Go program: %v\n%s", err, result)
+			}
+			if string(result) != tc.output {
+				t.Fatalf("Go output: %s", result)
+			}
+			for _, block := range blocks[1:] {
+				if !strings.Contains(strings.Join(strings.Fields(string(source)), " "), strings.Join(strings.Fields(block[1]), " ")) {
+					t.Fatal("gateway excerpt differs from tested source")
+				}
+			}
+			if tc.blocks > 1 && !strings.Contains(string(document), out.String()) {
+				t.Fatalf("gateway output not documented: %s", out.String())
+			}
+		})
 	}
 }
