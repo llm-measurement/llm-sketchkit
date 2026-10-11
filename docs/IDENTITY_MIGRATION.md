@@ -1,10 +1,9 @@
-# Identity Migration For The Next Minor Release
+# Identity Migration For 0.3.0
 
-Python `text_v1` will match current-main Go Unicode 15 behavior in the planned
-0.3.0 minor release. The Python correction does not change Go's canonicalizer.
-The separate `x/text` dependency update on main does change some Go identities
-relative to 0.2.2, as described below. Both changes stay separate from the
-output-preserving 0.2.3 hardening backport.
+Python `text_v1` in 0.3.0 matches Go's Unicode 15 behavior. The Python correction
+does not change Go's canonicalizer. The separate `x/text` dependency update in
+0.3.0 changes some Go identities relative to 0.2.x, as described below. Both
+changes stay separate from the output-preserving 0.2.3 hardening backport.
 
 ## Affected Python Inputs
 
@@ -23,7 +22,7 @@ the pre-existing conformance vector files are unchanged.
 
 ## Go Dependency Changes Since 0.2.2
 
-The 0.2.x line uses `golang.org/x/text v0.41.0`. Main uses v0.42.0, whose
+The 0.2.x line uses `golang.org/x/text v0.41.0`. Release 0.3.0 uses v0.42.0, whose
 normalization corrections change some canonical bytes and hashes. For example,
 `U+11F41 U+0301` previously normalized to the unrelated Greek character U+1F45;
 the newer dependency preserves `U+11F41 U+0301`. This is a dependency correction,
@@ -41,7 +40,7 @@ sketchkit version alone does not identify the normalization behavior.
 
 ## Retained Summaries
 
-The same minor release rejects zero-length observation intervals carrying
+Release 0.3.0 rejects zero-length observation intervals carrying
 nonzero counters or nonempty sketch state. Empty intervals may carry zero
 counters and configured empty sketches, including all-zero dense HLL++ state.
 Emptiness uses retained totals, counts and register/bit content, not the presence
