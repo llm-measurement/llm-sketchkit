@@ -31,6 +31,19 @@ and plots the results. The green marks are known synthetic counts used to check 
 bounds. Each row is normalized to its own upper estimate.
 [Watch the 90-second walkthrough](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/media/README.md).
 
+## Metric Overflow
+
+The [collector integration](https://github.com/llm-measurement/otelcol-genai-sketches/blob/main/docs/METRICS.md)
+uses `slice_value="__overflow__"` for excess configured slice values; sketchkit
+itself emits neither that label nor metrics. The OpenTelemetry SDK's
+[`otel.metric.overflow=true`](https://opentelemetry.io/docs/specs/otel/metrics/sdk/#overflow-attribute)
+instead marks a single-attribute aggregate at the SDK cardinality limit. Both
+retain aggregate measurements while losing excess label detail, with different
+grouping rules and no automatic translation between markers.
+[Cardinality Guardian](https://github.com/YElayyat/otel-cardinality-processor)
+is a related generic metric-label processor; keyed sketch summaries address
+distinct counts and rankings separately from metric-label controls.
+
 ## Go To Python Notebook
 
 The [runnable notebook](https://github.com/llm-measurement/llm-sketchkit/blob/main/examples/go-to-python/go-to-python.ipynb) produces
