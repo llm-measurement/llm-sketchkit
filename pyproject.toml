@@ -36,7 +36,7 @@ Source = "https://github.com/llm-measurement/llm-sketchkit"
 dev = [
   "mypy>=1.10",
   "pytest>=8.0",
-  "ruff>=0.5",
+  "ruff>=0.17.0",
 ]
 oracle = [
   "datasketches==5.2.0",
