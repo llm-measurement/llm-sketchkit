@@ -13,16 +13,14 @@ from typing import Any
 
 from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
 
-from . import _summary_state, bloom, frequentitems, hllpp, minhash
+from . import _summary_state, bloom, frequentitems, hllpp, minhash, model_usage
+from ._summary_errors import ModelUsageError
+from ._summary_errors import SummaryError as SummaryError
 from ._summary_json import check_counts
 
 MAX_BYTES = 8 << 20
 _MAX_INT = (1 << 63) - 1
 _IDENTIFIER = re.compile(r"[A-Za-z0-9._:-]{1,128}", re.ASCII)
-
-
-class SummaryError(ValueError):
-    """Malformed, incompatible, conflicting, or oversized summary input."""
 
 
 @dataclass
@@ -47,11 +45,17 @@ class Envelope:
     version: int
     window_duration_unix_nano: int
     window_start_unix_nano: int
+    model_usage: dict[str, Any] | None = None
 
     def validate(self) -> None:
         self._validate()
 
     def _validate(self) -> dict[str, _summary_state.Parsed]:
+        if self.model_usage is not None:
+            model_usage.validate(
+                self.model_usage, self.counters,
+                self.observed_start_unix_nano == self.observed_end_unix_nano,
+            )
         for value in (
             self.version, self.sequence, self.emitted_at_unix_nano,
             self.observed_start_unix_nano, self.observed_end_unix_nano,
@@ -121,6 +125,8 @@ class Envelope:
 
     def _marshal_validated(self) -> bytes:
         document = asdict(self)
+        if self.model_usage is None:
+            del document["model_usage"]
         document["sketches"] = {
             name: {"data": base64.b64encode(p.data).decode("ascii"), "kind": p.kind}
             for name, p in self.sketches.items()
@@ -137,7 +143,18 @@ class Envelope:
             raise SummaryError("summary exceeds size limit")
         try:
             check_counts(data)
-            document: Any = json.loads(data)
+            def integer(text: str) -> int:
+                if text == "-0":
+                    raise ModelUsageError("range")
+                return int(text)
+            def noninteger(text: str) -> Any:
+                raise ModelUsageError("range")
+            document: Any = json.loads(
+                data, parse_int=integer,
+                parse_float=noninteger, parse_constant=noninteger,
+            )
+            if "model_usage" in document and document["model_usage"] is None:
+                raise ModelUsageError("structure")
             payloads = document["sketches"]
             if type(payloads) is not dict:
                 raise SummaryError("invalid summary sketches")
@@ -154,6 +171,8 @@ class Envelope:
             if envelope.marshal_binary() != data:
                 raise SummaryError("noncanonical summary JSON")
             return envelope
+        except ModelUsageError:
+            raise
         except (ValueError, TypeError, KeyError, AttributeError, RecursionError):
             raise SummaryError("invalid summary JSON or state") from None
 
@@ -185,6 +204,7 @@ def _compatible_validated(
         other = b.sketches[name]
         if payload.kind != other.kind or left[name] != right[name]:
             raise SummaryError("incompatible summary sketch metadata")
+    model_usage.compatible(a.model_usage, b.model_usage)
 
 
 @dataclass
@@ -203,6 +223,7 @@ class Result:
     sources: list[Source]
     missing: list[str]
     partial: list[str]
+    model_usage: dict[str, Any] | None = None
 
 
 def combine(inputs: list[Envelope], expected: list[str]) -> Result:
@@ -259,6 +280,7 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
                 ):
                     raise SummaryError("summary observation or counter regressed")
                 selected[-1] = doc
+                model_usage.check_regression(last.model_usage, doc.model_usage)
                 headers[-1] = metadata
                 previous_bytes = data
                 continue
@@ -280,6 +302,8 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
             if total > _MAX_INT:
                 raise SummaryError("combined counter overflow")
             result.counters[name] = total
+        if doc.model_usage is not None:
+            result.model_usage = model_usage.merge(result.model_usage, doc.model_usage)
         for name, payload in doc.sketches.items():
             kinds[name] = payload.kind
             try:
@@ -325,7 +349,20 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
             parts[0].window_start_unix_nano + parts[0].window_duration_unix_nano
         ):
             result.partial.append(name)
+    if result.model_usage is not None:
+        model_usage.validate(result.model_usage, result.counters)
     return result
+
+
+def has_model_usage(data: bytes) -> bool:
+    """Bounded capability detection; malformed/over-limit data remains an error."""
+    if len(data) > MAX_BYTES:
+        raise SummaryError("summary exceeds size limit")
+    try:
+        present = check_counts(data)
+    except (ValueError, UnicodeError):
+        raise SummaryError("invalid summary JSON") from None
+    return present
 
 
 def _check_identifier(value: str) -> None:
