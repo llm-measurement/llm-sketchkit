@@ -7,10 +7,22 @@ public Go and Python APIs exercised by the conformance vectors.
 
 ## Unreleased
 
+## [0.4.0] - 2026-10-15
+
+Model Usage v1 adds opt-in per-model input/output/cache token totals, reported
+and missing coverage, and an input-tier histogram to Go and Python summary
+exchange. See the [release notes](docs/releases/v0.4.0.md) for compatibility,
+reader-before-producer rollout and dependency upgrade guidance.
+
+- Add checked collection, validation and combination of per-model usage, with
+  quality diagnostics and jointly complete token splits.
+- Add 112 shared conformance scenarios, two contract fixtures and 65 exact wire
+  fixtures.
 - Simplify internal sketch validation, profile lookup and test helpers while
-  preserving checked conformance outputs. These changes follow the frozen 0.3.0
-  release candidate and will ship in a later release.
+  preserving checked conformance outputs.
 - Refresh the README, task-oriented guides and fresh-install quick-start checks.
+
+[0.4.0]: docs/releases/v0.4.0.md
 
 ## [0.3.0] - 2026-10-11
 
