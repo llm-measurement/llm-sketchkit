@@ -10,13 +10,14 @@ for embedding `llm-sketchkit` in a long-running process.
 | Go | 1.26 and 1.27, latest patch releases | Tests run on the pinned 1.26 toolchain and latest 1.26/1.27 patches |
 | Python | 3.11, 3.12, 3.13, and 3.14 | Tests run on every listed version |
 
-This table describes `main`. The published `0.2.x` releases support Go 1.25 and
-1.26. The Go 1.26 minimum on `main` is for the next minor release, not a `0.2.x`
-patch release.
+This table describes `main` and 0.4.0. The published
+`0.2.x` releases support Go 1.25 and 1.26; published 0.3.0 already requires
+Go 1.26. Release 0.4.0 retains that minimum.
 
-The 0.2.3 hardening release is backported to the 0.2.x line with Go 1.25
-support and `golang.org/x/text v0.41.0`. Main retains its Go 1.26 minimum and
-`golang.org/x/text v0.42.0` for the next minor release.
+The published 0.2.3 hardening release retains Go 1.25 support and
+`golang.org/x/text v0.41.0`. See the [0.4.0 release notes](releases/v0.4.0.md)
+for current dependency upgrade guidance. Resolved versions in an embedding
+application may be newer than the module requirements.
 
 A runtime line is removed only in a minor release and is called out in the
 changelog. Security patches to a supported runtime should be applied promptly by
@@ -79,9 +80,12 @@ Additional limits and failure behavior:
 
 ## Upgrade And Compatibility
 
-The next minor release's [migration notes](IDENTITY_MIGRATION.md) cover Python
+The published 0.3.0 [migration notes](IDENTITY_MIGRATION.md) cover Python
 text identity corrections, Go dependency-related identity changes since 0.2.2,
 tied observation intervals and protobuf group rejection.
+
+The [0.4.0 release notes](releases/v0.4.0.md) cover the optional Model Usage v1
+extension and its reader-before-producer deployment order.
 
 Wire version, sketch kind, profile, hash domain, hash algorithm, and shape metadata
 form the merge contract. Never merge state produced with different secrets, domains,
@@ -95,7 +99,8 @@ rewritten.
 
 For an application upgrade:
 
-1. Upgrade readers before writers when a release introduces a new wire version.
+1. Upgrade readers before writers when a release introduces a new wire version
+   or an optional member that older readers reject, such as `model_usage`.
 2. Load representative retained state in a canary process before broad deployment.
 3. Keep the previous binary available until the canary has parsed, queried, and
    merged the retained state it will encounter.

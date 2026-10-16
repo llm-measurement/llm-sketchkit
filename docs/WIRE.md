@@ -27,7 +27,7 @@ python scripts/datasketches_oracle.py --check
 
 ## Status
 
-`llm-sketchkit 0.2.x` is the current supported release line. Patch releases preserve the
+See the [security policy](../SECURITY.md#supported-versions) for supported release lines. Patch releases preserve the
 documented wire formats, named hash domains, and Go and Python APIs exercised by
 the checked-in conformance vectors. Additive or incompatible changes to that
 surface receive a new minor version and are called out in the changelog before

@@ -132,7 +132,7 @@ Reported tokens describe usage rather than billing. For concurrent access, follo
 
 <a id="status"></a>
 
-**Status:** Pre-1.0; `0.2.x` is the supported release line. See the [changelog](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md) and [compatibility policy](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/WIRE.md#status).
+**Status:** Pre-1.0. See the [changelog](https://github.com/llm-measurement/llm-sketchkit/blob/main/CHANGELOG.md), [supported versions](https://github.com/llm-measurement/llm-sketchkit/blob/main/SECURITY.md#supported-versions) and [compatibility policy](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/WIRE.md#status).
 <a id="feedback"></a>
 
 **Feedback:** [Open an issue](https://github.com/llm-measurement/llm-sketchkit/issues), [contribute](https://github.com/llm-measurement/llm-sketchkit/blob/main/CONTRIBUTING.md), or [report a vulnerability privately](https://github.com/llm-measurement/llm-sketchkit/blob/main/SECURITY.md).
