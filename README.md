@@ -380,10 +380,13 @@ python scripts/datasketches_oracle.py --check
 
 ## Status
 
-`llm-sketchkit 0.2.x` is the current supported release line. Patch releases preserve the
+This checkout is the identity-preserving `llm-sketchkit 0.2.x` maintenance line.
+The [0.2.4 notes](docs/releases/v0.2.4.md) describe the targeted `model_usage`
+backport and reader-first rollout. Patch releases preserve the
 documented wire formats, named hash domains, and Go and Python APIs exercised by
-the checked-in conformance vectors. Additive or incompatible changes to that
-surface receive a new minor version and are called out in the changelog before
+the checked-in conformance vectors. Apart from this targeted additive backport,
+additive or incompatible changes receive a new minor version and are called out
+in the changelog before
 `1.0`. Supported runtimes, deprecation notice, and security backports follow the
 [operational policy](https://github.com/llm-measurement/llm-sketchkit/blob/main/docs/OPERATIONS.md#support-and-deprecation).
 

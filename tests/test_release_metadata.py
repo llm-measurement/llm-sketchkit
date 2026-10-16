@@ -7,7 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from scripts.release_metadata import release_tag
+from scripts.release_metadata import project_version, release_tag
+
+
+def test_maintenance_release_version() -> None:
+    assert project_version() == "0.2.4"
+    assert release_tag(project_version()) == "v0.2.4"
 
 
 def test_package_author_display_names() -> None:

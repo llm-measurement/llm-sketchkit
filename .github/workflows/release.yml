@@ -11,7 +11,7 @@ on:
         description: Existing v* tag whose package metadata should be validated
         required: true
         type: string
-        default: v0.2.2
+        default: v0.2.4
       publish_pypi:
         description: Publish with PyPI trusted publishing when the repository is public
         required: true

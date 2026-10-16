@@ -14,6 +14,7 @@ import (
 	"slices"
 	"sort"
 
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/modelusage"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -37,6 +38,7 @@ type Envelope struct {
 	EmittedAt      int64              `json:"emitted_at_unix_nano"`
 	Epoch          string             `json:"epoch"`
 	KeyID          string             `json:"key_id"`
+	ModelUsage     *modelusage.Block  `json:"model_usage,omitempty"`
 	ObservedEnd    int64              `json:"observed_end_unix_nano"`
 	ObservedStart  int64              `json:"observed_start_unix_nano"`
 	ProducerID     string             `json:"producer_id"`
@@ -53,6 +55,11 @@ func (e Envelope) Validate() error {
 }
 
 func (e Envelope) validate(parsed map[string]*parsedPayload) error {
+	if e.ModelUsage != nil {
+		if err := e.ModelUsage.Validate(e.Counters, e.ObservedStart == e.ObservedEnd); err != nil {
+			return err
+		}
+	}
 	if e.Version != 1 || e.Sequence == 0 || e.Sequence > math.MaxInt64 {
 		return errors.New("invalid summary version or sequence")
 	}
@@ -123,6 +130,10 @@ func Parse(data []byte) (Envelope, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&e); err != nil {
+		var numberError *json.UnmarshalTypeError
+		if errors.As(err, &numberError) && e.ModelUsage != nil {
+			return Envelope{}, &modelusage.Error{Reason: "range"}
+		}
 		return Envelope{}, errors.New("invalid summary JSON")
 	}
 	canonical, err := e.MarshalBinary()
@@ -160,7 +171,7 @@ func compatibleValidated(a, b Envelope, left, right map[string]*parsedPayload) e
 			return errors.New("incompatible summary sketch metadata")
 		}
 	}
-	return nil
+	return modelusage.Compatible(a.ModelUsage, b.ModelUsage)
 }
 
 type Source struct {
@@ -173,11 +184,12 @@ type Source struct {
 
 // Result is new combined state. Missing and Partial refer to expected producers.
 type Result struct {
-	Counters map[string]uint64  `json:"counters"`
-	Sketches map[string]Payload `json:"sketches"`
-	Sources  []Source           `json:"sources"`
-	Missing  []string           `json:"missing"`
-	Partial  []string           `json:"partial"`
+	Counters   map[string]uint64  `json:"counters"`
+	ModelUsage *modelusage.Block  `json:"model_usage,omitempty"`
+	Sketches   map[string]Payload `json:"sketches"`
+	Sources    []Source           `json:"sources"`
+	Missing    []string           `json:"missing"`
+	Partial    []string           `json:"partial"`
 }
 
 // Combine selects the latest cumulative snapshot per producer/epoch and rebuilds
@@ -219,6 +231,13 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 				return errors.New("combined counter overflow")
 			}
 			result.Counters[name] += value
+		}
+		if doc.ModelUsage != nil {
+			var err error
+			result.ModelUsage, err = modelusage.Merge(result.ModelUsage, doc.ModelUsage)
+			if err != nil {
+				return err
+			}
 		}
 		for name, state := range parsed {
 			if previous, ok := accumulated[name]; ok {
@@ -276,6 +295,9 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 					}
 				}
 				selected[len(selected)-1] = doc
+				if err := modelusage.CheckRegression(last.ModelUsage, doc.ModelUsage); err != nil {
+					return Result{}, err
+				}
 				pending = parsed
 				previousBytes = encoded
 				continue
@@ -327,6 +349,11 @@ func Combine(input []Envelope, expected []string) (Result, error) {
 		}
 		if partial || end != parts[0].WindowStart+parts[0].WindowDuration {
 			result.Partial = append(result.Partial, id)
+		}
+	}
+	if result.ModelUsage != nil {
+		if err := result.ModelUsage.Validate(result.Counters, false); err != nil {
+			return Result{}, err
 		}
 	}
 	return result, nil

@@ -5,6 +5,24 @@ All notable changes to `llm-sketchkit` are recorded here. Versions follow
 patch releases preserve the documented wire formats, named hash domains, and
 public Go and Python APIs exercised by the conformance vectors.
 
+## [0.2.4] - 2026-10-16
+
+- Backport the optional `model_usage` summary extension and bounded Go/Python
+  parsing, validation, collection, checked merge, and snapshot replay support.
+- Retain all 112 shared model-usage scenarios and two contract fixtures, with
+  malformed JSON/Unicode and input-batch-bound regressions.
+- Preserve v0.2.3 text canonicalization, keyed hashes, sketch algorithms, legacy
+  vectors, Go 1.25 support, and the `golang.org/x/text v0.41.0` dependency.
+  Add explicit regressions for legacy supplementary-plane identity bytes.
+
+This targeted maintenance backport adds the extension without importing the
+newer minor line's identity changes. Absent `model_usage` retains existing
+canonical summary bytes. Older readers reject an enabled extension, including
+an empty block; upgrade readers before producers enable it. Identity preservation
+is relative to v0.2.3 on the same runtime and resolved normalization dependency,
+not a new Go/Python equivalence guarantee. See the
+[release notes](docs/releases/v0.2.4.md).
+
 ## [0.2.3] - Unreleased
 
 - Bound protobuf allocations and summary JSON entry counts before decoding
