@@ -82,4 +82,4 @@ before enabling producers. No release/version number is assigned here.
 Pricing and CLI diagnostics appear only in conformance tests, not a production
 price engine. There is no key/team intersection. Consumer and collector
 integration are separate from this library. Shared-library tests do not claim
-collector OTLP execution; that is a separate integration gate.
+collector OTLP execution; that is a separate integration check.
