@@ -8,6 +8,8 @@ import math
 from collections.abc import Iterable
 from typing import Any, cast
 
+from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
+
 from . import _proto, profiles
 from .hashfamily import MASK64
 from .hllpp_bias import BIAS_DATA, RAW_ESTIMATE_DATA
@@ -44,11 +46,11 @@ class Sketch:
     ) -> None:
         config = profiles.HLLPP_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown hllpp profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(domain)
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._p = config.normal_precision
@@ -63,9 +65,14 @@ class Sketch:
     def parse(cls, data: bytes) -> Sketch:
         """Decode a HLL++ sketch from deterministic protobuf bytes."""
 
-        if len(data) > _proto.MAX_WIRE_BYTES:
+        if len(data) > _proto.MAX_WIRE_BYTES or len(data) > _proto.SMALL_WIRE_BYTES:
             raise InvalidWireEncodingError("wire input too large")
-        message = _proto.parse_sketch(data)
+        if not _proto.bounded_wire(data, _proto.SMALL_WIRE_BYTES):
+            raise InvalidWireEncodingError("malformed or oversized body")
+        try:
+            message = _proto.parse_sketch(data)
+        except DecodeError:
+            raise InvalidWireEncodingError("malformed protobuf") from None
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("hllpp"):
             raise InvalidWireEncodingError("missing HLL++ metadata or body")
@@ -79,14 +86,14 @@ class Sketch:
         profile = cast(str, metadata.profile)
         config = profiles.HLLPP_PROFILES.get(profile)
         if config is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown hllpp profile")
         normal_precision = cast(int, metadata.hllpp_normal_precision)
         sparse_precision = cast(int, metadata.hllpp_sparse_precision)
         if (
             normal_precision != config.normal_precision
             or sparse_precision != config.sparse_precision
         ):
-            raise PrecisionMismatchError(profile)
+            raise PrecisionMismatchError("hllpp precision mismatch")
 
         sketch = cls(profile, cast(str, metadata.hash_domain), profiles.HMAC_SHA256_64)
         body = message.hllpp

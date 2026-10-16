@@ -25,7 +25,7 @@ def canonicalize(profile: str, value: bytes | str) -> bytes:
     """Canonicalize a UTF-8 text value under the named profile."""
 
     if profile != TEXT_V1:
-        raise UnsupportedProfileError(profile)
+        raise UnsupportedProfileError("unsupported canonicalization profile")
     text = _decode_text(value)
     return _canonicalize_text_v1(text).encode("utf-8")
 
@@ -40,14 +40,14 @@ def _decode_text(value: bytes | str) -> str:
     if isinstance(value, str):
         try:
             value.encode("utf-8")
-        except UnicodeEncodeError as exc:
-            raise InvalidUTF8Error("invalid UTF-8 string") from exc
+        except UnicodeEncodeError:
+            raise InvalidUTF8Error("invalid UTF-8 string") from None
         return value
 
     try:
         return value.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise InvalidUTF8Error("invalid UTF-8 bytes") from exc
+    except UnicodeDecodeError:
+        raise InvalidUTF8Error("invalid UTF-8 bytes") from None
 
 
 def _canonicalize_text_v1(value: str) -> str:

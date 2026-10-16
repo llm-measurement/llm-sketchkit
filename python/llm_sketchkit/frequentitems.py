@@ -4,8 +4,11 @@
 
 from __future__ import annotations
 
+import heapq
 from dataclasses import dataclass
 from typing import Any, cast
+
+from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
 
 from . import _proto, profiles
 from .hashfamily import MASK64
@@ -69,11 +72,11 @@ class Sketch:
     ) -> None:
         map_size = profiles.FREQUENT_ITEMS_MAP_SIZES.get(profile)
         if map_size is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown frequent-items profile")
         if domain not in profiles.REGISTERED_DOMAINS:
-            raise IncompatibleMergeError(domain)
+            raise IncompatibleMergeError("unregistered hash domain")
         if algorithm != profiles.HMAC_SHA256_64:
-            raise IncompatibleMergeError(algorithm)
+            raise IncompatibleMergeError("unsupported hash algorithm")
 
         self._profile = profile
         self._map_size = map_size
@@ -82,14 +85,20 @@ class Sketch:
         self._total_weight = 0
         self._max_error = 0
         self._items: dict[int, int] = {}
+        self._minimum: list[tuple[int, int]] = []
 
     @classmethod
     def parse(cls, data: bytes) -> Sketch:
         """Decode a weighted frequent-items sketch from protobuf bytes."""
 
-        if len(data) > _proto.MAX_WIRE_BYTES:
+        if len(data) > _proto.MAX_WIRE_BYTES or len(data) > _proto.SMALL_WIRE_BYTES:
             raise InvalidWireEncodingError("wire input too large")
-        message = _proto.parse_sketch(data)
+        if not _proto.bounded_wire(data, _proto.SMALL_WIRE_BYTES):
+            raise InvalidWireEncodingError("malformed or oversized body")
+        try:
+            message = _proto.parse_sketch(data)
+        except DecodeError:
+            raise InvalidWireEncodingError("malformed protobuf") from None
         metadata = message.metadata
         if not message.HasField("metadata") or not message.HasField("frequent_items"):
             raise InvalidWireEncodingError("missing frequent-items metadata or body")
@@ -108,9 +117,9 @@ class Sketch:
         profile = cast(str, metadata.profile)
         map_size = profiles.FREQUENT_ITEMS_MAP_SIZES.get(profile)
         if map_size is None:
-            raise UnknownProfileError(profile)
+            raise UnknownProfileError("unknown frequent-items profile")
         if cast(int, metadata.frequent_items_map_size) != map_size:
-            raise InvalidMapSizeError(profile)
+            raise InvalidMapSizeError("invalid frequent-items map size")
 
         sketch = cls(profile, cast(str, metadata.hash_domain), profiles.HMAC_SHA256_64)
         body = message.frequent_items
@@ -142,6 +151,7 @@ class Sketch:
             previous = key
         if max_error == 0 and unassigned != 0:
             raise InvalidWireEncodingError("incomplete exact total weight")
+        sketch._rebuild_minimum()
         return sketch
 
     def add_hash(self, value: int, weight: int) -> None:
@@ -269,6 +279,7 @@ class Sketch:
         clone._total_weight = self._total_weight
         clone._max_error = self._max_error
         clone._items = dict(self._items)
+        clone._rebuild_minimum()
         return clone
 
     def marshal_binary(self) -> bytes:
@@ -283,12 +294,12 @@ class Sketch:
         if current is not None:
             if current > MAX_INT64 - residual:
                 raise WeightOverflowError("counter")
-            self._items[key] = current + residual
+            self._set_counter(key, current + residual)
             return
         if len(self._items) < self._map_size:
             if self._max_error > MAX_INT64 - residual:
                 raise WeightOverflowError("counter")
-            self._items[key] = self._max_error + residual
+            self._set_counter(key, self._max_error + residual)
             return
 
         consumed = self._prune_for_residual(residual)
@@ -298,14 +309,32 @@ class Sketch:
                 raise InvalidMapSizeError("no free counter")
             if self._max_error > MAX_INT64 - remaining:
                 raise WeightOverflowError("counter")
-            self._items[key] = self._max_error + remaining
+            self._set_counter(key, self._max_error + remaining)
+
+    def _rebuild_minimum(self) -> None:
+        self._minimum = [(estimate, key) for key, estimate in self._items.items()]
+        heapq.heapify(self._minimum)
+
+    def _set_counter(self, key: int, estimate: int) -> None:
+        self._items[key] = estimate
+        heapq.heappush(self._minimum, (estimate, key))
+        # Lazy removal uses the standard heap, with a strict bound on stale
+        # entries even when the same key is updated indefinitely.
+        if len(self._minimum) > 2 * self._map_size:
+            self._rebuild_minimum()
+
+    def _peek_minimum(self) -> tuple[int, int]:
+        while self._minimum:
+            estimate, key = self._minimum[0]
+            if self._items.get(key) == estimate:
+                return estimate, key
+            heapq.heappop(self._minimum)
+        raise InvalidMapSizeError("missing counter")
 
     def _prune_for_residual(self, residual: int) -> int:
         if not self._items:
             return 0
-        min_key, min_estimate = min(
-            self._items.items(), key=lambda entry: (entry[1], entry[0])
-        )
+        min_estimate, _ = self._peek_minimum()
         min_residual = min_estimate - self._max_error
         if residual < min_residual:
             if self._max_error > MAX_INT64 - residual:
@@ -320,14 +349,16 @@ class Sketch:
         return min_residual
 
     def _remove_expired(self) -> None:
-        expired = [
-            key for key, estimate in self._items.items() if estimate <= self._max_error
-        ]
-        for key in expired:
+        while self._items:
+            estimate, key = self._peek_minimum()
+            if estimate > self._max_error:
+                break
+            heapq.heappop(self._minimum)
             del self._items[key]
 
     def _reset(self) -> None:
         self._items.clear()
+        self._minimum.clear()
         self._total_weight = 0
         self._max_error = 0
 

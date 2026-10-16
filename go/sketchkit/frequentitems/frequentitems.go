@@ -10,12 +10,13 @@ import (
 
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/wirebounds"
 	"google.golang.org/protobuf/proto"
 )
 
 const (
 	wireVersion  = 1
-	maxWireBytes = 4 << 20
+	maxWireBytes = wirebounds.Small
 )
 
 // Profile names a weighted frequent-items profile from spec/profiles.md.
@@ -99,13 +100,13 @@ type Sketch struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	mapSize, ok := profileMapSizes[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, mapSize, domain, algorithm)
@@ -119,16 +120,16 @@ func newSketch(
 ) (*Sketch, error) {
 	profileMapSize, ok := profileMapSizes[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if mapSize <= 0 || mapSize != profileMapSize {
-		return nil, fmt.Errorf("%w: profile %s carries map size %d", ErrInvalidMapSize, profile, mapSize)
+		return nil, fmt.Errorf("%w: map size %d, want %d", ErrInvalidMapSize, mapSize, profileMapSize)
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	pool := make([]counter, mapSize)
@@ -334,13 +335,16 @@ func (s *Sketch) MarshalBinary() ([]byte, error) {
 
 // Parse decodes a weighted frequent-items sketch from deterministic protobuf bytes.
 func Parse(data []byte) (*Sketch, error) {
-	if len(data) > maxWireBytes {
+	if len(data) > wirebounds.Global || len(data) > maxWireBytes {
 		return nil, fmt.Errorf("%w: input length %d exceeds %d", ErrInvalidWireEncoding, len(data), maxWireBytes)
 	}
 
+	if !wirebounds.Valid(data, maxWireBytes) {
+		return nil, fmt.Errorf("%w: malformed or oversized body", ErrInvalidWireEncoding)
+	}
 	var message sketchpb.Sketch
 	if err := proto.Unmarshal(data, &message); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: malformed protobuf", ErrInvalidWireEncoding)
 	}
 
 	return fromProto(&message)
@@ -409,7 +413,7 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 		return nil, err
 	}
 	if !sketchhash.IsRegisteredDomain(sketch.domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, sketch.domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if body.GetTotalWeight() < 0 || body.GetMaxError() < 0 || body.GetMaxError() > body.GetTotalWeight() {
 		return nil, fmt.Errorf("%w: invalid total/error", ErrInvalidWireEncoding)

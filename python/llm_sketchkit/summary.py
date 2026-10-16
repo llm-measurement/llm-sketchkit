@@ -13,15 +13,14 @@ from typing import Any
 
 from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
 
-from . import _proto, bloom, frequentitems, hllpp, minhash
+from . import _summary_state, bloom, frequentitems, hllpp, minhash, model_usage
+from ._summary_errors import ModelUsageError
+from ._summary_errors import SummaryError as SummaryError
+from ._summary_json import check_counts
 
 MAX_BYTES = 8 << 20
 _MAX_INT = (1 << 63) - 1
 _IDENTIFIER = re.compile(r"[A-Za-z0-9._:-]{1,128}", re.ASCII)
-
-
-class SummaryError(ValueError):
-    """Malformed, incompatible, conflicting, or oversized summary input."""
 
 
 @dataclass
@@ -46,8 +45,17 @@ class Envelope:
     version: int
     window_duration_unix_nano: int
     window_start_unix_nano: int
+    model_usage: dict[str, Any] | None = None
 
     def validate(self) -> None:
+        self._validate()
+
+    def _validate(self) -> dict[str, _summary_state.Parsed]:
+        if self.model_usage is not None:
+            model_usage.validate(
+                self.model_usage, self.counters,
+                self.observed_start_unix_nano == self.observed_end_unix_nano,
+            )
         for value in (
             self.version, self.sequence, self.emitted_at_unix_nano,
             self.observed_start_unix_nano, self.observed_end_unix_nano,
@@ -83,18 +91,34 @@ class Envelope:
             if type(count) is not int or not 0 <= count <= _MAX_INT:
                 raise SummaryError("invalid summary counter")
         size = 0
+        parsed: dict[str, _summary_state.Parsed] = {}
         for name, payload in self.sketches.items():
             _check_identifier(name)
             if not isinstance(payload, Payload) or type(payload.data) is not bytes:
                 raise SummaryError("invalid summary sketch")
             size += len(payload.data)
-            if size > MAX_BYTES or _merge_payload(payload).data != payload.data:
+            if size > MAX_BYTES:
                 raise SummaryError("invalid summary sketch state")
+            try:
+                state, canonical = _summary_state.parse(payload.kind, payload.data)
+            except (ValueError, binascii.Error, DecodeError):
+                raise SummaryError(
+                    "invalid or incompatible summary sketch state"
+                ) from None
+            if canonical != payload.data:
+                raise SummaryError("invalid summary sketch state")
+            parsed[name] = state
+        return parsed
 
     def marshal_binary(self) -> bytes:
         """Return canonical JSON without mutating the receiver, including on error."""
         self.validate()
+        return self._marshal_validated()
+
+    def _marshal_validated(self) -> bytes:
         document = asdict(self)
+        if self.model_usage is None:
+            del document["model_usage"]
         document["sketches"] = {
             name: {"data": base64.b64encode(p.data).decode("ascii"), "kind": p.kind}
             for name, p in self.sketches.items()
@@ -110,7 +134,19 @@ class Envelope:
         if len(data) > MAX_BYTES:
             raise SummaryError("summary exceeds size limit")
         try:
-            document: Any = json.loads(data)
+            check_counts(data)
+            def integer(text: str) -> int:
+                if text == "-0":
+                    raise ModelUsageError("range")
+                return int(text)
+            def noninteger(text: str) -> Any:
+                raise ModelUsageError("range")
+            document: Any = json.loads(
+                data, parse_int=integer,
+                parse_float=noninteger, parse_constant=noninteger,
+            )
+            if "model_usage" in document and document["model_usage"] is None:
+                raise ModelUsageError("structure")
             payloads = document["sketches"]
             if type(payloads) is not dict:
                 raise SummaryError("invalid summary sketches")
@@ -127,14 +163,27 @@ class Envelope:
             if envelope.marshal_binary() != data:
                 raise SummaryError("noncanonical summary JSON")
             return envelope
-        except (ValueError, TypeError, KeyError, AttributeError, RecursionError) as exc:
-            raise SummaryError("invalid summary JSON or state") from exc
+        except ModelUsageError:
+            raise
+        except (ValueError, TypeError, KeyError, AttributeError, RecursionError):
+            raise SummaryError("invalid summary JSON or state") from None
 
 
 def compatible(a: Envelope, b: Envelope) -> None:
     """Check comparison compatibility; window starts may differ. No mutation."""
-    a.validate()
-    b.validate()
+    left, right = a._validate(), b._validate()
+    _compatible_validated(a, b, _metadata(left), _metadata(right))
+
+
+def _metadata(parsed: dict[str, _summary_state.Parsed]) -> dict[str, Any]:
+    return {name: state.metadata for name, state in parsed.items()}
+
+
+def _compatible_validated(
+    a: Envelope, b: Envelope,
+    left: dict[str, Any],
+    right: dict[str, Any],
+) -> None:
     if (
         a.scope_id != b.scope_id or a.accounting_id != b.accounting_id
         or a.key_id != b.key_id
@@ -145,12 +194,9 @@ def compatible(a: Envelope, b: Envelope) -> None:
         raise SummaryError("incompatible summary measurement contract")
     for name, payload in a.sketches.items():
         other = b.sketches[name]
-        left = _proto.parse_sketch(payload.data).metadata
-        right = _proto.parse_sketch(other.data).metadata
-        left.ClearField("representation_mode")
-        right.ClearField("representation_mode")
-        if payload.kind != other.kind or left != right:
+        if payload.kind != other.kind or left[name] != right[name]:
             raise SummaryError("incompatible summary sketch metadata")
+    model_usage.compatible(a.model_usage, b.model_usage)
 
 
 @dataclass
@@ -169,6 +215,7 @@ class Result:
     sources: list[Source]
     missing: list[str]
     partial: list[str]
+    model_usage: dict[str, Any] | None = None
 
 
 def combine(inputs: list[Envelope], expected: list[str]) -> Result:
@@ -183,26 +230,35 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
         _check_identifier(name)
     if len(set(expected)) != len(expected):
         raise SummaryError("duplicate expected producer")
-    encoded: list[tuple[Envelope, bytes]] = []
+    encoded: list[tuple[Envelope, bytes, dict[str, Any]]] = []
+    cached_doc: Envelope | None = None
+    cached_states: dict[str, _summary_state.Parsed] = {}
     size = 0
     for doc in inputs:
-        data = doc.marshal_binary()
+        parsed = doc._validate()
+        data = doc._marshal_validated()
         size += len(data)
         if size > 64 << 20:
             raise SummaryError("summary batch exceeds size limit")
         if doc.producer_id not in expected:
             raise SummaryError("unexpected summary producer")
-        encoded.append((doc, data))
+        encoded.append((doc, data, _metadata(parsed)))
+        cached_doc, cached_states = doc, parsed
+    # Validation must finish in input order before sorted compatibility checks.
+    # Keep only headers plus one envelope's decoded state, never the whole batch.
+    if inputs:
+        del parsed
     encoded.sort(key=lambda pair: (
         pair[0].producer_id, pair[0].epoch, pair[0].sequence
     ))
     selected: list[Envelope] = []
+    headers: list[dict[str, Any]] = []
     previous_bytes = b""
-    for doc, data in encoded:
+    for doc, data, metadata in encoded:
         if selected:
             if doc.window_start_unix_nano != selected[0].window_start_unix_nano:
                 raise SummaryError("cannot combine different windows")
-            compatible(selected[0], doc)
+            _compatible_validated(selected[0], doc, headers[0], metadata)
             last = selected[-1]
             if (last.producer_id, last.epoch) == (doc.producer_id, doc.epoch):
                 if last.sequence == doc.sequence:
@@ -216,13 +272,18 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
                 ):
                     raise SummaryError("summary observation or counter regressed")
                 selected[-1] = doc
+                model_usage.check_regression(last.model_usage, doc.model_usage)
+                headers[-1] = metadata
                 previous_bytes = data
                 continue
         selected.append(doc)
+        headers.append(metadata)
         previous_bytes = data
     result = Result({}, {}, [], [], [])
     intervals: dict[str, list[Envelope]] = {}
-    for doc in selected:
+    accumulated: dict[str, _summary_state.Parsed] = {}
+    kinds: dict[str, str] = {}
+    for doc, metadata in zip(selected, headers, strict=True):
         intervals.setdefault(doc.producer_id, []).append(doc)
         result.sources.append(Source(
             doc.producer_id, doc.epoch, doc.sequence,
@@ -233,12 +294,35 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
             if total > _MAX_INT:
                 raise SummaryError("combined counter overflow")
             result.counters[name] = total
+        if doc.model_usage is not None:
+            result.model_usage = model_usage.merge(result.model_usage, doc.model_usage)
         for name, payload in doc.sketches.items():
-            previous = result.sketches.get(name)
-            result.sketches[name] = (
-                _merge_payload(payload) if previous is None
-                else _merge_payload(previous, payload)
-            )
+            kinds[name] = payload.kind
+            try:
+                if (
+                    cached_doc is not None and name in cached_states
+                    and cached_doc.sketches.get(name) == payload
+                ):
+                    state = cached_states.pop(name)
+                else:
+                    # Only selected payloads are decoded again; validation and
+                    # canonicalization already ran exactly once above.
+                    state = _summary_state.Parsed(
+                        _summary_state.decode(payload.kind, payload.data),
+                        metadata[name],
+                    )
+                if name not in accumulated:
+                    accumulated[name] = state
+                else:
+                    accumulated[name].merge(state)
+            except (ValueError, binascii.Error, DecodeError):
+                raise SummaryError(
+                    "invalid or incompatible summary sketch state"
+                ) from None
+    result.sketches = {
+        name: Payload(parsed.state.marshal_binary(), kinds[name])
+        for name, parsed in accumulated.items()
+    }
     for name in sorted(expected):
         if name not in intervals:
             result.missing.append(name)
@@ -255,7 +339,20 @@ def combine(inputs: list[Envelope], expected: list[str]) -> Result:
             parts[0].window_start_unix_nano + parts[0].window_duration_unix_nano
         ):
             result.partial.append(name)
+    if result.model_usage is not None:
+        model_usage.validate(result.model_usage, result.counters)
     return result
+
+
+def has_model_usage(data: bytes) -> bool:
+    """Bounded capability detection; malformed/over-limit data remains an error."""
+    if len(data) > MAX_BYTES:
+        raise SummaryError("summary exceeds size limit")
+    try:
+        present = check_counts(data)
+    except (ValueError, UnicodeError):
+        raise SummaryError("invalid summary JSON") from None
+    return present
 
 
 def _check_identifier(value: str) -> None:
@@ -290,5 +387,5 @@ def _merge_payload(a: Payload, b: Payload | None = None) -> Payload:
         else:
             raise SummaryError("unknown summary sketch kind")
         return Payload(data, a.kind)
-    except (ValueError, binascii.Error, DecodeError) as exc:
-        raise SummaryError("invalid or incompatible summary sketch state") from exc
+    except (ValueError, binascii.Error, DecodeError):
+        raise SummaryError("invalid or incompatible summary sketch state") from None

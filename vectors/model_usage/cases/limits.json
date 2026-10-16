@@ -1,0 +1,24 @@
+{
+  "cases": [
+    {
+      "name": "real_model_limit_before_rows",
+      "template": "fixtures/empty.json",
+      "construction": {"op": "replace_models", "key_format": "m%04d", "start": 0, "count": 5001, "row": {}},
+      "reject": "model_count",
+      "precedence": "real-key count before semantic validation of deliberately empty rows"
+    },
+    {
+      "name": "merged_union_limit",
+      "template": "fixtures/one.json",
+      "construction": {"op": "two_disjoint_model_sets", "row_from": "/model_usage/models/model-a", "key_format": "m%04d", "ranges": [[0,2500],[2501,5001]], "producer_ids": ["p1","p2"], "recompute_five_base_counters": true},
+      "merged_real_entries": 5002,
+      "reject": "model_count"
+    },
+    {"name": "wire_bytes", "construction": {"op": "repeat_byte", "byte": 32, "count": 8388609}, "reject": "size"},
+    {"name": "input_batch_count", "template": "fixtures/empty.json", "repeat": 1025, "reject": "batch_count"},
+    {"name": "int64_max_accepted", "fixture": "fixtures/max_integer.json", "accept": true},
+    {"name": "input_limits_before_allocation", "template": "fixtures/one.json", "construction": {"op": "replace", "path": "/model_usage/models", "value": [[[0]]]}, "reject": "structure"},
+    {"name": "too_long_model_id", "template": "fixtures/one.json", "construction": {"op": "rename_model", "from": "model-a", "repeat_ascii": "m", "count": 129}, "reject": "model_id"},
+    {"name": "reserved_budget", "fixture": "fixtures/bad_reserved_name.json", "reject": "model_id"}
+  ]
+}

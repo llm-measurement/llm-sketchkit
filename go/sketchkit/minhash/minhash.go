@@ -10,12 +10,13 @@ import (
 	sketchhash "github.com/llm-measurement/llm-sketchkit/go/sketchkit/hash"
 	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/hashfamily"
 	sketchpb "github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/pb"
+	"github.com/llm-measurement/llm-sketchkit/go/sketchkit/internal/wirebounds"
 	"google.golang.org/protobuf/proto"
 )
 
 const (
 	wireVersion  = 1
-	maxWireBytes = 4 << 20
+	maxWireBytes = wirebounds.MinHash
 )
 
 // Profile names a MinHash profile from spec/profiles.md.
@@ -67,13 +68,13 @@ type Sketch struct {
 func New(profile Profile, domain sketchhash.Domain, algorithm sketchhash.Algorithm) (*Sketch, error) {
 	length, ok := profileLengths[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if !sketchhash.IsRegisteredDomain(domain) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, domain)
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if algorithm != sketchhash.HMACSHA25664 {
-		return nil, fmt.Errorf("%w: %s", ErrIncompatibleMerge, algorithm)
+		return nil, fmt.Errorf("%w: unsupported hash algorithm", ErrIncompatibleMerge)
 	}
 
 	return newSketch(profile, length, domain, algorithm), nil
@@ -210,13 +211,16 @@ func (s *Sketch) MarshalBinary() ([]byte, error) {
 
 // Parse decodes a MinHash sketch from deterministic protobuf bytes.
 func Parse(data []byte) (*Sketch, error) {
-	if len(data) > maxWireBytes {
+	if len(data) > wirebounds.Global || len(data) > maxWireBytes {
 		return nil, fmt.Errorf("%w: input length %d exceeds %d", ErrInvalidWireEncoding, len(data), maxWireBytes)
 	}
 
+	if !wirebounds.Valid(data, maxWireBytes) {
+		return nil, fmt.Errorf("%w: malformed or oversized body", ErrInvalidWireEncoding)
+	}
 	var message sketchpb.Sketch
 	if err := proto.Unmarshal(data, &message); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: malformed protobuf", ErrInvalidWireEncoding)
 	}
 
 	return fromProto(&message)
@@ -265,14 +269,14 @@ func fromProto(message *sketchpb.Sketch) (*Sketch, error) {
 	profile := Profile(metadata.GetProfile())
 	length, ok := profileLengths[profile]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnknownProfile, profile)
+		return nil, ErrUnknownProfile
 	}
 	if metadata.GetMinhashSignatureLength() != uint32(length) {
-		return nil, fmt.Errorf("%w: profile %s length=%d",
-			ErrInvalidSignatureLength, profile, metadata.GetMinhashSignatureLength())
+		return nil, fmt.Errorf("%w: length=%d, want %d",
+			ErrInvalidSignatureLength, metadata.GetMinhashSignatureLength(), length)
 	}
 	if !sketchhash.IsRegisteredDomain(sketchhash.Domain(metadata.GetHashDomain())) {
-		return nil, fmt.Errorf("%w: %s", sketchhash.ErrUnregisteredDomain, metadata.GetHashDomain())
+		return nil, sketchhash.ErrUnregisteredDomain
 	}
 	if len(body.GetSignature()) != length {
 		return nil, fmt.Errorf("%w: signature length", ErrInvalidWireEncoding)
