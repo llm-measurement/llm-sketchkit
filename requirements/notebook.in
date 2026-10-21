@@ -6,3 +6,5 @@ nbclient==0.11.0
 nbformat==5.11.1
 ipykernel==7.4.0
 pip-audit==2.10.1
+certifi==2026.10.19
+pillow==13.0.0
