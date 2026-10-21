@@ -9,13 +9,13 @@ normalization-sensitive contexts and seeded mixed-mark runs.
 ## CI Commands
 
 The integrating change should provide a Python `[3.11, 3.14]` matrix with
-Go **1.26.9** installed. Run these commands from an unsynced checkout in each
+Go **1.26.10** installed. Run these commands from an unsynced checkout in each
 Python environment. No workflow changes are part of the identity change.
 
 ```sh
 python -m pip install --require-hashes --only-binary=:all: -r requirements/dev.txt
 export PYTHONPATH=python:.
-export GOTOOLCHAIN=go1.26.9
+export GOTOOLCHAIN=go1.26.10
 python -m pytest -q
 python -m scripts.differential_identity --all-assigned
 python -m scripts.differential_fuzz --seed 20260903 --cases 12 --max-updates 320
