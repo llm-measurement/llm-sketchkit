@@ -48,6 +48,29 @@ def input_requirements(path: Path) -> list[Requirement]:
     return requirements
 
 
+def test_dependabot_covers_python_manifests() -> None:
+    config = yaml.safe_load((ROOT / ".github/dependabot.yml").read_text())
+    directories = []
+    for update in config["updates"]:
+        if update["package-ecosystem"] == "pip":
+            assert update["schedule"]["interval"] == "weekly"
+            directories.extend(update.get("directories", [update.get("directory")]))
+    assert directories and all(isinstance(path, str) for path in directories)
+    assert len(directories) == len(set(directories))
+    manifests = [
+        ROOT / "pyproject.toml", *REQUIREMENTS.glob("*.in"), *REQUIREMENTS.glob("*.txt")
+    ]
+    manifests.extend((ROOT / "examples").rglob("requirements*.txt"))
+    manifests.extend((ROOT / "examples").rglob("requirements*.in"))
+    for manifest in manifests:
+        # Dependabot's pip fetcher includes files one directory below each root.
+        assert any(
+            manifest.parent == ROOT / directory.lstrip("/")
+            or manifest.parent.parent == ROOT / directory.lstrip("/")
+            for directory in directories
+        ), str(manifest.relative_to(ROOT))
+
+
 @pytest.mark.parametrize("profile", PROFILES)
 @pytest.mark.parametrize("minor", (11, 12, 13, 14))
 def test_locks_cover_inputs_and_package_metadata(profile: str, minor: int) -> None:
