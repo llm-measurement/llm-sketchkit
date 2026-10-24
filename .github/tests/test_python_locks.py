@@ -183,7 +183,7 @@ def test_release_source_requires_existing_version_tag(
     )
     assert "${{" not in resolve["run"]
     assert resolve["env"]["RELEASE_TAG"] == (
-        "${{ github.event.release.tag_name || inputs.release_tag }}"
+        "${{ inputs.release_tag }}"
     )
     # Exercise the actual shell guard without creating tags or contacting GitHub.
     # Git itself checks syntax; these two read-only lookups model fetched tags.
@@ -207,12 +207,27 @@ git() {
     *) return 97 ;;
   esac
 }
+gh() {
+  case "$*" in
+    *branches/main*) printf '%s\n' \
+      '{"protected":true,"commit":{"sha":"0000000000000000000000000000000000000001"}}'
+      ;;
+    *releases?*) printf '%s\n' '[[]]' ;;
+    *compare/*) printf '%s\n' identical ;;
+    *) return 97 ;;
+  esac
+}
 '''
     output = tmp_path / "output"
     result = subprocess.run(
         ["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c",
          lookups + resolve["run"]],
-        env={**os.environ, "RELEASE_TAG": tag, "GITHUB_OUTPUT": str(output)},
+        env={**os.environ, "RELEASE_TAG": tag, "GITHUB_OUTPUT": str(output),
+             "GITHUB_REF": f"refs/tags/{tag}", "GITHUB_SHA": f"{1:040d}",
+             "WORKFLOW_SHA": f"{1:040d}", "GITHUB_RUN_ATTEMPT": "1",
+             "PUBLISH_RELEASE": "false", "PUBLISH_PYPI": "false",
+             "GITHUB_REPOSITORY": "llm-measurement/llm-sketchkit",
+             "RUNNER_TEMP": str(tmp_path)},
         capture_output=True, text=True, check=False,
     )
     assert (result.returncode == 0) is accepted
@@ -247,17 +262,51 @@ def test_release_sbom_is_isolated_and_uploads_do_not_clobber() -> None:
     assembly = jobs["assemble-release-assets"]
     assert set(assembly["needs"]) == {"build", "sbom"}
     downloads = {
-        s["with"]["name"]: s["with"]["path"] for s in assembly["steps"]
+        s["with"]["artifact-ids"]: s["with"]["path"] for s in assembly["steps"]
         if s.get("uses", "").startswith("actions/download-artifact@")
     }
-    assert downloads == {"python-distributions": "release/", "release-sbom": "sbom/"}
-    assert all(
-        jobs[name]["needs"] == "assemble-release-assets"
-        for name in ("publish-pypi", "publish-github-assets")
-    )
-    upload = jobs["publish-github-assets"]["steps"][-1]["run"]
-    assert "gh release upload" in upload
-    assert "--clobber" not in shlex.split(upload)
+    assert downloads == {
+        "${{ needs.build.outputs.artifact_id }}": "release/",
+        "${{ needs.sbom.outputs.artifact_id }}": "sbom/",
+    }
+    assert jobs["stage-github-release"]["needs"] == ["build", "assemble-release-assets"]
+    assert jobs["publish-pypi"]["needs"] == [
+        "build", "assemble-release-assets", "stage-github-release"
+    ]
+    stage_steps = jobs["stage-github-release"]["steps"]
+    stage = next(s["run"] for s in stage_steps if s.get("id") == "draft")
+    publish = stage_steps[-1]["run"]
+    assert "gh release create" in stage and "--draft" in stage
+    assert "--paginate --slurp" in stage
+    assert "releases/tags/" not in stage + publish
+    assert 'releases/$RELEASE_ID" -F draft=false' in publish
+    assert "--release-id" in stage and "--release-id" in publish
+    assert "gh release upload" not in stage + publish
+    assert "--clobber" not in shlex.split(stage + publish)
+    for name in ("publish-pypi", "stage-github-release"):
+        download = next(
+            s for s in jobs[name]["steps"]
+            if s.get("uses", "").startswith("actions/download-artifact@")
+        )
+        assert download["with"]["artifact-ids"] == (
+            "${{ needs.assemble-release-assets.outputs.artifact_id }}"
+        )
+
+
+def test_release_dispatch_defaults_and_public_instructions() -> None:
+    workflow = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
+    events = workflow.get("on", workflow.get(True))
+    assert set(events) == {"workflow_dispatch"}
+    inputs = events["workflow_dispatch"]["inputs"]
+    assert inputs["publish_release"]["default"] is False
+    assert inputs["publish_pypi"]["default"] is False
+    source = (ROOT / "docs/SUPPLY_CHAIN.md").read_text()
+    assert "exact existing release" in source
+    assert "publish_release=true" in source
+    assert "publish_pypi=true" in source
+    assert "default" in source and "release ID" in source
+    locks = (ROOT / "requirements/README.md").read_text()
+    assert "dispatch the updated workflow and select" not in locks
 
 
 def test_codeowners_cover_decoder_and_dependency_inputs() -> None:
