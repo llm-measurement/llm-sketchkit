@@ -32,10 +32,22 @@ jobs:
       - name: Go vulnerability scan
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.6.0 ./...
       - name: Repository leak guard
-        run: >-
-          ! git grep -nEi
-          '(/[U]sers/|[g]ithub_pat_|[B]EGIN (RSA |EC |OPENSSH )?PRIVATE KEY|(^|[^[:alnum:]_])([g]ate(s)?|[r]oadmap|[p]rd|[p]rogress)([^[:alnum:]_]|$))'
-          -- .
+        shell: bash
+        run: |
+          set -euo pipefail
+          if matches=$(git grep -nEi \
+            '(/[U]sers/|[g]ithub_pat_|[B]EGIN (RSA |EC |OPENSSH )?PRIVATE KEY|(^|[^[:alnum:]_])([g]ate(s)?|[r]oadmap|[p]rd|[p]rogress)([^[:alnum:]_]|$))' \
+            -- .); then
+            if disallowed=$(printf '%s\n' "$matches" | grep -vE \
+              '^\.github/workflows/[^:]+\.ya?ml:[0-9]+:[[:space:]]*cancel-in-[p]rogress:[[:space:]]*(true|false)[[:space:]]*$'); then
+              printf '%s\n' "$disallowed"
+              exit 1
+            else
+              test "$?" -eq 1
+            fi
+          else
+            test "$?" -eq 1
+          fi
       - name: SPDX header guard
         shell: bash
         run: |
@@ -209,6 +221,7 @@ jobs:
           unzip -Z1 dist/*.whl | grep -qx 'llm_sketchkit/sketches_pb2.py'
           ! unzip -Z1 dist/*.whl | grep -q '^spec/'
           tar -tzf dist/*.tar.gz | grep -q '/scripts/release_metadata.py$'
+          tar -tzf dist/*.tar.gz | grep -q '/scripts/release_assets.py$'
           tar -tzf dist/*.tar.gz | grep -q '/vectors/sketches/cross_language_hllpp_dense.json$'
           tar -tzf dist/*.tar.gz | grep -q '/vectors/compat/v0.1.0.json$'
       - name: Install wheel in a clean environment

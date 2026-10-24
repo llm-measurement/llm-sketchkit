@@ -11,7 +11,7 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
+from google.protobuf.message import DecodeError
 
 from . import _summary_state, bloom, frequentitems, hllpp, minhash, model_usage
 from ._summary_errors import ModelUsageError

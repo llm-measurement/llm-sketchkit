@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 include scripts/__init__.py
 include scripts/release_metadata.py
+include scripts/release_assets.py
 include scripts/differential_identity.py
 include scripts/check_quickstarts.py
 include CONTRIBUTING.md

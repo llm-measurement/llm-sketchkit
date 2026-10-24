@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 -r runtime.in
 mypy>=1.10
+types-protobuf==7.35.1.20260906
 pytest>=8.0
 ruff>=0.17.0
 pip-audit==2.10.1

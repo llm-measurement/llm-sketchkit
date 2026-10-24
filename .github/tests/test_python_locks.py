@@ -309,6 +309,44 @@ def test_release_dispatch_defaults_and_public_instructions() -> None:
     assert "dispatch the updated workflow and select" not in locks
 
 
+@pytest.mark.parametrize(
+    "case", ["empty", "yaml_false", "yaml_true", "other_path", "other_word",
+             "extra_content", "mixed", "git_error"]
+)
+def test_repository_leak_guard_retains_all_other_matches(case: str) -> None:
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    step = next(
+        item for item in workflow["jobs"]["go"]["steps"]
+        if item.get("name") == "Repository leak guard"
+    )
+    word = "pro" + "gress"
+    key = "cancel-in-" + word
+    allowed = f".github/workflows/release.yml:28:  {key}: false"
+    cases = {
+        "empty": ("", 1, True),
+        "yaml_false": (allowed, 0, True),
+        "yaml_true": (f".github/workflows/build.yaml:7:  {key}: true", 0, True),
+        "other_path": (f"docs/example.yml:1:  {key}: false", 0, False),
+        "other_word": (f"README.md:1: {word}", 0, False),
+        "extra_content": (allowed + f" # {word}", 0, False),
+        "mixed": (allowed + f"\nREADME.md:1: {word}", 0, False),
+        "git_error": ("", 2, False),
+    }
+    matches, status, accepted = cases[case]
+    stub = 'git() { printf "%s" "$MATCHES"; return "$GIT_STATUS"; }\n'
+    result = subprocess.run(
+        ["bash", "--noprofile", "--norc", "-c", stub + step["run"]],
+        env={**os.environ, "MATCHES": matches, "GIT_STATUS": str(status)},
+        capture_output=True, text=True, check=False,
+    )
+    assert (result.returncode == 0) is accepted
+
+
+def test_release_asset_validator_is_in_source_manifest() -> None:
+    lines = (ROOT / "MANIFEST.in").read_text().splitlines()
+    assert "include scripts/release_assets.py" in lines
+
+
 def test_codeowners_cover_decoder_and_dependency_inputs() -> None:
     lines = (ROOT / ".github/CODEOWNERS").read_text().splitlines()
     owned = {
