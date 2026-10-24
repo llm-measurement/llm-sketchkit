@@ -48,11 +48,14 @@ python -m pytest -q .github/tests/test_python_locks.py
 
 ## Older Release Tags
 
-The release workflow first checks out `github.workflow_sha`, the immutable commit
-that contains the running workflow, and installs its release lock. It then checks
-out the requested release tag and builds that source without isolation. An older
-tag does not need to contain the lockfiles. No moving branch supplies build tools.
-If the tag requires a different build backend version, the build fails without
-fetching replacements. Review and hash-lock compatible tools before retrying.
-To use this behavior for an older tag, dispatch the updated workflow and select
-the old tag in `release_tag`; dispatching an old workflow does not update it.
+Dispatch the release workflow at the exact existing tag named by `release_tag`.
+The workflow commit, event commit and resolved tag commit must be identical and
+belong to protected `main`. That source must contain the workflow and release
+lockfiles; a moving branch cannot supply newer build tools for an older tag.
+Builds use the hash-locked tools with no isolation or replacement downloads.
+
+Older tags do not acquire this workflow by dispatching current `main` with an old
+tag input. Do not rerun an older published-event uploader after release
+immutability is enabled. Use a new reviewed version containing the updated flow.
+See [release publication](../docs/SUPPLY_CHAIN.md#publishing-a-release) for the
+draft-only defaults, exact artifact handoff and publication inputs.

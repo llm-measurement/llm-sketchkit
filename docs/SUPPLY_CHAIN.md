@@ -31,6 +31,33 @@ pinned Syft version and writes SHA-256 checksums. These files and the Python
 distributions are attached to GitHub releases built after this control was added.
 Use the SBOM for dependency review and vulnerability scanning.
 
+### Publishing A Release
+
+Run `release-distributions` by `workflow_dispatch` at the exact existing release
+tag: the dispatch ref and `release_tag` input must name the same tag, whose source
+commit contains this workflow and belongs to protected `main`. A published release
+event does not start this workflow.
+
+Both `publish_release` and `publish_pypi` default to `false`. The default run builds
+once, assembles the wheel, source distribution, SPDX SBOM and `SHA256SUMS`, then
+uploads all four files to a draft. Authenticated paginated release listings locate
+the draft; subsequent checks and publication use its validated release ID, not a
+draft-by-tag lookup. Names, sizes, SHA-256 digests, tag, source and draft state must
+match before publication.
+
+For an authorized end-to-end publication, select `publish_release=true` at dispatch
+and, when publishing to PyPI, `publish_pypi=true`. The same run publishes the checked
+draft, reads it back by ID, then sends the original wheel and source distribution
+from the same artifact ID and checksum handoff through the existing `pypi`
+environment. PyPI-only publication is refused. No job uploads GitHub assets after
+publication, and no publication event rebuilds the distributions.
+
+A draft-only run is not later promoted by another rebuilding dispatch. Existing
+drafts or published releases and workflow reruns fail closed. Stop on a partial
+failure; preserve the original artifact ID, checksums and release ID for a
+separately authorized recovery, or fix forward with a new version. Do not replace
+assets, retag, or skip a conflicting PyPI version.
+
 ## Verify The Published Python Artifact
 
 The `0.1.0` wheel and source distribution both expose PyPI provenance tied to this

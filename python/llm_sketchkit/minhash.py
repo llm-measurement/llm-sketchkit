@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-from google.protobuf.message import DecodeError  # type: ignore[import-untyped]
+from google.protobuf.message import DecodeError
 
 from . import _proto, _sketchcheck, hashfamily, profiles
 

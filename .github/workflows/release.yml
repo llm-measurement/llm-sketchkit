@@ -3,15 +3,17 @@
 name: release-distributions
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       release_tag:
         description: Existing v* tag whose package metadata should be validated
         required: true
         type: string
-        default: v0.3.0
+      publish_release:
+        description: Publish the verified draft in this run
+        required: true
+        type: boolean
+        default: false
       publish_pypi:
         description: Publish with PyPI trusted publishing when the repository is public
         required: true
@@ -21,12 +23,18 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
       commit: ${{ steps.tag.outputs.commit }}
+      tag: ${{ inputs.release_tag }}
       python_version: ${{ steps.release.outputs.python_version }}
+      artifact_id: ${{ steps.distributions.outputs.artifact-id }}
     steps:
       - name: Check out workflow dependencies
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -37,8 +45,16 @@ jobs:
       - name: Resolve existing release tag
         id: tag
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          PUBLISH_RELEASE: ${{ inputs.publish_release }}
+          PUBLISH_PYPI: ${{ inputs.publish_pypi }}
         run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          test "$PUBLISH_PYPI" != true || test "$PUBLISH_RELEASE" = true
           case "$RELEASE_TAG" in
             v*) ;;
             *) echo "Release source must be an existing v* tag" >&2; exit 1 ;;
@@ -46,6 +62,18 @@ jobs:
           git check-ref-format "refs/tags/${RELEASE_TAG}"
           git show-ref --verify --quiet "refs/tags/${RELEASE_TAG}"
           commit=$(git rev-parse --verify "refs/tags/${RELEASE_TAG}^{commit}")
+          test "$commit" = "$GITHUB_SHA"
+          test "$commit" = "$WORKFLOW_SHA"
+          main=$(gh api --method GET "repos/$GITHUB_REPOSITORY/branches/main")
+          test "$(jq -r .protected <<< "$main")" = true
+          main_sha=$(jq -r .commit.sha <<< "$main")
+          status=$(gh api --method GET "repos/$GITHUB_REPOSITORY/compare/$commit...$main_sha" --jq .status)
+          case "$status" in
+            identical|ahead) ;;
+            *) echo "Release source is not on protected main" >&2; exit 1 ;;
+          esac
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases-before-build.json"
+          jq -e --arg tag "$RELEASE_TAG" 'add | all(.[]; .tag_name != $tag)' "$RUNNER_TEMP/releases-before-build.json" > /dev/null
           printf 'commit=%s\n' "$commit" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -61,7 +89,7 @@ jobs:
       - name: Verify release version
         id: release
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: >-
           python scripts/release_metadata.py
           --tag "${RELEASE_TAG}"
@@ -77,6 +105,7 @@ jobs:
           tar -tzf dist/*.tar.gz | grep -q '/vectors/compat/v0.1.0.json$'
           tar -tzf dist/*.tar.gz | grep -q '/vectors/summaries/envelope.json$'
       - name: Upload distributions
+        id: distributions
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: python-distributions
@@ -86,6 +115,8 @@ jobs:
   sbom:
     needs: build
     runs-on: ubuntu-latest
+    outputs:
+      artifact_id: ${{ steps.sbom.outputs.artifact-id }}
     steps:
       - name: Check out release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -104,6 +135,7 @@ jobs:
           upload-release-assets: false
           syft-version: v1.51.1
       - name: Upload SBOM
+        id: sbom
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-sbom
@@ -113,23 +145,32 @@ jobs:
   assemble-release-assets:
     needs: [build, sbom]
     runs-on: ubuntu-latest
+    outputs:
+      artifact_id: ${{ steps.assets.outputs.artifact-id }}
+      artifact_digest: ${{ steps.assets.outputs.artifact-digest }}
+      checksums_sha256: ${{ steps.checksums.outputs.sha256 }}
     steps:
       - name: Download distributions
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: python-distributions
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          merge-multiple: true
           path: release/
       - name: Download SBOM
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: release-sbom
+          artifact-ids: ${{ needs.sbom.outputs.artifact_id }}
+          merge-multiple: true
           path: sbom/
       - name: Write release checksums
+        id: checksums
         run: |
           cp sbom/*.spdx.json release/
           cd release
           sha256sum *.whl *.tar.gz *.spdx.json > SHA256SUMS
+          printf 'sha256=%s\n' "$(sha256sum SHA256SUMS | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Upload release assets
+        id: assets
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-assets
@@ -137,10 +178,10 @@ jobs:
           if-no-files-found: error
 
   publish-pypi:
-    needs: assemble-release-assets
+    needs: [build, assemble-release-assets, stage-github-release]
     if: >-
       github.event.repository.visibility == 'public' &&
-      (github.event_name == 'release' || inputs.publish_pypi)
+      inputs.publish_release && inputs.publish_pypi
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -149,28 +190,92 @@ jobs:
       actions: read
       id-token: write
     steps:
-      - name: Download distributions
+      - name: Download the staged release bundle
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: python-distributions
-          path: dist/
+          artifact-ids: ${{ needs.assemble-release-assets.outputs.artifact_id }}
+          merge-multiple: true
+          path: release/
+      - name: Verify and select the same distributions
+        env:
+          VERSION: ${{ needs.build.outputs.python_version }}
+          CHECKSUMS_SHA256: ${{ needs.assemble-release-assets.outputs.checksums_sha256 }}
+        run: |
+          set -euo pipefail
+          cd release
+          printf '%s  SHA256SUMS\n' "$CHECKSUMS_SHA256" | sha256sum --check --strict -
+          sha256sum --check --strict SHA256SUMS
+          test "$(find . -mindepth 1 -maxdepth 1 | wc -l)" -eq 4
+          test -f "llm-sketchkit-$VERSION.spdx.json"
+          mkdir ../dist
+          cp "llm_sketchkit-$VERSION-py3-none-any.whl" "llm_sketchkit-$VERSION.tar.gz" ../dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
 
-  publish-github-assets:
-    needs: assemble-release-assets
-    if: github.event_name == 'release'
+  stage-github-release:
+    needs: [build, assemble-release-assets]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Check out the authorized release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ needs.build.outputs.commit }}
       - name: Download release assets
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: release-assets
+          artifact-ids: ${{ needs.assemble-release-assets.outputs.artifact_id }}
+          merge-multiple: true
           path: release/
-      - name: Attach assets to GitHub release
+      - name: Stage and read back the complete draft
+        id: draft
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "${RELEASE_TAG}" release/* --repo "${GITHUB_REPOSITORY}"
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
+          SOURCE_COMMIT: ${{ needs.build.outputs.commit }}
+          VERSION: ${{ needs.build.outputs.python_version }}
+          CHECKSUMS_SHA256: ${{ needs.assemble-release-assets.outputs.checksums_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$(gh api --method GET "repos/$GITHUB_REPOSITORY/commits/refs/tags/$RELEASE_TAG" --jq .sha)" = "$SOURCE_COMMIT"
+          python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256"
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > releases-before.json
+          python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --release-list releases-before.json --require-absent --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state draft
+          flags=(--draft --verify-tag --target "$SOURCE_COMMIT")
+          if [[ "$RELEASE_TAG" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$RELEASE_TAG" release/* --repo "$GITHUB_REPOSITORY" "${flags[@]}" \
+            --title "$RELEASE_TAG" --notes "Python distributions, SPDX SBOM and SHA256 checksums for $RELEASE_TAG."
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > releases-after.json
+          release_id=$(python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --release-list releases-after.json --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state draft)
+          gh api --method GET "repos/$GITHUB_REPOSITORY/releases/$release_id" > draft.json
+          python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --metadata draft.json --release-id "$release_id" --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state draft
+          printf 'release_id=%s\n' "$release_id" >> "$GITHUB_OUTPUT"
+      - name: Publish the verified draft
+        if: inputs.publish_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
+          SOURCE_COMMIT: ${{ needs.build.outputs.commit }}
+          VERSION: ${{ needs.build.outputs.python_version }}
+          CHECKSUMS_SHA256: ${{ needs.assemble-release-assets.outputs.checksums_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$(gh api --method GET "repos/$GITHUB_REPOSITORY/commits/refs/tags/$RELEASE_TAG" --jq .sha)" = "$SOURCE_COMMIT"
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > releases-publish.json
+          test "$(python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --release-list releases-publish.json --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state draft)" = "$RELEASE_ID"
+          gh api --method GET "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > draft.json
+          python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --metadata draft.json --release-id "$RELEASE_ID" --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state draft
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -F draft=false > published.json
+          python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --metadata published.json --release-id "$RELEASE_ID" --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state published
+          gh api --method GET "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > published-readback.json
+          python -m scripts.release_assets --directory release --version "$VERSION" --checksums-sha256 "$CHECKSUMS_SHA256" \
+            --metadata published-readback.json --release-id "$RELEASE_ID" --tag "$RELEASE_TAG" --commit "$SOURCE_COMMIT" --state published
