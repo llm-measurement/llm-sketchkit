@@ -229,7 +229,8 @@ jobs:
           python -m venv /tmp/llm-sketchkit-wheel
           wheel="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
           /tmp/llm-sketchkit-wheel/bin/python -m pip install --require-hashes --only-binary=:all: -r requirements/runtime.txt
-          /tmp/llm-sketchkit-wheel/bin/python -m pip install --no-index --no-deps --no-build-isolation "$wheel"
+          python scripts/local_artifact_requirement.py "$wheel" > "$RUNNER_TEMP/llm-sketchkit-wheel-requirements.txt"
+          /tmp/llm-sketchkit-wheel/bin/python -m pip install --require-hashes --no-index --no-deps --no-build-isolation -r "$RUNNER_TEMP/llm-sketchkit-wheel-requirements.txt"
           expected_version="$(python -c 'import pathlib, tomllib; print(tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"])')"
           EXPECTED_VERSION="${expected_version}" /tmp/llm-sketchkit-wheel/bin/python - <<'PY'
           import importlib.metadata
@@ -250,6 +251,7 @@ jobs:
 
           python -m venv /tmp/llm-sketchkit-sdist
           /tmp/llm-sketchkit-sdist/bin/python -m pip install --require-hashes --only-binary=:all: -r requirements/dev.txt
-          /tmp/llm-sketchkit-sdist/bin/python -m pip install --no-index --no-deps --no-build-isolation "${sdist}[dev]"
+          python scripts/local_artifact_requirement.py --extra dev "$sdist" > "$RUNNER_TEMP/llm-sketchkit-sdist-requirements.txt"
+          /tmp/llm-sketchkit-sdist/bin/python -m pip install --require-hashes --no-index --no-deps --no-build-isolation -r "$RUNNER_TEMP/llm-sketchkit-sdist-requirements.txt"
           cd "${source_root}"
           /tmp/llm-sketchkit-sdist/bin/python -m pytest -q

@@ -125,7 +125,15 @@ def test_workflows_only_install_locked_or_local_packages(name: str) -> None:
                     continue
                 installs += 1
                 args = shlex.split(line)
-                if "--require-hashes" in args:
+                if "--require-hashes" in args and "--no-index" in args:
+                    assert {
+                        "--no-index", "--no-deps", "--no-build-isolation", "-r"
+                    } <= set(args)
+                    assert args[-1] in (
+                        "$RUNNER_TEMP/llm-sketchkit-wheel-requirements.txt",
+                        "$RUNNER_TEMP/llm-sketchkit-sdist-requirements.txt",
+                    )
+                elif "--require-hashes" in args:
                     assert "--only-binary=:all:" in args
                     path = Path(args[args.index("-r") + 1])
                     assert path.parent == Path("requirements")
