@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
-pip==26.2.1
-setuptools==84.1.0
+pip==26.2.2
+setuptools==84.2.1
 build==1.6.1
 twine==7.0.0
 certifi==2026.10.19

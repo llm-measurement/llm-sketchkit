@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 -r runtime.in
-pandas==3.0.6
+pandas==3.1.0
 matplotlib==3.11.2
 nbclient==0.11.0
 nbformat==5.11.1
