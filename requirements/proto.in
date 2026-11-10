@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-pip==26.2.2
+pip==26.3
 setuptools==84.2.1
-grpcio-tools==1.81.1
+grpcio-tools==1.81.2
 protobuf==6.33.5
